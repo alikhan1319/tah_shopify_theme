@@ -1,0 +1,279 @@
+{% doc %}
+  JSON-LD structured data for SEO: Organization, WebSite, BreadcrumbList,
+  Article, Collection, and WebPage schemas.
+  Product schema (with reviews) is handled in meta-tags.liquid.
+{% enddoc %}
+
+{%- liquid
+  assign seo_logo = settings.favicon
+  assign search_action_url = request.origin | append: routes.search_url | append: '?q='
+-%}
+{%- capture search_action_target -%}{{ search_action_url }}{search_term_string}{%- endcapture -%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": {{ shop.name | json }},
+  "url": {{ request.origin | json }}
+  {%- if seo_logo != blank -%}
+  ,"logo": {{ seo_logo | image_url: width: 512 | prepend: 'https:' | json }}
+  {%- endif -%}
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": {{ shop.name | json }},
+  "url": {{ request.origin | json }},
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {{ search_action_target | json }},
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+
+{%- if request.page_type == 'product' and product != blank -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": {{ 'general.home' | t | json }},
+        "item": {{ request.origin | json }}
+      }
+      {%- if product.collections.first != blank -%}
+      ,{
+        "@type": "ListItem",
+        "position": 2,
+        "name": {{ product.collections.first.title | json }},
+        "item": {{ request.origin | append: product.collections.first.url | json }}
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": {{ product.title | json }},
+        "item": {{ request.origin | append: product.url | json }}
+      }
+      {%- else -%}
+      ,{
+        "@type": "ListItem",
+        "position": 2,
+        "name": {{ product.title | json }},
+        "item": {{ request.origin | append: product.url | json }}
+      }
+      {%- endif -%}
+    ]
+  }
+  </script>
+{%- endif -%}
+
+{%- if request.page_type == 'collection' and collection != blank -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": {{ collection.title | json }},
+    "description": {{ collection.description | strip_html | truncate: 300 | default: collection.title | json }},
+    "url": {{ request.origin | append: collection.url | json }}
+    {%- if collection.image -%}
+    ,"image": {{ collection.image | image_url: width: 1200 | prepend: 'https:' | json }}
+    {%- endif -%}
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": {{ 'general.home' | t | json }},
+        "item": {{ request.origin | json }}
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": {{ collection.title | json }},
+        "item": {{ request.origin | append: collection.url | json }}
+      }
+    ]
+  }
+  </script>
+{%- endif -%}
+
+{%- if request.page_type == 'article' and article != blank -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": {{ article.title | json }},
+    "description": {{ article.excerpt_or_content | strip_html | truncate: 300 | json }},
+    "datePublished": {{ article.published_at | date: '%Y-%m-%d' | json }},
+    "dateModified": {{ article.updated_at | default: article.published_at | date: '%Y-%m-%d' | json }},
+    "author": {
+      "@type": "Person",
+      "name": {{ article.author | default: shop.name | json }}
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": {{ shop.name | json }}
+      {%- if seo_logo != blank -%}
+      ,"logo": {
+        "@type": "ImageObject",
+        "url": {{ seo_logo | image_url: width: 512 | prepend: 'https:' | json }}
+      }
+      {%- endif -%}
+    },
+    "mainEntityOfPage": {{ request.origin | append: article.url | json }}
+    {%- if article.image -%}
+    ,"image": {{ article.image | image_url: width: 1200 | prepend: 'https:' | json }}
+    {%- endif -%}
+    ,"articleSection": {{ blog.title | json }}
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": {{ 'general.home' | t | json }},
+        "item": {{ request.origin | json }}
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": {{ blog.title | json }},
+        "item": {{ request.origin | append: blog.url | json }}
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": {{ article.title | json }},
+        "item": {{ request.origin | append: article.url | json }}
+      }
+    ]
+  }
+  </script>
+{%- endif -%}
+
+{%- if request.page_type == 'page' and page != blank -%}
+  {%- liquid
+    assign page_schema_type = 'WebPage'
+    if page.handle == 'about' or page.handle == 'about-us'
+      assign page_schema_type = 'AboutPage'
+    elsif page.handle == 'contact' or page.handle == 'contact-us'
+      assign page_schema_type = 'ContactPage'
+    endif
+  -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": {{ page_schema_type | json }},
+    "name": {{ page.title | json }},
+    "description": {{ page_description | default: page.content | strip_html | truncate: 300 | default: page.title | json }},
+    "url": {{ request.origin | append: page.url | json }}
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": {{ 'general.home' | t | json }},
+        "item": {{ request.origin | json }}
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": {{ page.title | json }},
+        "item": {{ request.origin | append: page.url | json }}
+      }
+    ]
+  }
+  </script>
+{%- endif -%}
+
+{%- if request.page_type == 'blog' and blog != blank -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": {{ blog.title | json }},
+    "url": {{ request.origin | append: blog.url | json }},
+    "description": {{ page_description | default: blog.title | json }}
+  }
+  </script>
+{%- endif -%}
+
+{%- if request.page_type == 'index' -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": {{ shop.name | json }},
+    "description": {{ page_description | default: shop.description | default: shop.name | json }},
+    "url": {{ request.origin | json }}
+  }
+  </script>
+{%- endif -%}
+
+{%- liquid
+  assign policy_for_schema = blank
+  if shop.refund_policy != blank and request.path == shop.refund_policy.url
+    assign policy_for_schema = shop.refund_policy
+  elsif shop.privacy_policy != blank and request.path == shop.privacy_policy.url
+    assign policy_for_schema = shop.privacy_policy
+  elsif shop.terms_of_service != blank and request.path == shop.terms_of_service.url
+    assign policy_for_schema = shop.terms_of_service
+  elsif shop.shipping_policy != blank and request.path == shop.shipping_policy.url
+    assign policy_for_schema = shop.shipping_policy
+  endif
+-%}
+{%- if policy_for_schema != blank -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": {{ policy_for_schema.title | json }},
+    "description": {{ policy_for_schema.body | strip_html | truncate: 300 | default: policy_for_schema.title | json }},
+    "url": {{ request.origin | append: policy_for_schema.url | json }}
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": {{ 'general.home' | t | json }},
+        "item": {{ request.origin | json }}
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": {{ policy_for_schema.title | json }},
+        "item": {{ request.origin | append: policy_for_schema.url | json }}
+      }
+    ]
+  }
+  </script>
+{%- endif -%}

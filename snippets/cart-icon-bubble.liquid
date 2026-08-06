@@ -1,0 +1,22 @@
+{% doc %}
+  Renders the cart icon with a live item-count bubble for AJAX updates.
+
+  @param {string} [class] - Optional wrapper class
+
+  @example
+  {% render 'cart-icon-bubble' %}
+{% enddoc %}
+
+<span class="cart-icon-bubble {{ class }}" data-cart-icon-bubble>
+  {{ 'icon-cart.svg' | inline_asset_content }}
+  <span
+    class="cart-icon-bubble__count{% if cart.item_count == 0 %} is-hidden{% endif %}"
+    data-cart-count
+    aria-hidden="{% if cart.item_count == 0 %}true{% else %}false{% endif %}"
+  >
+    {{- cart.item_count -}}
+  </span>
+  <span class="visually-hidden" data-cart-count-live>
+    {{ 'cart.item_count' | t: count: cart.item_count }}
+  </span>
+</span>

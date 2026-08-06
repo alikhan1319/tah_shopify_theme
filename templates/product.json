@@ -1,0 +1,199 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "product",
+      "blocks": {
+        "feature_1": {
+          "type": "feature",
+          "settings": {
+            "icon": "check",
+            "text": "Premium quality"
+          }
+        },
+        "feature_2": {
+          "type": "feature",
+          "settings": {
+            "icon": "shield",
+            "text": "Secure checkout"
+          }
+        },
+        "feature_3": {
+          "type": "feature",
+          "settings": {
+            "icon": "truck",
+            "text": "Fast shipping"
+          }
+        },
+        "feature_4": {
+          "type": "feature",
+          "settings": {
+            "icon": "return",
+            "text": "Easy returns"
+          }
+        },
+        "trust_1": {
+          "type": "trust_item",
+          "settings": {
+            "text": "Cash on delivery"
+          }
+        },
+        "trust_2": {
+          "type": "trust_item",
+          "settings": {
+            "text": "Fast shipping"
+          }
+        },
+        "trust_3": {
+          "type": "trust_item",
+          "settings": {
+            "text": "Secure checkout"
+          }
+        },
+        "trust_4": {
+          "type": "trust_item",
+          "settings": {
+            "text": "14-day return"
+          }
+        }
+      },
+      "block_order": [
+        "feature_1",
+        "feature_2",
+        "feature_3",
+        "feature_4",
+        "trust_1",
+        "trust_2",
+        "trust_3",
+        "trust_4"
+      ],
+      "settings": {
+        "show_vendor": true,
+        "show_rating": true,
+        "show_verified": true,
+        "show_sold": false,
+        "sold_label": "",
+        "short_description": "",
+        "installments_text": "",
+        "show_social_proof": false,
+        "viewing_text": "",
+        "sold_today_text": "",
+        "bestseller": false,
+        "show_stock": false,
+        "stock_left": 8,
+        "show_trust_cards": true,
+        "show_buy_button": true,
+        "whatsapp_number": "923001234567",
+        "whatsapp_message": "Hi, I want to order:",
+        "shipping_text": "Fast nationwide delivery",
+        "cod_text": "Pay when you receive",
+        "returns_text": "14-day easy returns",
+        "warranty_text": "Official quality guarantee",
+        "show_payment_icons": true,
+        "color_background": "#F8F9FA",
+        "accent_color": "#22C55E",
+        "padding_top": 40,
+        "padding_bottom": 96
+      }
+    },
+    "customer_reviews": {
+      "type": "customer-reviews",
+      "blocks": {
+        "review_1": {
+          "type": "review",
+          "settings": {
+            "customer_name": "Ayesha M.",
+            "review_text": "The stitching and fabric feel exactly like the photos. Worth every rupee.",
+            "rating": 5,
+            "verified": true
+          }
+        },
+        "review_2": {
+          "type": "review",
+          "settings": {
+            "customer_name": "Hassan R.",
+            "review_text": "Ordered on Monday, delivered by Wednesday. Packaging was premium.",
+            "rating": 5,
+            "verified": true
+          }
+        },
+        "review_3": {
+          "type": "review",
+          "settings": {
+            "customer_name": "Sara K.",
+            "review_text": "Colour is rich and true to the pictures. I get compliments every time.",
+            "rating": 5,
+            "verified": true
+          }
+        },
+        "review_4": {
+          "type": "review",
+          "settings": {
+            "customer_name": "Nadia F.",
+            "review_text": "Size guide was accurate and the fit was perfect straight out of the box.",
+            "rating": 4,
+            "verified": true
+          }
+        },
+        "review_5": {
+          "type": "review",
+          "settings": {
+            "customer_name": "Imran A.",
+            "review_text": "Customer support answered on WhatsApp within minutes. Smooth experience.",
+            "rating": 5,
+            "verified": true
+          }
+        }
+      },
+      "block_order": ["review_1", "review_2", "review_3", "review_4", "review_5"],
+      "settings": {
+        "eyebrow": "Customer review",
+        "heading": "What buyers say about this piece",
+        "subheading": "<p>Real feedback from customers who ordered from TAH.</p>",
+        "header_alignment": "center",
+        "show_summary": true,
+        "enable_auto_scroll": true,
+        "scroll_speed": 40,
+        "background_color": "#FFFFFF",
+        "text_color": "#111111",
+        "card_background": "#F8F9FA",
+        "star_color": "#C4A35A",
+        "card_gap": 20,
+        "padding_top": 64,
+        "padding_bottom": 72
+      }
+    },
+    "related_products": {
+      "type": "related-products",
+      "settings": {
+        "eyebrow": "Complete the look",
+        "heading": "Related products",
+        "subheading": "<p>More pieces customers often view with this one.</p>",
+        "header_alignment": "center",
+        "recommendation_intent": "related",
+        "products_to_show": 4,
+        "show_vendor": true,
+        "show_description": true,
+        "show_rating": true,
+        "show_quick_view": true,
+        "show_add_to_cart": true,
+        "background_color": "#FFFFFF",
+        "grid_gap": 24,
+        "columns_mobile": "2",
+        "columns_tablet": "3",
+        "columns_desktop": 4,
+        "padding_top": 64,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": ["main", "customer_reviews", "related_products"]
+}

@@ -1,0 +1,87 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "legal",
+      "blocks": {
+        "s1": {
+          "type": "section",
+          "settings": {
+            "title": "Overview",
+            "text": "<p>By accessing and using the Star Fabrics website and placing an order, you agree to these Terms and Conditions. Please read them carefully before making a purchase.</p>"
+          }
+        },
+        "s2": {
+          "type": "section",
+          "settings": {
+            "title": "Products and pricing",
+            "text": "<p>We do our best to display products, colours, and prices accurately. Slight variations in colour may occur due to screen settings. Prices and availability may change without notice.</p>"
+          }
+        },
+        "s3": {
+          "type": "section",
+          "settings": {
+            "title": "Orders and acceptance",
+            "text": "<p>Placing an order is an offer to purchase. We reserve the right to accept or decline any order, for example if an item is out of stock or a pricing error occurs. You will be notified if your order cannot be fulfilled.</p>"
+          }
+        },
+        "s4": {
+          "type": "section",
+          "settings": {
+            "title": "Payment",
+            "text": "<p>We accept the payment methods shown at checkout, including cash on delivery where available. Full payment must be confirmed before dispatch for prepaid orders.</p>"
+          }
+        },
+        "s5": {
+          "type": "section",
+          "settings": {
+            "title": "Shipping and delivery",
+            "text": "<p>Delivery times are estimates and may vary due to location or courier delays. Once an order is dispatched, delivery timelines are subject to the courier's service.</p>"
+          }
+        },
+        "s6": {
+          "type": "section",
+          "settings": {
+            "title": "Intellectual property",
+            "text": "<p>All content on this site, including images, logos, and text, is the property of Star Fabrics and may not be copied or reused without permission.</p>"
+          }
+        },
+        "s7": {
+          "type": "section",
+          "settings": {
+            "title": "Limitation of liability",
+            "text": "<p>Star Fabrics is not liable for indirect or incidental damages arising from the use of our products or website, to the fullest extent permitted by law.</p>"
+          }
+        }
+      },
+      "block_order": ["s1", "s2", "s3", "s4", "s5", "s6", "s7"],
+      "settings": {
+        "eyebrow": "Legal",
+        "heading": "Terms and conditions",
+        "updated_at": "January 2026",
+        "intro": "<p>These terms govern your use of the Star Fabrics website and your purchases with us.</p>",
+        "content": "",
+        "show_contact_note": true,
+        "note_heading": "Need clarification?",
+        "note_text": "Contact our team any time:",
+        "note_email": "starfabricsshop@gmail.com",
+        "background_color": "#FFFFFF",
+        "surface_color": "#F7F7F5",
+        "text_color": "#111111",
+        "muted_color": "#6B6B6B",
+        "corner_radius": 16,
+        "padding_top": 64,
+        "padding_bottom": 88
+      }
+    }
+  },
+  "order": ["main"]
+}

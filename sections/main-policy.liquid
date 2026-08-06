@@ -1,0 +1,172 @@
+{%- liquid
+  assign policy = blank
+  for p in shop.policies
+    if p.url == request.path
+      assign policy = p
+      break
+    endif
+  endfor
+
+  if policy == blank
+    if shop.refund_policy != blank and request.path == shop.refund_policy.url
+      assign policy = shop.refund_policy
+    elsif shop.privacy_policy != blank and request.path == shop.privacy_policy.url
+      assign policy = shop.privacy_policy
+    elsif shop.terms_of_service != blank and request.path == shop.terms_of_service.url
+      assign policy = shop.terms_of_service
+    elsif shop.shipping_policy != blank and request.path == shop.shipping_policy.url
+      assign policy = shop.shipping_policy
+    endif
+  endif
+
+  assign heading = policy.title | default: page_title | default: shop.name
+  assign is_refund = false
+  if shop.refund_policy != blank and request.path == shop.refund_policy.url
+    assign is_refund = true
+  endif
+-%}
+
+{%- if policy != blank -%}
+  <div class="legal-page legal-page--policy full-width" id="MainPolicy">
+    <div class="legal-page__shell">
+      <div class="legal-page__inner">
+        <header class="legal-page__header">
+          <p class="legal-page__eyebrow">
+            {%- if is_refund -%}
+              {{ 'legal.support' | t }}
+            {%- else -%}
+              {{ 'legal.legal_label' | t }}
+            {%- endif -%}
+          </p>
+          <h1 class="legal-page__heading">{{ heading | escape }}</h1>
+          <span class="legal-page__rule" aria-hidden="true"></span>
+        </header>
+
+        <div class="legal-page__layout legal-page__layout--single">
+          <div class="legal-page__body rte shopify-policy__body">
+            {{ policy.body }}
+          </div>
+
+          <div class="legal-page__note">
+            <p class="legal-page__note-title">{{ 'legal.questions' | t }}</p>
+            <p class="legal-page__note-text">
+              {{ 'legal.contact_help' | t }}
+              {%- if shop.email != blank -%}
+                <a href="mailto:{{ shop.email }}">{{ shop.email }}</a>
+              {%- endif -%}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .legal-page--policy {
+    display: block;
+    color: var(--color-heading);
+    background: var(--color-background);
+  }
+
+  .legal-page--policy .legal-page__shell {
+    padding-block: 64px 88px;
+  }
+
+  .legal-page--policy .legal-page__inner {
+    width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    margin-inline: auto;
+  }
+
+  .legal-page--policy .legal-page__header {
+    display: grid;
+    gap: 0.85rem;
+    margin-bottom: clamp(1.75rem, 4vw, 2.75rem);
+    max-width: 42rem;
+  }
+
+  .legal-page--policy .legal-page__eyebrow {
+    margin: 0;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .legal-page--policy .legal-page__heading {
+    margin: 0;
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    font-weight: 500;
+    letter-spacing: -0.045em;
+    line-height: 1.05;
+  }
+
+  .legal-page--policy .legal-page__rule {
+    display: block;
+    width: 2.5rem;
+    height: 1.5px;
+    background: var(--color-button, var(--color-heading));
+    border-radius: 999px;
+  }
+
+  .legal-page--policy .legal-page__body {
+    max-width: 42rem;
+    font-size: 1.02rem;
+    line-height: 1.75;
+    color: var(--color-text-muted);
+  }
+
+  .legal-page--policy .legal-page__body h1,
+  .legal-page--policy .legal-page__body h2,
+  .legal-page--policy .legal-page__body h3 {
+    color: var(--color-heading);
+    letter-spacing: -0.02em;
+  }
+
+  .legal-page--policy .legal-page__body h2 {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border);
+    font-size: 1.25rem;
+  }
+
+  .legal-page--policy .legal-page__note {
+    margin-top: 2.5rem;
+    max-width: 42rem;
+    padding: 1.25rem 1.35rem;
+    border-radius: 16px;
+    background: var(--color-surface);
+  }
+
+  .legal-page--policy .legal-page__note-title {
+    margin: 0 0 0.35rem;
+    font-weight: 700;
+    color: var(--color-heading);
+  }
+
+  .legal-page--policy .legal-page__note-text {
+    margin: 0;
+  }
+
+  .legal-page--policy .legal-page__note-text a {
+    color: var(--color-heading);
+  }
+
+  /* Hide Shopify's default policy chrome if it still leaks through */
+  .shopify-policy__title,
+  .shopify-policy__container > h1 {
+    display: none;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.policy",
+  "settings": [],
+  "presets": []
+}
+{% endschema %}

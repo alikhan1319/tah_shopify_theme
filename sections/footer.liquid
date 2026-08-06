@@ -1,0 +1,1420 @@
+{%- liquid
+  assign show_social = false
+  if section.settings.show_social_icons
+    if section.settings.social_facebook != blank or section.settings.social_instagram != blank or section.settings.social_x != blank or section.settings.social_tiktok != blank or section.settings.social_pinterest != blank or section.settings.social_youtube != blank
+      assign show_social = true
+    endif
+  endif
+
+  assign link_column_count = 0
+  for block in section.blocks
+    if block.type == 'link_list'
+      assign link_column_count = link_column_count | plus: 1
+    endif
+  endfor
+
+  assign watermark_text = section.settings.watermark_text | default: shop.name | upcase
+
+  if section.settings.use_theme_colors == false
+    assign footer_bg = section.settings.color_background
+    assign footer_text = section.settings.color_text
+    assign footer_muted = section.settings.color_muted
+    assign footer_border = section.settings.color_border
+  else
+    assign footer_bg = settings.color_surface
+    assign footer_text = settings.color_text
+    assign footer_muted = settings.color_text_muted
+    assign footer_border = settings.color_border
+  endif
+-%}
+
+<div
+  class="site-footer full-width"
+  id="SiteFooter-{{ section.id }}"
+  style="
+    --footer-bg: {{ footer_bg }};
+    --footer-text: {{ footer_text }};
+    --footer-muted: {{ footer_muted }};
+    --footer-border: {{ footer_border }};
+    --footer-watermark: {{ section.settings.color_watermark }};
+    --footer-logo-height: {{ section.settings.logo_height | default: 56 }}px;
+    --footer-padding-top: {{ section.settings.padding_top }}px;
+    --footer-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --footer-btn: {{ settings.color_button }};
+    --footer-btn-text: {{ settings.color_button_text }};
+    --footer-btn-hover: {{ settings.color_button_hover }};
+  "
+  {{ section.shopify_attributes }}
+>
+  <div class="site-footer__stage">
+    {%- if section.settings.show_watermark -%}
+      <p class="site-footer__watermark" aria-hidden="true">{{ watermark_text | escape }}</p>
+    {%- endif -%}
+
+    <div class="site-footer__inner">
+      <div class="site-footer__main">
+        <div class="site-footer__brand">
+          {%- if section.settings.logo != blank -%}
+            <a class="site-footer__logo-link" href="{{ routes.root_url }}">
+              {{
+                section.settings.logo
+                | image_url: width: 720
+                | image_tag:
+                  loading: 'lazy',
+                  widths: '200, 320, 480, 720',
+                  sizes: '(min-width: 990px) 220px, 180px',
+                  class: 'site-footer__logo',
+                  alt: shop.name
+              }}
+            </a>
+          {%- else -%}
+            <a class="site-footer__shop-name" href="{{ routes.root_url }}">{{ shop.name | escape }}</a>
+          {%- endif -%}
+
+          {%- if section.settings.about != blank -%}
+            <div class="site-footer__about">{{ section.settings.about }}</div>
+          {%- endif -%}
+
+          {%- if show_social -%}
+            <nav class="site-footer__social" aria-label="{{ 'accessibility.social_media' | t }}">
+              <ul class="site-footer__social-list" role="list">
+                {%- if section.settings.social_facebook != blank -%}
+                  <li>
+                    <a
+                      class="site-footer__social-link"
+                      href="{{ section.settings.social_facebook }}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="{{ 'accessibility.social_facebook' | t }}"
+                    >
+                      {% render 'icon-social', network: 'facebook', class: 'site-footer__social-icon' %}
+                    </a>
+                  </li>
+                {%- endif -%}
+                {%- if section.settings.social_instagram != blank -%}
+                  <li>
+                    <a
+                      class="site-footer__social-link"
+                      href="{{ section.settings.social_instagram }}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="{{ 'accessibility.social_instagram' | t }}"
+                    >
+                      {% render 'icon-social', network: 'instagram', class: 'site-footer__social-icon' %}
+                    </a>
+                  </li>
+                {%- endif -%}
+                {%- if section.settings.social_x != blank -%}
+                  <li>
+                    <a
+                      class="site-footer__social-link"
+                      href="{{ section.settings.social_x }}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="{{ 'accessibility.social_x' | t }}"
+                    >
+                      {% render 'icon-social', network: 'x', class: 'site-footer__social-icon' %}
+                    </a>
+                  </li>
+                {%- endif -%}
+                {%- if section.settings.social_tiktok != blank -%}
+                  <li>
+                    <a
+                      class="site-footer__social-link"
+                      href="{{ section.settings.social_tiktok }}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="{{ 'accessibility.social_tiktok' | t }}"
+                    >
+                      {% render 'icon-social', network: 'tiktok', class: 'site-footer__social-icon' %}
+                    </a>
+                  </li>
+                {%- endif -%}
+                {%- if section.settings.social_pinterest != blank -%}
+                  <li>
+                    <a
+                      class="site-footer__social-link"
+                      href="{{ section.settings.social_pinterest }}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="{{ 'accessibility.social_pinterest' | t }}"
+                    >
+                      {% render 'icon-social', network: 'pinterest', class: 'site-footer__social-icon' %}
+                    </a>
+                  </li>
+                {%- endif -%}
+                {%- if section.settings.social_youtube != blank -%}
+                  <li>
+                    <a
+                      class="site-footer__social-link"
+                      href="{{ section.settings.social_youtube }}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="{{ 'accessibility.social_youtube' | t }}"
+                    >
+                      {% render 'icon-social', network: 'youtube', class: 'site-footer__social-icon' %}
+                    </a>
+                  </li>
+                {%- endif -%}
+              </ul>
+            </nav>
+          {%- endif -%}
+        </div>
+
+        {%- if link_column_count > 0 or section.settings.show_contact -%}
+          <div
+            class="site-footer__links"
+            style="--footer-link-cols: {% if section.settings.show_contact %}{{ link_column_count | plus: 1 }}{% else %}{{ link_column_count }}{% endif %}"
+          >
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'link_list' -%}
+                {%- assign menu = block.settings.menu -%}
+                <div class="site-footer__column" {{ block.shopify_attributes }}>
+                  {%- if block.settings.heading != blank -%}
+                    <h2 class="site-footer__column-heading">{{ block.settings.heading | escape }}</h2>
+                  {%- elsif menu != blank -%}
+                    <h2 class="site-footer__column-heading">{{ menu.title | escape }}</h2>
+                  {%- endif -%}
+
+                  {%- if menu != blank and menu.links.size > 0 -%}
+                    <ul class="site-footer__menu" role="list">
+                      {%- for link in menu.links -%}
+                        <li>
+                          <a class="site-footer__menu-link" href="{{ link.url }}">{{ link.title | escape }}</a>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  {%- elsif request.design_mode -%}
+                    <p class="site-footer__empty-menu">{{ 'sections.footer.select_menu' | t }}</p>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+
+            {%- if section.settings.show_contact -%}
+              <div class="site-footer__column site-footer__column--contact">
+                <h2 class="site-footer__column-heading">
+                  {%- if section.settings.contact_heading != blank -%}
+                    {{ section.settings.contact_heading | escape }}
+                  {%- else -%}
+                    {{ 'sections.footer.contact_us' | t }}
+                  {%- endif -%}
+                </h2>
+                <ul class="site-footer__contact" role="list">
+                  {%- if section.settings.contact_phone != blank -%}
+                    <li>
+                      <span class="site-footer__contact-label">{{ 'sections.footer.phone' | t }}</span>
+                      <a class="site-footer__contact-value" href="tel:{{ section.settings.contact_phone | replace: ' ', '' | escape }}">
+                        {{ section.settings.contact_phone | escape }}
+                      </a>
+                    </li>
+                  {%- endif -%}
+                  {%- if section.settings.contact_email != blank -%}
+                    <li>
+                      <span class="site-footer__contact-label">{{ 'sections.footer.email' | t }}</span>
+                      <a class="site-footer__contact-value" href="mailto:{{ section.settings.contact_email | escape }}">
+                        {{ section.settings.contact_email | escape }}
+                      </a>
+                    </li>
+                  {%- endif -%}
+                  {%- if section.settings.contact_address != blank -%}
+                    <li>
+                      <span class="site-footer__contact-label">{{ 'sections.footer.address' | t }}</span>
+                      <span class="site-footer__contact-value">{{ section.settings.contact_address | newline_to_br }}</span>
+                    </li>
+                  {%- endif -%}
+                </ul>
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- liquid
+        assign show_subscribe = section.settings.show_newsletter
+        assign show_payments = section.settings.show_payment_icons
+      -%}
+
+      {%- if show_subscribe or show_payments -%}
+        <div class="site-footer__panels{% if show_subscribe and show_payments %} site-footer__panels--split{% endif %}">
+          {%- if show_subscribe -%}
+            <div class="site-footer__subscribe">
+              <div class="site-footer__subscribe-copy">
+                {%- if section.settings.newsletter_heading != blank -%}
+                  <h2 class="site-footer__subscribe-heading">{{ section.settings.newsletter_heading | escape }}</h2>
+                {%- endif -%}
+                {%- if section.settings.newsletter_text != blank -%}
+                  <div class="site-footer__newsletter-text">{{ section.settings.newsletter_text }}</div>
+                {%- endif -%}
+              </div>
+
+              {%- form 'customer', class: 'site-footer__newsletter-form' -%}
+                <input type="hidden" name="contact[tags]" value="newsletter">
+                <div class="site-footer__newsletter-field">
+                  <label class="visually-hidden" for="FooterNewsletterEmail-{{ section.id }}">
+                    {{ 'sections.footer.newsletter_email' | t }}
+                  </label>
+                  <input
+                    id="FooterNewsletterEmail-{{ section.id }}"
+                    class="site-footer__newsletter-input"
+                    type="email"
+                    name="contact[email]"
+                    value="{{ form.email }}"
+                    autocomplete="email"
+                    placeholder="{{ 'sections.footer.newsletter_placeholder' | t }}"
+                    required
+                    {% if form.errors %}
+                      aria-invalid="true"
+                      aria-describedby="FooterNewsletterError-{{ section.id }}"
+                    {% endif %}
+                  >
+                  <button class="site-footer__newsletter-button" type="submit">
+                    {{ 'sections.footer.newsletter_submit' | t }}
+                  </button>
+                </div>
+
+                {%- if form.posted_successfully? -%}
+                  <p class="site-footer__newsletter-message site-footer__newsletter-message--success" role="status">
+                    {{ 'sections.footer.newsletter_success' | t }}
+                  </p>
+                {%- endif -%}
+
+                {%- if form.errors -%}
+                  <p
+                    id="FooterNewsletterError-{{ section.id }}"
+                    class="site-footer__newsletter-message site-footer__newsletter-message--error"
+                    role="alert"
+                  >
+                    {%- if form.errors.messages.email != blank -%}
+                      {{ form.errors.messages.email }}
+                    {%- else -%}
+                      {{ 'sections.footer.newsletter_error' | t }}
+                    {%- endif -%}
+                  </p>
+                {%- endif -%}
+              {%- endform -%}
+            </div>
+          {%- endif -%}
+
+          {%- if show_payments -%}
+            <div class="site-footer__accept">
+              <h2 class="site-footer__accept-heading">
+                {%- if section.settings.payment_heading != blank -%}
+                  {{ section.settings.payment_heading | escape }}
+                {%- else -%}
+                  {{ 'sections.footer.we_accept' | t }}
+                {%- endif -%}
+              </h2>
+              {%- if section.settings.payment_text != blank -%}
+                <div class="site-footer__accept-text">{{ section.settings.payment_text }}</div>
+              {%- endif -%}
+
+              {%- if shop.enabled_payment_types.size > 0 -%}
+                <div class="site-footer__payment" aria-label="{{ 'sections.footer.payment_methods' | t }}">
+                  {%- for type in shop.enabled_payment_types -%}
+                    {{ type | payment_type_svg_tag: class: 'site-footer__payment-icon' }}
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+
+              {%- if section.settings.payment_methods_list != blank -%}
+                <ul class="site-footer__payment-list" role="list">
+                  {%- assign payment_raw = section.settings.payment_methods_list | newline_to_br | split: '<br />' -%}
+                  {%- for method in payment_raw -%}
+                    {%- liquid
+                      assign method_label = method | strip_html | strip
+                      assign method_key = method_label | downcase
+                      assign method_icon = 'card'
+                      if method_key contains 'cash' or method_key contains 'cod' or method_key contains 'delivery'
+                        assign method_icon = 'cash'
+                      elsif method_key contains 'bank' or method_key contains 'transfer' or method_key contains 'iban'
+                        assign method_icon = 'bank'
+                      elsif method_key contains 'jazz' or method_key contains 'easypaisa' or method_key contains 'wallet' or method_key contains 'paisa'
+                        assign method_icon = 'wallet'
+                      endif
+                    -%}
+                    {%- if method_label != blank -%}
+                      <li class="site-footer__payment-item">
+                        <span class="site-footer__payment-badge" aria-hidden="true">
+                          {%- case method_icon -%}
+                            {%- when 'cash' -%}
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2.5" y="6" width="19" height="12" rx="2.5"/>
+                                <circle cx="12" cy="12" r="2.6"/>
+                                <path d="M6 9.5v5M18 9.5v5"/>
+                              </svg>
+                            {%- when 'bank' -%}
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 9.5 12 4l9 5.5"/>
+                                <path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8"/>
+                                <path d="M3 20h18"/>
+                              </svg>
+                            {%- when 'wallet' -%}
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="6" width="18" height="13" rx="2.5"/>
+                                <path d="M3 10.5h18"/>
+                                <circle cx="16.5" cy="14.5" r="1.3"/>
+                              </svg>
+                            {%- else -%}
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2.5" y="5.5" width="19" height="13" rx="2.5"/>
+                                <path d="M2.5 10h19"/>
+                                <path d="M6 14.5h4"/>
+                              </svg>
+                          {%- endcase -%}
+                        </span>
+                        <span class="site-footer__payment-label">{{ method_label | escape }}</span>
+                      </li>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      <div class="site-footer__bottom">
+        <div class="site-footer__bottom-start">
+          {%- if section.settings.secondary_menu != blank and section.settings.secondary_menu.links.size > 0 -%}
+            <nav class="site-footer__secondary" aria-label="{{ 'sections.footer.secondary_navigation' | t }}">
+              <ul class="site-footer__secondary-list" role="list">
+                {%- for link in section.settings.secondary_menu.links -%}
+                  <li>
+                    <a class="site-footer__secondary-link" href="{{ link.url }}">{{ link.title | escape }}</a>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            </nav>
+          {%- endif -%}
+
+          <p class="site-footer__copyright">
+            {%- liquid
+              assign copyright_year = 'now' | date: '%Y'
+              assign copyright_text = section.settings.copyright_text | strip
+              if copyright_text != blank
+                echo copyright_text | replace: '[year]', copyright_year | replace: '[shop_name]', shop.name | escape
+              else
+                echo 'sections.footer.copyright_html' | t: year: copyright_year, shop_name: shop.name
+              endif
+            -%}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .site-footer {
+    --footer-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    background: var(--footer-bg, var(--color-background));
+    color: var(--footer-text, var(--color-text));
+    border-top: 0;
+    overflow: hidden;
+  }
+
+  .site-footer__stage {
+    position: relative;
+    padding-block: var(--footer-padding-top) var(--footer-padding-bottom);
+    isolation: isolate;
+  }
+
+  .site-footer__watermark {
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    z-index: 0;
+    margin: 0;
+    max-width: 100%;
+    padding: 0 1rem;
+    font-size: clamp(3.25rem, 12vw, 9rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--footer-watermark, var(--color-border));
+    pointer-events: none;
+    user-select: none;
+    transform: translateX(-50%);
+  }
+
+  .site-footer__inner {
+    position: relative;
+    z-index: 1;
+    width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    margin-inline: auto;
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 4rem);
+  }
+
+  .site-footer__main {
+    display: grid;
+    gap: clamp(2rem, 4vw, 3rem);
+    align-items: start;
+  }
+
+  .site-footer__brand {
+    display: grid;
+    gap: 1.15rem;
+    max-width: 24rem;
+  }
+
+  .site-footer__logo-link {
+    display: inline-flex;
+    align-items: center;
+    line-height: 0;
+    width: fit-content;
+  }
+
+  .site-footer__logo {
+    display: block;
+    width: auto;
+    height: var(--footer-logo-height, 56px);
+    max-width: min(280px, 70vw);
+    object-fit: contain;
+    object-position: left center;
+  }
+
+  .site-footer__shop-name {
+    color: inherit;
+    text-decoration: none;
+    font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+    font-weight: 750;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .site-footer__about {
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: var(--footer-muted, var(--color-text-muted));
+  }
+
+  .site-footer__about p {
+    margin: 0;
+  }
+
+  .site-footer__social-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    list-style: none;
+    margin: 0.25rem 0 0;
+    padding: 0;
+  }
+
+  .site-footer__social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.35rem;
+    height: 2.35rem;
+    color: inherit;
+    text-decoration: none;
+    border: 1px solid var(--footer-border, var(--color-border));
+    border-radius: 999px;
+    background: var(--color-background);
+    transition:
+      background-color 200ms var(--footer-ease),
+      border-color 200ms var(--footer-ease),
+      color 200ms var(--footer-ease),
+      transform 200ms var(--footer-ease);
+  }
+
+  .site-footer__social-link:hover {
+    background: var(--color-button);
+    color: var(--color-button-text);
+    border-color: var(--color-button);
+    transform: translateY(-1px);
+  }
+
+  .site-footer__social-icon {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+
+  .site-footer__panels {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .site-footer__panels--split {
+    grid-template-columns: 1fr;
+  }
+
+  .site-footer__subscribe,
+  .site-footer__accept {
+    display: grid;
+    gap: 0.85rem;
+    align-content: start;
+    min-width: 0;
+    padding: 1.1rem 1.15rem 1.2rem;
+    border: 1px solid var(--footer-border, var(--color-border));
+    border-radius: 1rem;
+    background: var(--color-background);
+    box-shadow: 0 8px 22px color-mix(in srgb, var(--color-heading) 4%, transparent);
+  }
+
+  .site-footer__subscribe {
+    order: 1;
+  }
+
+  .site-footer__accept {
+    order: 2;
+  }
+
+  .site-footer__subscribe-copy,
+  .site-footer__accept-copy {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .site-footer__subscribe-heading,
+  .site-footer__accept-heading {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .site-footer__newsletter-text,
+  .site-footer__accept-text {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--footer-muted, var(--color-text-muted));
+  }
+
+  .site-footer__newsletter-text p,
+  .site-footer__accept-text p {
+    margin: 0;
+  }
+
+  .site-footer__newsletter-form {
+    display: grid;
+    gap: 0.45rem;
+    width: 100%;
+    max-width: 22rem;
+  }
+
+  .site-footer__newsletter-field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    border: 1px solid var(--footer-border, var(--color-border));
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--color-surface);
+  }
+
+  .site-footer__newsletter-input {
+    min-width: 0;
+    padding: 0.7rem 0.95rem;
+    font-size: 0.875rem;
+    border: 0;
+    background: transparent;
+    color: inherit;
+  }
+
+  .site-footer__newsletter-input::placeholder {
+    color: inherit;
+    opacity: 0.45;
+  }
+
+  .site-footer__newsletter-input:focus {
+    outline: none;
+  }
+
+  .site-footer__newsletter-button {
+    padding: 0.7rem 1rem;
+    border: 0;
+    background: var(--footer-btn, var(--color-button));
+    color: var(--footer-btn-text, var(--color-button-text));
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 200ms var(--footer-ease);
+  }
+
+  .site-footer__newsletter-button:hover {
+    background: var(--footer-btn-hover, var(--color-button-hover));
+  }
+
+  .site-footer__newsletter-message {
+    margin: 0;
+    font-size: 0.8125rem;
+  }
+
+  .site-footer__newsletter-message--error {
+    color: var(--color-error);
+  }
+
+  .site-footer__payment {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    align-items: center;
+  }
+
+  .site-footer__payment-icon {
+    height: 1.5rem;
+    width: auto;
+    background: var(--color-surface);
+    border: 1px solid var(--footer-border, var(--color-border));
+    border-radius: 0.4rem;
+    padding: 0.15rem 0.3rem;
+  }
+
+  .site-footer__payment-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .site-footer__payment-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.65rem 0.35rem 0.4rem;
+    border: 1px solid var(--footer-border, var(--color-border));
+    border-radius: 999px;
+    background: var(--color-surface);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--color-heading);
+    transition:
+      background-color 200ms var(--footer-ease),
+      border-color 200ms var(--footer-ease);
+  }
+
+  .site-footer__payment-item:hover {
+    background: var(--color-background);
+    border-color: var(--color-button);
+  }
+
+  .site-footer__payment-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 50%;
+    background: var(--color-button);
+    color: var(--color-button-text);
+    flex: 0 0 auto;
+  }
+
+  .site-footer__payment-badge svg {
+    width: 0.8rem;
+    height: 0.8rem;
+  }
+
+  .site-footer__contact {
+    display: grid;
+    gap: 0.85rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .site-footer__contact-label {
+    display: block;
+    margin-bottom: 0.2rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-heading) 42%, transparent);
+  }
+
+  .site-footer__contact-value {
+    display: block;
+    color: var(--footer-muted, var(--color-text-muted));
+    text-decoration: none;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  a.site-footer__contact-value:hover {
+    color: var(--footer-text, var(--color-text));
+  }
+
+  .site-footer__links {
+    display: grid;
+    gap: 1.75rem 2rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .site-footer__column {
+    min-width: 0;
+  }
+
+  .site-footer__column-heading {
+    margin: 0 0 1.05rem;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-transform: none;
+    color: var(--footer-text, var(--color-text));
+  }
+
+  .site-footer__menu {
+    display: grid;
+    gap: 0.7rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .site-footer__menu-link {
+    color: var(--footer-muted, var(--color-text-muted));
+    text-decoration: none;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    transition: color 180ms ease;
+  }
+
+  .site-footer__menu-link:hover {
+    color: var(--footer-text, var(--color-text));
+  }
+
+  .site-footer__empty-menu {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: color-mix(in srgb, var(--color-heading) 40%, transparent);
+  }
+
+  .site-footer__bottom {
+    display: grid;
+    gap: 1.25rem;
+    align-items: center;
+    padding-top: 0.5rem;
+  }
+
+  .site-footer__bottom-start {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .site-footer__secondary-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .site-footer__secondary-list li {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .site-footer__secondary-list li:not(:last-child)::after {
+    content: '·';
+    margin-inline: 0.65rem;
+    color: color-mix(in srgb, var(--color-heading) 28%, transparent);
+  }
+
+  .site-footer__secondary-link {
+    color: color-mix(in srgb, var(--color-heading) 55%, transparent);
+    text-decoration: none;
+    font-size: 0.8125rem;
+    transition: color 180ms ease;
+  }
+
+  .site-footer__secondary-link:hover {
+    color: var(--color-heading);
+  }
+
+  .site-footer__copyright {
+    margin: 0;
+    font-size: 0.75rem;
+    color: color-mix(in srgb, var(--color-heading) 40%, transparent);
+  }
+
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  @media screen and (max-width: 749px) {
+    .site-footer__stage {
+      padding-block: 3.25rem 1.75rem;
+    }
+
+    .site-footer__watermark {
+      top: 0.85rem;
+      width: 100%;
+      padding-inline: 0.75rem;
+      font-size: clamp(2.4rem, 14vw, 4.5rem);
+      white-space: normal;
+      overflow-wrap: anywhere;
+      opacity: 0.85;
+    }
+
+    .site-footer__inner {
+      width: calc(100% - 2rem);
+      gap: 1.75rem;
+    }
+
+    .site-footer__main {
+      gap: 1.5rem;
+    }
+
+    .site-footer__brand {
+      justify-items: center;
+      max-width: 28rem;
+      margin-inline: auto;
+      gap: 0.75rem;
+      text-align: center;
+    }
+
+    .site-footer__logo {
+      height: clamp(44px, 12vw, 56px);
+      max-width: min(220px, 64vw);
+      object-position: center;
+    }
+
+    .site-footer__about {
+      max-width: 26rem;
+      font-size: 0.875rem;
+      line-height: 1.55;
+    }
+
+    .site-footer__social-list {
+      justify-content: center;
+      margin-top: 0.15rem;
+    }
+
+    /* Clean equal grid: Categories | Shop, then Contact full-width */
+    .site-footer__links {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      border-top: 1px solid var(--footer-border, var(--color-border));
+      border-bottom: 1px solid var(--footer-border, var(--color-border));
+    }
+
+    .site-footer__column {
+      min-width: 0;
+      padding: 1.15rem 0.85rem;
+      text-align: left;
+    }
+
+    .site-footer__column:first-child {
+      padding-left: 0;
+      border-right: 1px solid var(--footer-border, var(--color-border));
+    }
+
+    .site-footer__column:nth-child(2) {
+      padding-right: 0;
+    }
+
+    .site-footer__column--contact {
+      grid-column: 1 / -1;
+      padding: 1.15rem 0;
+      border-top: 1px solid var(--footer-border, var(--color-border));
+      border-right: 0;
+      text-align: left;
+    }
+
+    .site-footer__column-heading {
+      margin: 0 0 0.7rem;
+      font-size: 0.8125rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .site-footer__menu {
+      gap: 0.5rem;
+    }
+
+    .site-footer__menu-link {
+      font-size: 0.875rem;
+    }
+
+    .site-footer__contact {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.7rem;
+    }
+
+    .site-footer__contact-label {
+      margin-bottom: 0.1rem;
+    }
+
+    .site-footer__contact-value {
+      overflow-wrap: anywhere;
+      font-size: 0.875rem;
+    }
+
+    .site-footer__panels {
+      gap: 0.75rem;
+    }
+
+    .site-footer__subscribe,
+    .site-footer__accept {
+      gap: 0.7rem;
+      padding: 1rem 0.95rem;
+      border-radius: 0.9rem;
+      box-shadow: none;
+    }
+
+    .site-footer__subscribe-copy,
+    .site-footer__accept-copy,
+    .site-footer__accept {
+      text-align: left;
+    }
+
+    .site-footer__newsletter-form {
+      max-width: 100%;
+      margin-inline: 0;
+    }
+
+    .site-footer__newsletter-field {
+      grid-template-columns: minmax(0, 1fr) auto;
+      border-radius: 0.75rem;
+    }
+
+    .site-footer__payment,
+    .site-footer__payment-list {
+      justify-content: flex-start;
+    }
+
+    .site-footer__payment-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.45rem;
+      width: 100%;
+    }
+
+    .site-footer__payment-item {
+      justify-content: flex-start;
+      min-width: 0;
+      width: 100%;
+      border-radius: 0.7rem;
+      padding: 0.45rem 0.55rem 0.45rem 0.4rem;
+    }
+
+    .site-footer__payment-label {
+      overflow-wrap: anywhere;
+      text-align: left;
+      font-size: 0.6875rem;
+    }
+
+    .site-footer__bottom {
+      gap: 0.85rem;
+      padding-top: 0.25rem;
+      text-align: left;
+      justify-items: start;
+    }
+
+    .site-footer__bottom-start {
+      justify-items: start;
+      text-align: left;
+      width: 100%;
+    }
+
+    .site-footer__secondary-list {
+      justify-content: flex-start;
+    }
+  }
+
+  @media screen and (max-width: 420px) {
+    .site-footer__inner {
+      width: calc(100% - 1.5rem);
+    }
+
+    .site-footer__column {
+      padding-inline: 0.65rem;
+    }
+
+    .site-footer__column:first-child {
+      padding-left: 0;
+    }
+
+    .site-footer__column:nth-child(2) {
+      padding-right: 0;
+    }
+
+    .site-footer__newsletter-field {
+      grid-template-columns: 1fr;
+      border-radius: 0.75rem;
+    }
+
+    .site-footer__newsletter-input {
+      text-align: left;
+      padding-inline: 0.9rem;
+    }
+
+    .site-footer__newsletter-button {
+      width: 100%;
+      padding-block: 0.8rem;
+    }
+
+    .site-footer__payment-list {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .site-footer__links {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .site-footer__panels--split {
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      align-items: stretch;
+      gap: 1rem;
+    }
+
+    .site-footer__subscribe,
+    .site-footer__accept {
+      height: 100%;
+    }
+
+    .site-footer__newsletter-form {
+      max-width: 100%;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .site-footer__main {
+      grid-template-columns: minmax(16rem, 1.05fr) minmax(0, 2.5fr);
+      gap: 3.5rem;
+      padding-top: clamp(3.5rem, 7vw, 6rem);
+    }
+
+    .site-footer__logo {
+      height: var(--footer-logo-height, 64px);
+      max-width: 320px;
+    }
+
+    .site-footer__links {
+      grid-template-columns: repeat(var(--footer-link-cols, 4), minmax(0, 1fr));
+      gap: 1.5rem 1.75rem;
+    }
+
+    .site-footer__panels--split {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.footer",
+  "tag": "footer",
+  "class": "site-footer-section",
+  "enabled_on": {
+    "groups": ["footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:general.content"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "t:labels.logo"
+    },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "label": "t:labels.logo_height",
+      "min": 36,
+      "max": 96,
+      "step": 2,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "richtext",
+      "id": "about",
+      "label": "t:labels.about",
+      "default": "<p>Star Fabrics offers refined bridal and formal fabrics crafted for lasting beauty.</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_watermark",
+      "label": "t:labels.show_watermark",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "watermark_text",
+      "label": "t:labels.watermark_text",
+      "default": "STAR FABRICS"
+    },
+    {
+      "type": "header",
+      "content": "t:general.newsletter"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_newsletter",
+      "label": "t:labels.show_newsletter",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "label": "t:labels.newsletter_heading",
+      "default": "Subscribe"
+    },
+    {
+      "type": "richtext",
+      "id": "newsletter_text",
+      "label": "t:labels.newsletter_text",
+      "default": "<p>Get new arrivals, fabric stories, and exclusive offers in your inbox.</p>"
+    },
+    {
+      "type": "header",
+      "content": "t:general.social_media"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_social_icons",
+      "label": "t:labels.show_social_icons",
+      "default": true
+    },
+    {
+      "type": "url",
+      "id": "social_facebook",
+      "label": "t:labels.social_facebook"
+    },
+    {
+      "type": "url",
+      "id": "social_instagram",
+      "label": "t:labels.social_instagram"
+    },
+    {
+      "type": "url",
+      "id": "social_x",
+      "label": "t:labels.social_x"
+    },
+    {
+      "type": "url",
+      "id": "social_tiktok",
+      "label": "t:labels.social_tiktok"
+    },
+    {
+      "type": "url",
+      "id": "social_pinterest",
+      "label": "t:labels.social_pinterest"
+    },
+    {
+      "type": "url",
+      "id": "social_youtube",
+      "label": "t:labels.social_youtube"
+    },
+    {
+      "type": "header",
+      "content": "t:labels.contact_us"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_contact",
+      "label": "t:labels.show_contact",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "contact_heading",
+      "label": "t:labels.contact_heading",
+      "default": "Contact us"
+    },
+    {
+      "type": "text",
+      "id": "contact_phone",
+      "label": "t:labels.contact_phone",
+      "default": "+92 300 0000000"
+    },
+    {
+      "type": "text",
+      "id": "contact_email",
+      "label": "t:labels.contact_email",
+      "default": "hello@starfabrics.com"
+    },
+    {
+      "type": "textarea",
+      "id": "contact_address",
+      "label": "t:labels.contact_address",
+      "default": "Lahore, Pakistan"
+    },
+    {
+      "type": "header",
+      "content": "t:general.bottom_bar"
+    },
+    {
+      "type": "link_list",
+      "id": "secondary_menu",
+      "label": "t:labels.secondary_menu",
+      "info": "t:info.footer_secondary_menu"
+    },
+    {
+      "type": "text",
+      "id": "copyright_text",
+      "label": "t:labels.copyright_text",
+      "default": "© [year] [shop_name]. All rights reserved.",
+      "info": "t:info.copyright_text"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment_icons",
+      "label": "t:labels.show_payment_icons",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "payment_heading",
+      "label": "t:labels.payment_heading",
+      "default": "We accept"
+    },
+    {
+      "type": "richtext",
+      "id": "payment_text",
+      "label": "t:labels.payment_text",
+      "default": "<p>Choose how you want to pay at checkout.</p>"
+    },
+    {
+      "type": "textarea",
+      "id": "payment_methods_list",
+      "label": "t:labels.payment_methods_list",
+      "default": "Cash on delivery\nBank transfer\nJazzCash / EasyPaisa\nDebit & credit cards",
+      "info": "t:info.payment_methods_list"
+    },
+    {
+      "type": "header",
+      "content": "t:general.colors"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_theme_colors",
+      "label": "t:labels.use_theme_colors",
+      "default": true,
+      "info": "t:info.use_theme_colors"
+    },
+    {
+      "type": "color",
+      "id": "color_background",
+      "label": "t:labels.background",
+      "default": "#F4F5F7"
+    },
+    {
+      "type": "color",
+      "id": "color_text",
+      "label": "t:labels.foreground",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "color_muted",
+      "label": "t:labels.muted_text",
+      "default": "#5C5C5C"
+    },
+    {
+      "type": "color",
+      "id": "color_watermark",
+      "label": "t:labels.watermark_color",
+      "default": "#E6E8EC"
+    },
+    {
+      "type": "color",
+      "id": "color_border",
+      "label": "t:labels.border",
+      "default": "#D8DBE0"
+    },
+    {
+      "type": "header",
+      "content": "t:general.spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "t:labels.padding_top",
+      "min": 40,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "t:labels.padding_bottom",
+      "min": 24,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link_list",
+      "name": "t:sections.footer.blocks.link_list.name",
+      "limit": 2,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:labels.heading",
+          "default": "Links"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "t:labels.menu"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.footer",
+      "blocks": [
+        {
+          "type": "link_list",
+          "settings": {
+            "heading": "Categories"
+          }
+        },
+        {
+          "type": "link_list",
+          "settings": {
+            "heading": "Shop"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

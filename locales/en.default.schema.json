@@ -1,0 +1,647 @@
+{
+  "general": {
+    "404": "Not found",
+    "announcement": "Announcement",
+    "announcement_bar": "Announcement bar",
+    "article": "Article",
+    "behavior": "Behavior",
+    "block": "Block",
+    "blog": "Blog",
+    "cart": "Cart",
+    "cart_drawer": "Cart drawer",
+    "collection": "Collection",
+    "collections": "Collections",
+    "collection_card": "Collection card",
+    "collections_grid": "Collections grid",
+    "colors": "Colors",
+    "column": "Column",
+    "content": "Content",
+    "call_to_action": "Call to action",
+    "custom_section": "Custom section",
+    "fonts": "Fonts",
+    "footer": "Footer",
+    "why_choose": "Why choose us",
+    "blog_posts": "Blog posts",
+    "newsletter": "Newsletter",
+    "bottom_bar": "Bottom bar",
+    "spacing": "Spacing",
+    "group": "Group",
+    "header": "Header",
+    "hero": "Hero",
+    "category_banner": "Category banner",
+    "catalog": "Catalog",
+    "category": "Category",
+    "trusted_by": "Trusted by",
+    "layout": "Layout",
+    "localization": "Localization",
+    "main": "Main",
+    "mega_menu": "Mega menu",
+    "page": "Page",
+    "page_loader": "Page loader",
+    "password": "Password",
+    "policy": "Store policy",
+    "primary": "Primary",
+    "product": "Product",
+    "product_card_preview": "Product card preview",
+    "row": "Row",
+    "search": "Search",
+    "secondary": "Secondary",
+    "section": "Section",
+    "settings": "Settings",
+    "sidebar": "Sidebar",
+    "slider": "Slider",
+    "social_media": "Social media",
+    "style": "Style",
+    "text": "Text",
+    "theme": "Theme",
+    "typography": "Typography",
+    "video": "Video"
+  },
+  "labels": {
+    "alignment": "Alignment",
+    "caption": "Caption",
+    "collection": "Collection",
+    "collections": "Collections",
+    "columns_desktop": "Columns on desktop",
+    "columns_mobile": "Columns on mobile",
+    "columns_tablet": "Columns on tablet",
+    "show_description": "Show description",
+    "show_rating": "Show rating",
+    "show_quick_view": "Show quick view",
+    "show_add_to_cart": "Show add to cart",
+
+    "cta_label": "Button label",
+    "cta_link": "Button link",
+    "customer_name": "Customer name",
+    "external_video_url": "External video URL",
+    "eyebrow": "Eyebrow",
+    "heading": "Heading",
+    "description": "Description",
+    "highlight": "Highlight line",
+    "image": "Image",
+    "banner_image": "Banner image",
+    "mobile_image": "Mobile image",
+    "min_height": "Minimum height",
+    "section_height": "Section height",
+    "overlay_opacity": "Overlay opacity",
+    "show_product_count": "Show product count",
+    "show_collection_count": "Show collection count",
+    "show_shop_label": "Show shop button",
+    "collections_per_page": "Collections per page",
+    "layout_style": "Layout style",
+    "image_ratio": "Image ratio",
+    "corner_radius": "Corner radius",
+    "show_collection_description": "Show collection description",
+    "products_per_page": "Products per page",
+    "enable_sorting": "Enable sorting",
+    "rail_background": "Category rail background",
+    "button_label": "Button label",
+    "muted_text": "Muted text",
+    "stats": "Stats",
+    "show_stats": "Show stats",
+    "stat_1_value": "Stat 1 value",
+    "stat_1_label": "Stat 1 label",
+    "stat_2_value": "Stat 2 value",
+    "stat_2_label": "Stat 2 label",
+    "stat_3_value": "Stat 3 value",
+    "stat_3_label": "Stat 3 label",
+    "link_label": "Link label",
+    "media_type": "Media type",
+    "padding_bottom": "Padding bottom",
+    "padding_top": "Padding top",
+    "poster_image": "Poster image",
+    "products_to_show": "Products to show",
+    "products": "Products",
+    "manual_products": "Manual products",
+    "recommendation_intent": "Recommendation type",
+    "rating": "Rating",
+    "review_text": "Review text",
+    "show_rating_summary": "Show average rating",
+    "star_color": "Star color",
+    "verified_buyer": "Show verified buyer badge",
+    "show_cta": "Show button",
+    "show_secondary_image": "Show secondary image on hover",
+    "show_vendor": "Show vendor",
+    "show_sku": "Show SKU",
+    "show_quantity": "Show quantity selector",
+    "show_dynamic_checkout": "Show dynamic checkout buttons",
+    "show_breadcrumbs": "Show breadcrumbs",
+    "show_breadcrumb": "Show breadcrumb",
+    "category_label": "Category label",
+    "short_description": "Short description",
+    "shipping_note": "Shipping note",
+    "sale_badge_style": "Sale badge style",
+    "show_social_proof": "Show social proof",
+    "social_proof_text": "Social proof text",
+    "social_proof_extra": "Social proof count badge",
+    "show_full_description": "Show full description accordion",
+    "show_sold": "Show sold count",
+    "sold_label": "Sold count text",
+    "show_verified": "Show verified badge",
+    "installments_text": "Installments text",
+    "viewing_text": "Viewing now text",
+    "sold_today_text": "Sold today text",
+    "bestseller": "Show best seller badge",
+    "show_stock": "Show limited stock badge",
+    "stock_left": "Stock left count",
+    "show_trust_cards": "Show trust cards",
+    "shipping_text": "Shipping text",
+    "cod_text": "Cash on delivery text",
+    "returns_text": "Returns text",
+    "warranty_text": "Warranty text",
+    "show_buy_button": "Show buy now button",
+    "show_trust_marquee": "Show trust marquee",
+    "whatsapp_number": "WhatsApp number",
+    "whatsapp_label": "WhatsApp button label",
+    "whatsapp_message": "WhatsApp prefilled message",
+    "hours": "Business hours",
+    "contact_details": "Contact details",
+    "contact_form": "Contact form",
+    "aside_heading": "Details heading",
+    "aside_text": "Details text",
+    "form_heading": "Form heading",
+    "form_text": "Form text",
+    "submit_label": "Submit button label",
+    "show_page_content": "Use page content as subheading",
+    "surface": "Form surface",
+    "map": "Map",
+    "show_map": "Show map",
+    "map_heading": "Map heading",
+    "map_text": "Map text",
+    "map_embed": "Google Maps iframe code",
+    "map_height": "Map height",
+    "story": "Story",
+    "story_eyebrow": "Story eyebrow",
+    "story_heading": "Story heading",
+    "story_text": "Story text",
+    "image_position": "Image position",
+    "values": "Values",
+    "values_heading": "Values heading",
+    "values_text": "Values text",
+    "banner": "Bottom banner",
+    "banner_heading": "Banner heading",
+    "banner_text": "Banner text",
+    "banner_label": "Banner button label",
+    "banner_link": "Banner button link",
+    "stat_value": "Stat value",
+    "stat_label": "Stat label",
+    "mission_vision": "Mission and vision",
+    "mission_heading": "Mission heading",
+    "mission_text": "Mission text",
+    "vision_heading": "Vision heading",
+    "vision_text": "Vision text",
+    "ceo_message": "CEO message",
+    "ceo_heading": "CEO heading",
+    "ceo_text": "CEO message text",
+    "ceo_name": "CEO name / signature",
+    "ceo_role": "Job title",
+    "ceo_image": "CEO photo",
+    "ceo_image_alt": "CEO photo alt text",
+    "chat_url": "Chat link",
+    "discussion_text": "Discussion tab content",
+    "rating_breakdown": "Rating breakdown",
+    "likes": "Likes",
+    "dislikes": "Dislikes",
+    "trust_text": "Trust note",
+    "subheading": "Subheading",
+    "video": "Video",
+    "brand_colors": "Brand colors",
+    "accent_colors": "Accent colors",
+    "button_colors": "Buttons",
+    "header_colors": "Header",
+    "link_colors": "Links",
+    "heading_color": "Heading color",
+    "hover_color": "Hover color",
+    "sale_color": "Sale / highlight color",
+    "wave_color": "Wave color",
+    "star_color": "Star rating color",
+    "success_color": "Success color",
+    "error_color": "Error color",
+    "button_background": "Button background",
+    "button_text": "Button text",
+    "button_hover": "Button hover",
+    "button_corner_radius": "Button corner radius",
+    "header_background": "Header background",
+    "announcement_bar_colors": "Announcement bar",
+    "announcement_background": "Announcement background",
+    "announcement_text": "Announcement text",
+    "announcement_link": "Announcement link",
+    "header_text": "Header text",
+    "link_hover": "Link hover",
+    "use_theme_colors": "Use theme colors",
+    "body_font": "Body font",
+    "enable_page_loader": "Enable page loader",
+    "page_loader_once_per_session": "Show only once per visit",
+    "page_loader_style_header": "Style",
+    "page_loader_style": "Loader mood",
+    "page_loader_exit": "Exit animation",
+    "page_loader_bg": "Background color",
+    "page_loader_fg": "Text color",
+    "page_loader_muted": "Muted text color",
+    "page_loader_accent": "Accent / progress color",
+    "page_loader_image": "Loader image / logo",
+    "page_loader_image_width": "Image width",
+    "page_loader_text": "Loader text",
+    "page_loader_show_text": "Show loader text",
+    "page_loader_caption": "Caption text",
+    "page_loader_show_caption": "Show caption",
+    "page_loader_show_progress": "Show progress line",
+    "page_loader_show_percent": "Show percentage",
+    "page_loader_min_duration": "Minimum display time",
+    "heading_font": "Heading font",
+    "font_sizes": "Sizes",
+    "body_size": "Body text size",
+    "heading_scale": "Heading size scale",
+    "heading_weight": "Heading weight",
+    "heading_letter_spacing": "Heading letter spacing",
+    "wave_speed": "Wave animation speed",
+    "accent": "Accent",
+    "about": "About text",
+    "blog": "Blog",
+    "side_image": "Side image",
+    "layout": "Layout",
+    "posts_to_show": "Posts to show",
+    "show_author": "Show author",
+    "show_date": "Show date",
+    "show_excerpt": "Show excerpt",
+    "show_tags": "Show tags",
+    "show_article_count": "Show article count",
+    "show_tag_filter": "Show tag filter",
+    "posts_per_page": "Posts per page",
+    "show_newsletter": "Show newsletter",
+    "show_watermark": "Show background watermark",
+    "watermark_text": "Watermark text",
+    "watermark_color": "Watermark color",
+    "muted_text": "Muted text",
+    "newsletter_heading": "Newsletter heading",
+    "newsletter_text": "Newsletter text",
+    "note": "Note",
+    "secondary_menu": "Secondary menu",
+    "copyright_text": "Copyright text",
+    "title": "Title",
+    "icon": "Icon",
+    "autoplay_speed": "Auto-rotate every",
+    "marquee_speed": "Scroll speed",
+    "background": "Background",
+    "card_background": "Card background",
+    "panel_background": "Panel background",
+    "bar_height": "Minimum height",
+    "border": "Border",
+    "customer_account_menu": "Customer account menu",
+    "enable_announcement_bar": "Enable announcement bar",
+    "enable_autoplay": "Auto-rotate announcements",
+    "enable_marquee": "Enable infinite scroll",
+    "enable_auto_scroll": "Enable auto-scroll",
+    "scroll_speed": "Auto-scroll speed",
+
+    "enable_cart_drawer": "Enable AJAX cart drawer",
+    "enable_search": "Enable predictive search",
+    "enable_sticky_header": "Enable sticky header",
+    "enable_transparent_header": "Transparent header on homepage",
+    "font_size": "Font size",
+    "foreground": "Foreground",
+    "grid_gap": "Grid spacing",
+    "grid_item_width": "Grid item width",
+    "header_height": "Header height",
+    "input_corner_radius": "Input corner radius",
+    "layout_direction": "Layout direction",
+    "letter_spacing": "Letter spacing",
+    "link": "Link",
+    "link_color": "Link color",
+    "logo": "Logo",
+    "logo_height": "Logo height",
+    "mega_promo_heading": "Promo heading",
+    "mega_promo_image": "Promo image",
+    "mega_promo_link": "Promo link",
+    "mega_promo_text": "Promo text",
+    "menu": "Menu",
+    "mosaic_slot": "Mosaic position",
+    "padding": "Padding",
+    "page_margin": "Page margin",
+    "page_width": "Page width",
+    "favicon": "Favicon",
+    "favicon_seo": "Favicon & browser icon",
+    "layout": "Page layout",
+    "search_results_limit": "Predictive search results",
+    "search_show_vendor": "Show vendor in search results",
+    "show_account": "Show account icon",
+    "show_close_button": "Show close button",
+    "show_currency_name": "Show country name with currency",
+    "show_currency_selector": "Show country / currency selector",
+    "show_language_selector": "Show language selector",
+    "show_payment_icons": "Show payment icons",
+    "payment_heading": "Payment heading",
+    "payment_text": "Payment text",
+    "payment_methods_list": "Payment methods list",
+    "show_contact": "Show contact details",
+    "contact_us": "Contact us",
+    "contact_heading": "Contact heading",
+    "contact_phone": "Phone number",
+    "contact_email": "Email",
+    "contact_address": "Address",
+    "show_shipping_note": "Show shipping note",
+    "show_social_icons": "Show social icons",
+    "social_facebook": "Facebook",
+    "social_instagram": "Instagram",
+    "social_linkedin": "LinkedIn",
+    "social_pinterest": "Pinterest",
+    "social_tiktok": "TikTok",
+    "social_x": "X (Twitter)",
+    "social_youtube": "YouTube",
+    "text": "Text",
+    "text_style": "Text style",
+    "content": "Content",
+    "intro": "Intro text",
+    "updated_at": "Last updated date",
+    "contact_note": "Help note",
+    "show_contact_note": "Show help note",
+    "note_heading": "Note heading",
+    "note_text": "Note text",
+    "note_email": "Contact email",
+    "show_featured_image": "Show featured image",
+    "show_back_link": "Show back to blog link",
+    "show_share": "Show share links",
+    "show_comments": "Show comments",
+    "related_posts": "Related posts",
+    "show_related": "Show related posts",
+    "related_count": "Related posts to show",
+    "hero": "Hero",
+    "show_sidebar": "Show sidebar",
+    "sidebar_note": "Sidebar intro text",
+    "show_latest": "Show latest posts",
+    "latest_count": "Latest posts to show",
+    "show_all_tags": "Show blog tags"
+  },
+  "info": {
+    "catalog_collections_fallback": "Used when no category blocks are added.",
+    "collection_hero_image": "Optional. Uses the collection image when left empty.",
+    "collection_hero_heading": "Optional. Uses the collection title when left empty.",
+    "article_featured_image": "Shows above the article content, not in the hero.",
+    "cta_link_collection": "Leave blank to use the selected collection URL.",
+    "external_video_url": "YouTube or Vimeo URL. Used when no Shopify-hosted video is selected.",
+    "letter_spacing": "Higher values increase spacing between characters.",
+    "product_card_preview_collection": "Choose any collection from your Pakistan store to preview live product cards.",
+    "scroll_speed": "Time for one full loop. Higher = slower scroll.",
+    "transparent_header": "Header starts transparent on the homepage, then becomes solid on scroll.",
+    "footer_secondary_menu": "Shown at the bottom as legal links, for example Privacy policy, Returns, and Terms.",
+    "copyright_text": "Use [year] for the current year and [shop_name] for your store name. Leave blank to use the default text.",
+    "payment_methods_list": "Enter one payment method per line. These always show in the We accept section.",
+    "category_label": "Optional. Uses product type or vendor when left empty.",
+    "short_description": "Optional. Uses a truncated product description when left empty.",
+    "ceo_image": "Square photo recommended (at least 400×400). Shown beside the CEO message.",
+    "ceo_image_alt": "Describe the person for accessibility and SEO. Defaults to the CEO name.",
+    "ceo_role": "Used in Person schema for SEO (for example CEO or Founder).",
+    "whatsapp_number": "Include country code, digits only (example: 923001234567). Leave blank to hide the button.",
+    "recommendation_intent": "Related shows similar products. Complementary shows items often bought together (configure in Search & Discovery).",
+    "manual_related_products": "Optional. When set, these products replace automatic recommendations.",
+    "collections_manual_list": "Optional. Leave empty to show all collections automatically.",
+    "collections_per_page": "Used when no manual collection list is selected.",
+    "blog_heading_fallback": "Leave blank to use the blog title.",
+    "contact_heading_fallback": "Leave blank to use the page title.",
+    "show_page_content": "Used only when the subheading setting is empty.",
+    "map_embed": "In Google Maps, open Share → Embed a map, then paste the full iframe code here.",
+    "about_heading_fallback": "Leave blank to use the page title.",
+    "about_page_content": "Used only when story text is empty.",
+    "about_page_auto": "About / about-us and policy pages (returns, privacy, terms) auto-use their special layouts even on the default page template. You can also assign a dedicated template in the page editor.",
+    "favicon": "Shown in the browser tab. Upload a PNG/JPG with your full logo — it is not cropped. Square 512×512 works best in browser tabs.",
+    "legal_heading_fallback": "Leave blank to use the page title.",
+    "legal_content": "Main policy text. You can also add structured sections below to get a table of contents.",
+    "theme_accent": "Used for accents, active states, and highlights across the theme.",
+    "use_theme_colors": "When enabled, this section follows Theme settings → Colors. Turn off to set custom colors here.",
+    "body_font": "Used for body text, buttons, and general UI.",
+    "page_loader_once_per_session": "Keep this off so the loader shows on every page open and reload. Turn on only if you want it once per browser session.",
+    "page_loader_colors": "Leave empty to use the selected mood defaults. Set colors here to override.",
+    "page_loader_image": "Upload a logo or brand mark. If empty, a letter monogram is shown.",
+    "page_loader_text": "Main headline text. Turn off Show loader text to hide it.",
+    "page_loader_caption": "Small line under the headline. Leave blank for default loading text.",
+    "heading_font": "Used for headings and large titles.",
+    "heading_scale": "Scales all heading sizes up or down.",
+    "heading_letter_spacing": "Negative values tighten letters. Positive values add space."
+  },
+  "options": {
+    "sale_badge": {
+      "text": "Sale text",
+      "percent": "Percent off"
+    },
+    "feature_icon": {
+      "smile": "Smile",
+      "truck": "Truck",
+      "shield": "Shield"
+    },
+    "layout": {
+      "image_left": "Image left",
+      "image_right": "Image right",
+      "grid_only": "Grid only",
+      "grid": "Grid",
+      "split": "Split featured",
+      "spotlight": "Spotlight"
+    },
+    "layout_style": {
+      "bento": "Bento mosaic",
+      "grid": "Editorial grid",
+      "featured": "Featured first"
+    },
+    "font_weight": {
+      "regular": "Regular",
+      "medium": "Medium",
+      "semibold": "Semibold",
+      "bold": "Bold"
+    },
+    "page_loader_style": {
+      "cinematic": "Cinematic dark",
+      "light": "Minimal light",
+      "brand": "Brand colors"
+    },
+    "page_loader_exit": {
+      "curtain": "Curtain wipe",
+      "bloom": "Bloom fade",
+      "fade": "Simple fade"
+    },
+    "alignment": {
+      "left": "Left",
+      "center": "Center",
+      "right": "Right"
+    },
+    "recommendation_intent": {
+      "related": "Related",
+      "complementary": "Complementary"
+    },
+    "image_ratio": {
+      "square": "Square",
+      "portrait": "Portrait",
+      "tall": "Tall",
+      "landscape": "Landscape",
+      "wide": "Wide",
+      "standard": "Standard",
+      "classic": "Classic"
+    },
+    "media_type": {
+      "video": "Video",
+      "image": "Image"
+    },
+    "mosaic_slot": {
+      "auto": "Auto (by order)",
+      "tall_left": "Tall left",
+      "mid_large": "Middle large",
+      "mid_small_a": "Middle small left",
+      "mid_small_b": "Middle small right",
+      "tall_right": "Tall right"
+    },
+    "direction": {
+      "horizontal": "Horizontal",
+      "vertical": "Vertical"
+    },
+    "page_width": {
+      "narrow": "Narrow",
+      "wide": "Wide"
+    },
+    "size": {
+      "large": "Large",
+      "medium": "Medium",
+      "small": "Small"
+    },
+    "text_style": {
+      "title": "Title",
+      "subtitle": "Subtitle",
+      "normal": "Normal text"
+    }
+  },
+  "sections": {
+    "collection_hero": {
+      "name": "Collection hero",
+      "presets": {
+        "name": "Collection hero"
+      }
+    },
+    "collection": {
+      "name": "Collection products"
+    },
+    "new_arrivals": {
+      "name": "New arrivals",
+      "presets": {
+        "name": "New arrivals"
+      }
+    },
+    "featured_collection": {
+      "name": "Featured products",
+      "presets": {
+        "name": "Featured products"
+      }
+    },
+    "bridal_lehenga": {
+      "name": "Bridal lehenga",
+      "presets": {
+        "name": "Bridal lehenga collection"
+      }
+    },
+    "customer_review_videos": {
+      "name": "Customer reviews",
+      "presets": {
+        "name": "Customer reviews"
+      },
+      "blocks": {
+        "review_video": {
+          "name": "Customer review"
+        }
+      }
+    },
+    "customer_testimonials": {
+      "name": "What customers say",
+      "presets": {
+        "name": "What customers say"
+      },
+      "blocks": {
+        "testimonial": {
+          "name": "Testimonial"
+        }
+      }
+    },
+    "customer_reviews": {
+      "name": "Customer review",
+      "presets": {
+        "name": "Customer review"
+      },
+      "blocks": {
+        "review": {
+          "name": "Review"
+        }
+      }
+    },
+    "related_products": {
+      "name": "Related products",
+      "presets": {
+        "name": "Related products"
+      }
+    },
+    "collections": {
+      "name": "Collections",
+      "presets": {
+        "name": "Collections"
+      }
+    },
+    "blog": {
+      "name": "Blog posts"
+    },
+    "contact": {
+      "name": "Contact",
+      "presets": {
+        "name": "Contact"
+      }
+    },
+    "legal": {
+      "name": "Legal / policy page",
+      "presets": {
+        "name": "Legal / policy page"
+      },
+      "blocks": {
+        "section": {
+          "name": "Policy section"
+        }
+      }
+    },
+    "about": {
+      "name": "About us",
+      "presets": {
+        "name": "About us"
+      },
+      "blocks": {
+        "trust": {
+          "name": "Trust item"
+        },
+        "stat": {
+          "name": "Stat"
+        },
+        "value": {
+          "name": "Value"
+        }
+      }
+    },
+    "why_choose": {
+      "blocks": {
+        "feature": {
+          "name": "Feature"
+        }
+      }
+    },
+    "product": {
+      "blocks": {
+        "feature": {
+          "name": "Feature"
+        },
+        "trust_item": {
+          "name": "Trust item"
+        },
+        "accordion": {
+          "name": "Accordion item"
+        }
+      }
+    },
+    "footer": {
+      "blocks": {
+        "link_list": {
+          "name": "Link list"
+        }
+      }
+    }
+  }
+}

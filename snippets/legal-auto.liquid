@@ -1,0 +1,207 @@
+{% doc %}
+  Legal / policy page fallback used when a page uses the default page
+  template but the handle matches a policy page (returns, privacy, terms).
+  Ensures Returns & Exchanges still show the legal layout.
+
+  @param {object} [page_obj] - Page object (defaults to global page)
+
+  @example
+  {% render 'legal-auto' %}
+{% enddoc %}
+
+{%- liquid
+  assign p = page_obj | default: page
+  assign handle = p.handle | default: ''
+  assign heading = p.title
+
+  assign is_returns = false
+  if handle == 'return-exchange-policy' or handle == 'returns-exchanges' or handle == 'returns-and-exchanges' or handle == 'return-and-exchange' or handle == 'returns' or handle == 'return-policy' or handle == 'refund-policy' or handle == 'return-exchange' or handle == 'returns-exchange' or handle == 'return' or handle == 'exchange' or handle == 'exchanges'
+    assign is_returns = true
+  endif
+
+  assign is_privacy = false
+  if handle == 'privacy-policy' or handle == 'privacy'
+    assign is_privacy = true
+  endif
+
+  assign is_terms = false
+  if handle == 'terms-and-conditions' or handle == 'terms-of-service' or handle == 'terms' or handle == 'terms-conditions'
+    assign is_terms = true
+  endif
+
+  if is_returns
+    assign eyebrow = 'Support'
+  elsif is_privacy
+    assign eyebrow = 'Legal'
+  elsif is_terms
+    assign eyebrow = 'Legal'
+  else
+    assign eyebrow = 'Policy'
+  endif
+-%}
+
+<div class="legal-page legal-page--auto full-width" id="LegalAuto-{{ p.id | default: 'page' }}">
+  <div class="legal-page__shell">
+    <div class="legal-page__inner">
+      <header class="legal-page__header">
+        <p class="legal-page__eyebrow">{{ eyebrow | escape }}</p>
+        <h1 class="legal-page__heading">{{ heading | escape }}</h1>
+        <span class="legal-page__rule" aria-hidden="true"></span>
+      </header>
+
+      <div class="legal-page__layout legal-page__layout--single">
+        <div class="legal-page__body rte">
+          {%- if p.content != blank -%}
+            {{ p.content }}
+          {%- elsif is_returns -%}
+            <section class="legal-page__section">
+              <h2 class="legal-page__section-title">Our promise</h2>
+              <div class="legal-page__section-text">
+                <p>We want you to love your purchase. If something isn't right, we're here to help with a simple returns and exchange process.</p>
+              </div>
+            </section>
+            <section class="legal-page__section">
+              <h2 class="legal-page__section-title">Return window</h2>
+              <div class="legal-page__section-text">
+                <p>You may request an exchange within 7 days of receiving your order. Items must be unused, unwashed, and in their original condition with tags and packaging intact.</p>
+              </div>
+            </section>
+            <section class="legal-page__section">
+              <h2 class="legal-page__section-title">How to request a return or exchange</h2>
+              <div class="legal-page__section-text">
+                <p>Contact us by email or WhatsApp with your order number and the reason for the return. Our team will guide you through the next steps.</p>
+              </div>
+            </section>
+            <section class="legal-page__section">
+              <h2 class="legal-page__section-title">Exchanges</h2>
+              <div class="legal-page__section-text">
+                <p>Exchanges are subject to stock availability. If your preferred size or design is unavailable, we'll offer an alternative or store credit.</p>
+              </div>
+            </section>
+            <section class="legal-page__section">
+              <h2 class="legal-page__section-title">Refunds</h2>
+              <div class="legal-page__section-text">
+                <p>Where a refund applies, it will be processed to your original payment method or as store credit after we receive and inspect the returned item.</p>
+              </div>
+            </section>
+          {%- elsif is_privacy -%}
+            <p>This privacy policy explains how {{ shop.name }} collects, uses, and protects your personal information when you shop with us.</p>
+          {%- elsif is_terms -%}
+            <p>By using {{ shop.name }}, you agree to these terms and conditions. Please read them carefully before placing an order.</p>
+          {%- else -%}
+            <p>{{ 'sections.page.empty' | t | default: 'Add content to this page in the Shopify admin.' }}</p>
+          {%- endif -%}
+
+          <div class="legal-page__note">
+            <p class="legal-page__note-title">{{ 'legal.questions' | t | default: 'Questions?' }}</p>
+            <p class="legal-page__note-text">
+              {{ 'legal.contact_help' | t | default: 'Contact us and our team will be happy to help.' }}
+              {%- if shop.email != blank -%}
+                <a href="mailto:{{ shop.email }}">{{ shop.email }}</a>
+              {%- endif -%}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .legal-page--auto {
+    display: block;
+    color: var(--color-heading);
+    background: var(--color-background);
+  }
+
+  .legal-page--auto .legal-page__shell {
+    padding-block: 64px 88px;
+  }
+
+  .legal-page--auto .legal-page__inner {
+    width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    margin-inline: auto;
+  }
+
+  .legal-page--auto .legal-page__header {
+    display: grid;
+    gap: 0.85rem;
+    margin-bottom: clamp(1.75rem, 4vw, 2.75rem);
+    max-width: 42rem;
+  }
+
+  .legal-page--auto .legal-page__eyebrow {
+    margin: 0;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .legal-page--auto .legal-page__heading {
+    margin: 0;
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    font-weight: 500;
+    letter-spacing: -0.045em;
+    line-height: 1.05;
+  }
+
+  .legal-page--auto .legal-page__rule {
+    display: block;
+    width: 2.5rem;
+    height: 1.5px;
+    background: var(--color-button, var(--color-heading));
+    border-radius: 999px;
+  }
+
+  .legal-page--auto .legal-page__body {
+    max-width: 42rem;
+    font-size: 1.02rem;
+    line-height: 1.75;
+    color: var(--color-text-muted);
+  }
+
+  .legal-page--auto .legal-page__section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .legal-page--auto .legal-page__section:first-of-type {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .legal-page--auto .legal-page__section-title {
+    margin: 0 0 0.75rem;
+    font-size: 1.25rem;
+    color: var(--color-heading);
+    letter-spacing: -0.02em;
+  }
+
+  .legal-page--auto .legal-page__note {
+    margin-top: 2.5rem;
+    padding: 1.25rem 1.35rem;
+    border-radius: 16px;
+    background: var(--color-surface);
+  }
+
+  .legal-page--auto .legal-page__note-title {
+    margin: 0 0 0.35rem;
+    font-weight: 700;
+    color: var(--color-heading);
+  }
+
+  .legal-page--auto .legal-page__note-text {
+    margin: 0;
+  }
+
+  .legal-page--auto .legal-page__note-text a {
+    color: var(--color-heading);
+  }
+{% endstylesheet %}

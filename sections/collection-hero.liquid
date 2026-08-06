@@ -1,0 +1,349 @@
+{%- liquid
+  assign hero_heading = section.settings.heading
+  if hero_heading == blank
+    assign hero_heading = collection.title
+  endif
+
+  assign hero_text = section.settings.description
+  if hero_text == blank and section.settings.show_collection_description and collection.description != blank
+    assign hero_text = collection.description
+  endif
+
+  assign alignment = section.settings.content_alignment | default: 'center'
+-%}
+
+<div
+  class="collection-hero full-width collection-hero--{{ section.settings.height }} collection-hero--{{ alignment }}"
+  id="CollectionHero-{{ section.id }}"
+  style="
+    {%- if section.settings.use_theme_colors == false %}--ch-bg: {{ section.settings.color_background }};{% endif -%}
+    {%- if section.settings.use_theme_colors == false %}--ch-text: {{ section.settings.color_text }};{% endif -%}
+    {%- if section.settings.use_theme_colors == false %}--ch-mute: {{ section.settings.color_muted }};{% endif -%}
+    --ch-pad-top: {{ section.settings.padding_top }}px;
+    --ch-pad-bottom: {{ section.settings.padding_bottom }}px;
+  "
+  {{ section.shopify_attributes }}
+>
+  <div class="collection-hero__shell">
+    <div class="collection-hero__copy">
+      {%- if section.settings.show_breadcrumb -%}
+        <nav class="collection-hero__breadcrumb" aria-label="{{ 'accessibility.breadcrumb' | t }}">
+          <a href="{{ routes.root_url }}">{{ 'general.home' | t }}</a>
+          <span class="collection-hero__breadcrumb-sep" aria-hidden="true">/</span>
+          <a href="{{ routes.collections_url }}">{{ 'collections.title' | t }}</a>
+          <span class="collection-hero__breadcrumb-sep" aria-hidden="true">/</span>
+          <span aria-current="page">{{ collection.title | escape }}</span>
+        </nav>
+      {%- endif -%}
+
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="collection-hero__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+
+      <h1 class="collection-hero__title">{{ hero_heading | escape }}</h1>
+
+      <span class="collection-hero__rule" aria-hidden="true"></span>
+
+      {%- if hero_text != blank -%}
+        <div class="collection-hero__text rte">{{ hero_text }}</div>
+      {%- endif -%}
+
+      {%- if section.settings.show_product_count -%}
+        <p class="collection-hero__count">
+          {{ 'sections.collection_hero.product_count' | t: count: collection.products_count }}
+        </p>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .collection-hero {
+    --ch-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    display: block;
+    width: 100%;
+    color: var(--ch-text, var(--color-heading));
+    background: var(--ch-bg, var(--color-surface));
+    border-bottom: 1px solid color-mix(in srgb, var(--color-border) 80%, transparent);
+  }
+
+  .collection-hero__shell {
+    width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    margin-inline: auto;
+    padding-block: var(--ch-pad-top, 56px) var(--ch-pad-bottom, 48px);
+  }
+
+  .collection-hero--compact .collection-hero__shell {
+    padding-block: clamp(1.75rem, 4vw, 2.5rem) clamp(1.5rem, 3vw, 2rem);
+  }
+
+  .collection-hero--medium .collection-hero__shell {
+    padding-block: clamp(2.5rem, 5vw, 3.5rem) clamp(2rem, 4vw, 3rem);
+  }
+
+  .collection-hero--tall .collection-hero__shell {
+    padding-block: clamp(3.25rem, 7vw, 5rem) clamp(2.75rem, 5vw, 3.75rem);
+  }
+
+  .collection-hero__copy {
+    display: grid;
+    gap: 0.85rem;
+    max-width: 42rem;
+    justify-items: start;
+    text-align: left;
+  }
+
+  .collection-hero--center .collection-hero__copy {
+    justify-items: center;
+    text-align: center;
+    margin-inline: auto;
+  }
+
+  .collection-hero__breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.5rem;
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ch-mute, var(--color-text-muted));
+  }
+
+  .collection-hero--center .collection-hero__breadcrumb {
+    justify-content: center;
+  }
+
+  .collection-hero__breadcrumb a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 160ms ease;
+  }
+
+  .collection-hero__breadcrumb a:hover,
+  .collection-hero__breadcrumb a:focus-visible {
+    color: var(--ch-text, var(--color-heading));
+  }
+
+  .collection-hero__breadcrumb-sep {
+    opacity: 0.45;
+  }
+
+  .collection-hero__eyebrow {
+    margin: 0;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ch-mute, var(--color-text-muted));
+  }
+
+  .collection-hero__title {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-style: var(--font-heading--style);
+    font-weight: var(--font-heading--weight, 500);
+    font-size: clamp(2rem, 5.5vw, 3.35rem);
+    letter-spacing: var(--font-heading-letter-spacing, -0.04em);
+    line-height: 1.08;
+    text-wrap: balance;
+    color: var(--ch-text, var(--color-heading));
+  }
+
+  .collection-hero__rule {
+    display: block;
+    width: 2.75rem;
+    height: 1.5px;
+    margin-block: 0.15rem 0.1rem;
+    background: var(--color-button, var(--color-heading));
+    border-radius: 999px;
+  }
+
+  .collection-hero--center .collection-hero__rule {
+    margin-inline: auto;
+  }
+
+  .collection-hero__text {
+    margin: 0;
+    max-width: 34rem;
+    font-size: clamp(0.9375rem, 1.6vw, 1.0625rem);
+    line-height: 1.7;
+    color: var(--ch-mute, var(--color-text-muted));
+  }
+
+  .collection-hero__text p {
+    margin: 0;
+  }
+
+  .collection-hero__text p + p {
+    margin-top: 0.5rem;
+  }
+
+  .collection-hero__count {
+    margin: 0.35rem 0 0;
+    font-size: 0.75rem;
+    font-weight: 650;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ch-mute, var(--color-text-muted));
+  }
+
+  @media (max-width: 749px) {
+    .collection-hero__title {
+      font-size: clamp(1.85rem, 8vw, 2.4rem);
+    }
+
+    .collection-hero__copy {
+      gap: 0.75rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .collection-hero__copy {
+      animation: collection-hero-rise 650ms var(--ch-ease) both;
+    }
+  }
+
+  @keyframes collection-hero-rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.collection_hero.name",
+  "tag": "section",
+  "class": "collection-hero-section",
+  "enabled_on": {
+    "templates": ["collection"]
+  },
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_theme_colors",
+      "label": "t:labels.use_theme_colors",
+      "info": "t:info.use_theme_colors",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:labels.eyebrow",
+      "default": "Collection"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "info": "t:info.collection_hero_heading"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "t:labels.description"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_description",
+      "label": "t:labels.show_collection_description",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_count",
+      "label": "t:labels.show_product_count",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumb",
+      "label": "t:labels.show_breadcrumb",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "t:labels.alignment",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "t:labels.section_height",
+      "default": "medium",
+      "options": [
+        { "value": "compact", "label": "t:options.size.small" },
+        { "value": "medium", "label": "t:options.size.medium" },
+        { "value": "tall", "label": "t:options.size.large" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:general.colors"
+    },
+    {
+      "type": "color",
+      "id": "color_background",
+      "label": "t:labels.background",
+      "default": "#F7F7F5"
+    },
+    {
+      "type": "color",
+      "id": "color_text",
+      "label": "t:labels.text",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "color_muted",
+      "label": "t:labels.muted_text",
+      "default": "#6B6B6B"
+    },
+    {
+      "type": "header",
+      "content": "t:general.spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "t:labels.padding_top",
+      "min": 24,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "t:labels.padding_bottom",
+      "min": 24,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.collection_hero.presets.name"
+    }
+  ]
+}
+{% endschema %}

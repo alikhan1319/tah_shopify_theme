@@ -1,0 +1,25 @@
+{% doc %}
+  Renders a money price, with optional compare-at price.
+
+  @param {number} price - Price in cents
+  @param {number} [compare_at_price] - Optional compare-at price in cents
+  @param {string} [class] - Optional class name
+
+  @example
+  {% render 'price', price: product.price, compare_at_price: product.compare_at_price %}
+{% enddoc %}
+
+<div class="price {{ class }}">
+  {%- if compare_at_price != blank and compare_at_price > price -%}
+    <span class="price__sale">
+      <span class="visually-hidden">{{ 'products.price.sale' | t }}</span>
+      <span class="price__current">{{ price | money }}</span>
+      <s class="price__compare">
+        <span class="visually-hidden">{{ 'products.price.regular' | t }}</span>
+        {{ compare_at_price | money }}
+      </s>
+    </span>
+  {%- else -%}
+    <span class="price__current">{{ price | money }}</span>
+  {%- endif -%}
+</div>

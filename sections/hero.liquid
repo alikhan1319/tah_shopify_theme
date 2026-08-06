@@ -1,0 +1,724 @@
+{%- liquid
+  assign banner_count = section.blocks.size
+  assign enable_autoplay = false
+  if section.settings.enable_autoplay and banner_count > 1
+    assign enable_autoplay = true
+  endif
+-%}
+
+{%- if banner_count > 0 -%}
+  <div
+    class="hero hero--banners full-width"
+    id="Hero-{{ section.id }}"
+    data-hero-banners
+    data-section-id="{{ section.id }}"
+    data-autoplay="{{ enable_autoplay }}"
+    data-autoplay-speed="{{ section.settings.autoplay_speed | times: 1000 }}"
+    {{ section.shopify_attributes }}
+  >
+    <div class="hero__stage">
+      <div
+        class="hero__banners"
+        data-banners
+        role="region"
+        aria-roledescription="{{ 'accessibility.carousel' | t }}"
+        aria-label="{{ 'sections.hero.categories' | t }}"
+        {% if enable_autoplay %}
+          aria-live="off"
+        {% else %}
+          aria-live="polite"
+        {% endif %}
+      >
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign banner_image = block.settings.image
+            assign banner_mobile_image = block.settings.mobile_image
+            assign banner_link = block.settings.link
+            assign banner_title = block.settings.title
+            assign loading = 'lazy'
+            assign desktop_ratio = blank
+            assign mobile_ratio = blank
+
+            if forloop.first
+              assign loading = 'eager'
+            endif
+
+            if block.settings.collection != blank
+              assign picked = block.settings.collection
+              if banner_link == blank
+                assign banner_link = picked.url
+              endif
+              if banner_image == blank and picked.featured_image
+                assign banner_image = picked.featured_image
+              endif
+              if banner_title == blank
+                assign banner_title = picked.title
+              endif
+            endif
+
+            if banner_image != blank
+              assign desktop_ratio = banner_image.aspect_ratio
+            endif
+            if banner_mobile_image != blank
+              assign mobile_ratio = banner_mobile_image.aspect_ratio
+            elsif desktop_ratio != blank
+              assign mobile_ratio = desktop_ratio
+            endif
+          -%}
+
+          <div
+            class="hero__banner{% if forloop.first %} is-active{% endif %}"
+            data-banner
+            role="group"
+            aria-roledescription="{{ 'accessibility.slide' | t }}"
+            aria-label="{{ banner_title | default: forloop.index | escape }}"
+            {% if desktop_ratio != blank %}
+              style="--hero-ratio-desktop: {{ desktop_ratio }}; --hero-ratio-mobile: {{ mobile_ratio }};"
+            {% endif %}
+            {% unless forloop.first %}
+              aria-hidden="true"
+            {% endunless %}
+            {{ block.shopify_attributes }}
+          >
+            {%- if banner_link != blank -%}
+              <a class="hero__link" href="{{ banner_link }}" {% if banner_title != blank %}aria-label="{{ banner_title | escape }}"{% endif %}>
+            {%- else -%}
+              <div class="hero__link">
+            {%- endif -%}
+              <div class="hero__media">
+                {%- if banner_image != blank -%}
+                  {%- if banner_mobile_image != blank -%}
+                    {%- if forloop.first -%}
+                      {{
+                        banner_image
+                        | image_url: width: 2400
+                        | image_tag:
+                          class: 'hero__image hero__image--desktop',
+                          loading: loading,
+                          sizes: '100vw',
+                          widths: '900,1200,1600,2000,2400',
+                          fetchpriority: 'high',
+                          alt: banner_title
+                      }}
+                      {{
+                        banner_mobile_image
+                        | image_url: width: 1200
+                        | image_tag:
+                          class: 'hero__image hero__image--mobile',
+                          loading: loading,
+                          sizes: '100vw',
+                          widths: '600,900,1200',
+                          fetchpriority: 'high',
+                          alt: banner_title
+                      }}
+                    {%- else -%}
+                      {{
+                        banner_image
+                        | image_url: width: 2400
+                        | image_tag:
+                          class: 'hero__image hero__image--desktop',
+                          loading: loading,
+                          sizes: '100vw',
+                          widths: '900,1200,1600,2000,2400',
+                          alt: banner_title
+                      }}
+                      {{
+                        banner_mobile_image
+                        | image_url: width: 1200
+                        | image_tag:
+                          class: 'hero__image hero__image--mobile',
+                          loading: loading,
+                          sizes: '100vw',
+                          widths: '600,900,1200',
+                          alt: banner_title
+                      }}
+                    {%- endif -%}
+                  {%- elsif forloop.first -%}
+                    {{
+                      banner_image
+                      | image_url: width: 2400
+                      | image_tag:
+                        class: 'hero__image',
+                        loading: loading,
+                        sizes: '100vw',
+                        widths: '900,1200,1600,2000,2400',
+                        fetchpriority: 'high',
+                        alt: banner_title
+                    }}
+                  {%- else -%}
+                    {{
+                      banner_image
+                      | image_url: width: 2400
+                      | image_tag:
+                        class: 'hero__image',
+                        loading: loading,
+                        sizes: '100vw',
+                        widths: '900,1200,1600,2000,2400',
+                        alt: banner_title
+                    }}
+                  {%- endif -%}
+                {%- else -%}
+                  <div class="hero__placeholder" aria-hidden="true">
+                    {{ 'collection-1' | placeholder_svg_tag }}
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- if banner_link != blank -%}
+              </a>
+            {%- else -%}
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+
+      {%- if banner_count > 1 -%}
+        <div class="hero__nav-wrap">
+          <button
+            type="button"
+            class="hero__nav hero__nav--prev"
+            data-prev
+            aria-label="{{ 'accessibility.previous_announcement' | t }}"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+              <path d="M10 3 5 8l5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="hero__nav hero__nav--next"
+            data-next
+            aria-label="{{ 'accessibility.next_announcement' | t }}"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+              <path d="m6 3 5 5-5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="hero__dots" role="tablist" aria-label="{{ 'sections.hero.categories' | t }}">
+          {%- for block in section.blocks -%}
+            <button
+              type="button"
+              class="hero__dot{% if forloop.first %} is-active{% endif %}"
+              role="tab"
+              data-tab
+              data-index="{{ forloop.index0 }}"
+              aria-label="{{ 'accessibility.slide_of' | t: index: forloop.index, count: banner_count }}"
+              aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+            >
+              {%- if enable_autoplay -%}
+                <span class="hero__dot-progress" aria-hidden="true">
+                  <span class="hero__dot-progress-bar" data-progress></span>
+                </span>
+              {%- endif -%}
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+{%- else -%}
+  <div class="hero hero--empty full-width" id="Hero-{{ section.id }}" {{ section.shopify_attributes }}>
+    <div class="hero__placeholder" aria-hidden="true">
+      {{ 'collection-1' | placeholder_svg_tag }}
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .hero {
+    --hero-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --hero-fade: 500ms var(--hero-ease);
+    position: relative;
+    display: block;
+    width: 100%;
+    background: #0a0a0a;
+    color: var(--color-button-text);
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .hero__stage,
+  .hero__banners {
+    position: relative;
+    width: 100%;
+  }
+
+  /* In-flow only — avoids zero-height collapse after editor reload */
+  .hero__banner {
+    display: none;
+    width: 100%;
+  }
+
+  .hero__banner.is-active {
+    display: block;
+    animation: hero-fade-in var(--hero-fade) both;
+  }
+
+  @keyframes hero-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .hero__link {
+    display: block;
+    width: 100%;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .hero__media {
+    display: block;
+    width: 100%;
+    line-height: 0;
+    aspect-ratio: var(--hero-ratio-desktop, auto);
+    background: var(--color-button);
+  }
+
+  .hero__image {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .hero__image--mobile {
+    display: none;
+  }
+
+  @media (max-width: 749px) {
+    .hero__media {
+      aspect-ratio: var(--hero-ratio-mobile, var(--hero-ratio-desktop, auto));
+    }
+
+    .hero__image--desktop {
+      display: none;
+    }
+
+    .hero__image--mobile {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  .hero__placeholder {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 7;
+    background: var(--color-button);
+    color: color-mix(in srgb, var(--color-background) 18%, transparent);
+  }
+
+  .hero__placeholder svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero--empty .hero__placeholder {
+    aspect-ratio: 16 / 9;
+  }
+
+  .hero__nav-wrap {
+    position: absolute;
+    inset-inline: 0;
+    top: 50%;
+    z-index: 3;
+    display: none;
+    justify-content: space-between;
+    padding-inline: clamp(0.65rem, 2vw, 1.35rem);
+    pointer-events: none;
+    transform: translateY(-50%);
+  }
+
+  .hero__nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.65rem;
+    height: 2.65rem;
+    padding: 0;
+    border: 1px solid color-mix(in srgb, var(--color-background) 22%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-heading) 28%, transparent);
+    color: inherit;
+    cursor: pointer;
+    pointer-events: auto;
+    backdrop-filter: blur(10px);
+    transition: background-color 220ms ease, border-color 220ms ease;
+  }
+
+  .hero__nav:hover,
+  .hero__nav:focus-visible {
+    background: color-mix(in srgb, var(--color-heading) 48%, transparent);
+    border-color: color-mix(in srgb, var(--color-background) 42%, transparent);
+  }
+
+  .hero__dots {
+    position: absolute;
+    left: 50%;
+    bottom: clamp(0.85rem, 2.5vw, 1.5rem);
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    transform: translateX(-50%);
+  }
+
+  .hero__dot {
+    position: relative;
+    width: 1.65rem;
+    height: 2px;
+    padding: 0;
+    border: 0;
+    background: color-mix(in srgb, var(--color-background) 28%, transparent);
+    cursor: pointer;
+    overflow: hidden;
+    transition: background-color 220ms ease, width 220ms ease;
+  }
+
+  .hero__dot.is-active {
+    width: 2.35rem;
+    background: color-mix(in srgb, var(--color-background) 22%, transparent);
+  }
+
+  .hero__dot-progress {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .hero__dot-progress-bar {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--color-background);
+    transform-origin: left center;
+    transform: scaleX(0);
+  }
+
+  .hero__dot.is-active .hero__dot-progress-bar.is-running {
+    animation-name: hero-dot-progress;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+  }
+
+  @keyframes hero-dot-progress {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @media (min-width: 750px) {
+    .hero__nav-wrap {
+      display: flex;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__banner.is-active,
+    .hero__dot-progress-bar.is-running {
+      animation: none;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    const instances = new WeakMap();
+
+    class HeroBannersController {
+      constructor(root) {
+        this.root = root;
+        this.banners = Array.from(root.querySelectorAll('[data-banner]'));
+        this.tabs = Array.from(root.querySelectorAll('[data-tab]'));
+        this.prevButton = root.querySelector('[data-prev]');
+        this.nextButton = root.querySelector('[data-next]');
+        this.autoplay = root.dataset.autoplay === 'true';
+        this.autoplaySpeed = Number(root.dataset.autoplaySpeed) || 6000;
+        this.index = Math.max(
+          0,
+          this.banners.findIndex((banner) => banner.classList.contains('is-active'))
+        );
+        this.timer = null;
+        this.isPaused = false;
+        this.reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        if (this.banners.length < 1) return;
+
+        this.bindEvents();
+        this.setActive(this.index, false);
+        this.startAutoplay();
+      }
+
+      destroy() {
+        this.unbindEvents();
+        this.stopAutoplay();
+      }
+
+      bindEvents() {
+        this.onPrev = () => this.prev();
+        this.onNext = () => this.next();
+        this.onMouseEnter = () => this.pause();
+        this.onMouseLeave = () => this.resume();
+        this.onFocusIn = () => this.pause();
+        this.onFocusOut = (event) => {
+          if (!this.root.contains(event.relatedTarget)) this.resume();
+        };
+        this.onVisibility = () => {
+          if (document.hidden) this.pause();
+          else this.resume();
+        };
+        this.onKeyDown = (event) => {
+          if (this.banners.length < 2) return;
+          if (event.key === 'ArrowLeft') {
+            event.preventDefault();
+            this.prev();
+          }
+          if (event.key === 'ArrowRight') {
+            event.preventDefault();
+            this.next();
+          }
+        };
+        this.onTabClick = (event) => {
+          const nextIndex = Number(event.currentTarget.dataset.index);
+          if (Number.isNaN(nextIndex)) return;
+          this.setActive(nextIndex);
+          this.restartAutoplay();
+        };
+
+        this.prevButton?.addEventListener('click', this.onPrev);
+        this.nextButton?.addEventListener('click', this.onNext);
+        this.tabs.forEach((tab) => tab.addEventListener('click', this.onTabClick));
+        this.root.addEventListener('mouseenter', this.onMouseEnter);
+        this.root.addEventListener('mouseleave', this.onMouseLeave);
+        this.root.addEventListener('focusin', this.onFocusIn);
+        this.root.addEventListener('focusout', this.onFocusOut);
+        this.root.addEventListener('keydown', this.onKeyDown);
+        document.addEventListener('visibilitychange', this.onVisibility);
+      }
+
+      unbindEvents() {
+        this.prevButton?.removeEventListener('click', this.onPrev);
+        this.nextButton?.removeEventListener('click', this.onNext);
+        this.tabs.forEach((tab) => tab.removeEventListener('click', this.onTabClick));
+        this.root.removeEventListener('mouseenter', this.onMouseEnter);
+        this.root.removeEventListener('mouseleave', this.onMouseLeave);
+        this.root.removeEventListener('focusin', this.onFocusIn);
+        this.root.removeEventListener('focusout', this.onFocusOut);
+        this.root.removeEventListener('keydown', this.onKeyDown);
+        document.removeEventListener('visibilitychange', this.onVisibility);
+      }
+
+      prev() {
+        this.setActive((this.index - 1 + this.banners.length) % this.banners.length);
+        this.restartAutoplay();
+      }
+
+      next() {
+        this.setActive((this.index + 1) % this.banners.length);
+        this.restartAutoplay();
+      }
+
+      setActive(index, animateProgress = true) {
+        this.index = index;
+
+        this.banners.forEach((banner, i) => {
+          const isActive = i === index;
+          banner.classList.toggle('is-active', isActive);
+          banner.setAttribute('aria-hidden', String(!isActive));
+        });
+
+        this.tabs.forEach((tab, i) => {
+          const isActive = i === index;
+          tab.classList.toggle('is-active', isActive);
+          tab.setAttribute('aria-selected', String(isActive));
+          const bar = tab.querySelector('[data-progress]');
+          if (!bar) return;
+          bar.classList.remove('is-running');
+          bar.style.animationDuration = '';
+          void bar.offsetWidth;
+          if (isActive && animateProgress && this.autoplay && !this.reduceMotion && !this.isPaused) {
+            bar.style.animationDuration = `${this.autoplaySpeed}ms`;
+            bar.classList.add('is-running');
+          }
+        });
+      }
+
+      startAutoplay() {
+        if (!this.autoplay || this.reduceMotion || this.banners.length < 2 || this.isPaused) return;
+        this.stopAutoplay();
+        this.timer = window.setInterval(() => this.next(), this.autoplaySpeed);
+        const bar = this.tabs[this.index]?.querySelector('[data-progress]');
+        if (bar) {
+          bar.classList.remove('is-running');
+          bar.style.animationDuration = `${this.autoplaySpeed}ms`;
+          void bar.offsetWidth;
+          bar.classList.add('is-running');
+        }
+      }
+
+      stopAutoplay() {
+        if (this.timer) {
+          window.clearInterval(this.timer);
+          this.timer = null;
+        }
+      }
+
+      restartAutoplay() {
+        this.stopAutoplay();
+        this.startAutoplay();
+      }
+
+      pause() {
+        this.isPaused = true;
+        this.stopAutoplay();
+        this.tabs.forEach((tab) => {
+          const bar = tab.querySelector('[data-progress]');
+          if (bar) bar.classList.remove('is-running');
+        });
+      }
+
+      resume() {
+        this.isPaused = false;
+        this.startAutoplay();
+      }
+    }
+
+    function mount(root) {
+      if (!(root instanceof HTMLElement)) return;
+      const existing = instances.get(root);
+      if (existing) existing.destroy();
+      instances.set(root, new HeroBannersController(root));
+    }
+
+    function initAll(scope) {
+      const roots = (scope || document).querySelectorAll('[data-hero-banners]');
+      roots.forEach((root) => mount(root));
+    }
+
+    function onSectionLoad(event) {
+      const section = event.target;
+      if (!(section instanceof HTMLElement)) return;
+      const root = section.matches('[data-hero-banners]')
+        ? section
+        : section.querySelector('[data-hero-banners]');
+      if (root) mount(root);
+    }
+
+    function onSectionUnload(event) {
+      const section = event.target;
+      if (!(section instanceof HTMLElement)) return;
+      const root = section.matches('[data-hero-banners]')
+        ? section
+        : section.querySelector('[data-hero-banners]');
+      const existing = root && instances.get(root);
+      if (existing) {
+        existing.destroy();
+        instances.delete(root);
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => initAll(), { once: true });
+    } else {
+      initAll();
+    }
+
+    document.addEventListener('shopify:section:load', onSectionLoad);
+    document.addEventListener('shopify:section:unload', onSectionUnload);
+    document.addEventListener('shopify:section:reorder', () => initAll());
+    document.addEventListener('shopify:block:select', onSectionLoad);
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:general.hero",
+  "tag": "section",
+  "class": "hero-section",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:general.slider"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_autoplay",
+      "label": "t:labels.enable_autoplay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "t:labels.autoplay_speed",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "unit": "s",
+      "default": 6
+    }
+  ],
+  "blocks": [
+    {
+      "type": "banner",
+      "name": "t:general.category_banner",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:labels.banner_image"
+        },
+        {
+          "type": "image_picker",
+          "id": "mobile_image",
+          "label": "t:labels.mobile_image",
+          "info": "Optional. Use a mobile-sized banner so height matches that image on small screens."
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "t:labels.collection",
+          "info": "Optional. Used for the banner link when no custom link is set."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:labels.link"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:labels.title",
+          "info": "For accessibility only. Not shown on the banner."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.hero",
+      "settings": {
+        "enable_autoplay": true,
+        "autoplay_speed": 6
+      },
+      "blocks": [
+        { "type": "banner" },
+        { "type": "banner" },
+        { "type": "banner" },
+        { "type": "banner" },
+        { "type": "banner" }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,936 @@
+{%- liquid
+  assign heading = section.settings.heading
+  if heading == blank
+    assign heading = page.title
+  endif
+
+  assign form_heading = section.settings.form_heading
+  if form_heading == blank
+    assign form_heading = 'contact.form_heading' | t
+  endif
+
+  assign whatsapp_digits = section.settings.whatsapp_number | default: '' | replace: ' ', '' | replace: '-', '' | replace: '+', '' | replace: '(', '' | replace: ')', ''
+  assign whatsapp_href = blank
+  if whatsapp_digits != blank
+    assign whatsapp_text = section.settings.whatsapp_message | default: 'Hi, I have a question.' | url_param_escape
+    assign whatsapp_href = 'https://wa.me/' | append: whatsapp_digits | append: '?text=' | append: whatsapp_text
+  endif
+-%}
+
+<div
+  class="contact-page full-width"
+  id="ContactPage-{{ section.id }}"
+  style="
+    --cp-pad-top: {{ section.settings.padding_top }}px;
+    --cp-pad-bottom: {{ section.settings.padding_bottom }}px;
+    {%- if section.settings.use_theme_colors == false %}--cp-bg: {{ section.settings.background_color }};{% endif -%}
+    {%- if section.settings.use_theme_colors == false %}--cp-surface: {{ section.settings.surface_color }};{% endif -%}
+    {%- if section.settings.use_theme_colors == false %}--cp-text: {{ section.settings.text_color }};{% endif -%}
+    {%- if section.settings.use_theme_colors == false %}--cp-mute: {{ section.settings.muted_color }};{% endif -%}
+    --cp-radius: {{ section.settings.corner_radius }}px;
+  "
+  {{ section.shopify_attributes }}
+>
+  <div class="contact-page__shell">
+    <div class="contact-page__inner">
+      <header class="contact-page__header contact-page__header--{{ section.settings.header_alignment }}">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="contact-page__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+
+        <h1 class="contact-page__heading">{{ heading | escape }}</h1>
+
+        <span class="contact-page__rule" aria-hidden="true"></span>
+
+        {%- if section.settings.subheading != blank -%}
+          <div class="contact-page__subheading">{{ section.settings.subheading }}</div>
+        {%- elsif page.content != blank and section.settings.show_page_content -%}
+          <div class="contact-page__subheading">{{ page.content }}</div>
+        {%- endif -%}
+      </header>
+
+      <div class="contact-page__layout">
+        <aside class="contact-page__aside">
+          {%- if section.settings.aside_heading != blank -%}
+            <h2 class="contact-page__aside-heading">{{ section.settings.aside_heading | escape }}</h2>
+          {%- endif -%}
+
+          {%- if section.settings.aside_text != blank -%}
+            <div class="contact-page__aside-text">{{ section.settings.aside_text }}</div>
+          {%- endif -%}
+
+          <ul class="contact-page__details" role="list">
+            {%- if section.settings.phone != blank -%}
+              <li class="contact-page__detail">
+                <span class="contact-page__detail-label">{{ 'contact.phone' | t }}</span>
+                <a class="contact-page__detail-value" href="tel:{{ section.settings.phone | replace: ' ', '' | escape }}">
+                  {{ section.settings.phone | escape }}
+                </a>
+              </li>
+            {%- endif -%}
+
+            {%- if section.settings.email != blank -%}
+              <li class="contact-page__detail">
+                <span class="contact-page__detail-label">{{ 'contact.email' | t }}</span>
+                <a class="contact-page__detail-value" href="mailto:{{ section.settings.email | escape }}">
+                  {{ section.settings.email | escape }}
+                </a>
+              </li>
+            {%- endif -%}
+
+            {%- if section.settings.address != blank -%}
+              <li class="contact-page__detail">
+                <span class="contact-page__detail-label">{{ 'contact.address' | t }}</span>
+                <span class="contact-page__detail-value">{{ section.settings.address | newline_to_br }}</span>
+              </li>
+            {%- endif -%}
+
+            {%- if section.settings.hours != blank -%}
+              <li class="contact-page__detail">
+                <span class="contact-page__detail-label">{{ 'contact.hours' | t }}</span>
+                <span class="contact-page__detail-value">{{ section.settings.hours | newline_to_br }}</span>
+              </li>
+            {%- endif -%}
+          </ul>
+
+          {%- if whatsapp_href != blank -%}
+            <a class="contact-page__whatsapp" href="{{ whatsapp_href }}" target="_blank" rel="noopener noreferrer">
+              <svg class="contact-page__whatsapp-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+                <path
+                  fill="currentColor"
+                  d="M12.04 2C6.58 2 2.15 6.4 2.15 11.84c0 1.97.52 3.88 1.5 5.56L2 22l4.78-1.55a9.86 9.86 0 0 0 5.26 1.49h.01c5.46 0 9.89-4.4 9.89-9.84S17.5 2 12.04 2Zm5.78 14.01c-.24.68-1.4 1.25-1.93 1.33-.5.08-1.13.11-1.82-.11-.42-.14-.96-.31-1.66-.61-2.92-1.26-4.82-4.2-4.97-4.4-.14-.2-1.2-1.6-1.2-3.05 0-1.45.76-2.16 1.03-2.45.27-.29.59-.36.79-.36h.57c.18 0 .42-.07.66.5.24.58.82 2 .89 2.15.07.14.12.32.02.51-.1.2-.14.32-.28.49-.14.17-.3.38-.43.51-.14.14-.29.29-.12.56.17.28.75 1.23 1.61 2 .98.88 1.8 1.15 2.07 1.28.27.14.43.12.59-.07.16-.18.68-.79.86-1.06.18-.27.36-.23.61-.14.24.1 1.55.73 1.82.87.27.13.45.2.51.31.07.11.07.64-.17 1.32Z"
+                />
+              </svg>
+              <span>{{ section.settings.whatsapp_label | default: 'Chat on WhatsApp' | escape }}</span>
+            </a>
+          {%- endif -%}
+        </aside>
+
+        <div class="contact-page__form-wrap">
+          <div class="contact-page__form-panel">
+            <div class="contact-page__form-intro">
+              <h2 class="contact-page__form-heading">{{ form_heading | escape }}</h2>
+              {%- if section.settings.form_text != blank -%}
+                <p class="contact-page__form-text">{{ section.settings.form_text | escape }}</p>
+              {%- endif -%}
+            </div>
+
+            {%- form 'contact', id: 'ContactForm', class: 'contact-page__form' -%}
+              {%- if form.posted_successfully? -%}
+                <p class="contact-page__banner contact-page__banner--success" role="status" tabindex="-1">
+                  {{ 'contact.success' | t }}
+                </p>
+              {%- endif -%}
+
+              {%- if form.errors -%}
+                <div class="contact-page__banner contact-page__banner--error" role="alert" tabindex="-1">
+                  <p class="contact-page__banner-title">{{ 'contact.error_heading' | t }}</p>
+                  <ul class="contact-page__errors" role="list">
+                    {%- for field in form.errors -%}
+                      <li>
+                        {%- if field == 'form' -%}
+                          {{ form.errors.messages[field] }}
+                        {%- else -%}
+                          <a href="#ContactForm-{{ field }}">
+                            {{ form.errors.translated_fields[field] | capitalize }}
+                            {{ form.errors.messages[field] }}
+                          </a>
+                        {%- endif -%}
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                </div>
+              {%- endif -%}
+
+              <div class="contact-page__fields">
+                <div class="contact-page__field">
+                  <label class="contact-page__label" for="ContactForm-name">{{ 'contact.name' | t }}</label>
+                  <input
+                    class="contact-page__input"
+                    type="text"
+                    id="ContactForm-name"
+                    name="contact[name]"
+                    autocomplete="name"
+                    value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+                    {% if form.errors contains 'name' %}
+                      aria-invalid="true"
+                      aria-describedby="ContactForm-name-error"
+                    {% endif %}
+                  >
+                  {%- if form.errors contains 'name' -%}
+                    <p class="contact-page__field-error" id="ContactForm-name-error">
+                      {{ form.errors.translated_fields.name | capitalize }}
+                      {{ form.errors.messages.name }}
+                    </p>
+                  {%- endif -%}
+                </div>
+
+                <div class="contact-page__field">
+                  <label class="contact-page__label" for="ContactForm-email">
+                    {{ 'contact.email' | t }}
+                    <span aria-hidden="true">*</span>
+                  </label>
+                  <input
+                    class="contact-page__input"
+                    type="email"
+                    id="ContactForm-email"
+                    name="contact[email]"
+                    autocomplete="email"
+                    spellcheck="false"
+                    autocapitalize="off"
+                    value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+                    required
+                    {% if form.errors contains 'email' %}
+                      aria-invalid="true"
+                      aria-describedby="ContactForm-email-error"
+                    {% endif %}
+                  >
+                  {%- if form.errors contains 'email' -%}
+                    <p class="contact-page__field-error" id="ContactForm-email-error">
+                      {{ form.errors.translated_fields.email | capitalize }}
+                      {{ form.errors.messages.email }}
+                    </p>
+                  {%- endif -%}
+                </div>
+
+                <div class="contact-page__field">
+                  <label class="contact-page__label" for="ContactForm-phone">{{ 'contact.phone' | t }}</label>
+                  <input
+                    class="contact-page__input"
+                    type="tel"
+                    id="ContactForm-phone"
+                    name="contact[phone]"
+                    autocomplete="tel"
+                    value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}"
+                  >
+                </div>
+
+                <div class="contact-page__field contact-page__field--full">
+                  <label class="contact-page__label" for="ContactForm-body">
+                    {{ 'contact.message' | t }}
+                    <span aria-hidden="true">*</span>
+                  </label>
+                  <textarea
+                    class="contact-page__input contact-page__textarea"
+                    id="ContactForm-body"
+                    name="contact[body]"
+                    rows="6"
+                    required
+                    {% if form.errors contains 'body' %}
+                      aria-invalid="true"
+                      aria-describedby="ContactForm-body-error"
+                    {% endif %}
+                  >{% if form.body %}{{ form.body }}{% endif %}</textarea>
+                  {%- if form.errors contains 'body' -%}
+                    <p class="contact-page__field-error" id="ContactForm-body-error">
+                      {{ form.errors.translated_fields.body | capitalize }}
+                      {{ form.errors.messages.body }}
+                    </p>
+                  {%- endif -%}
+                </div>
+              </div>
+
+              <button type="submit" class="contact-page__submit">
+                {{ section.settings.submit_label | default: 'Send message' | escape }}
+              </button>
+            {%- endform -%}
+          </div>
+        </div>
+      </div>
+
+      {%- if section.settings.show_map and section.settings.map_embed != blank -%}
+        <section class="contact-page__map" aria-label="{{ section.settings.map_heading | default: 'Map' | escape }}">
+          {%- if section.settings.map_heading != blank or section.settings.map_text != blank -%}
+            <div class="contact-page__map-intro contact-page__map-intro--{{ section.settings.header_alignment }}">
+              {%- if section.settings.map_heading != blank -%}
+                <h2 class="contact-page__map-heading">{{ section.settings.map_heading | escape }}</h2>
+              {%- endif -%}
+              {%- if section.settings.map_text != blank -%}
+                <p class="contact-page__map-text">{{ section.settings.map_text | escape }}</p>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+
+          <div
+            class="contact-page__map-frame"
+            style="--cp-map-height: {{ section.settings.map_height }}px"
+          >
+            {{ section.settings.map_embed }}
+          </div>
+        </section>
+      {%- elsif section.settings.show_map and request.design_mode -%}
+        <section class="contact-page__map">
+          <p class="contact-page__map-empty">{{ 'contact.map_empty' | t }}</p>
+        </section>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .contact-page {
+    --cp-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --cp-line: color-mix(in srgb, var(--color-heading) 10%, transparent);
+    display: block;
+    color: var(--cp-text, var(--color-text));
+    background: var(--cp-bg, var(--color-background));
+  }
+
+  .contact-page__shell {
+    padding-block: var(--cp-pad-top) var(--cp-pad-bottom);
+  }
+
+  .contact-page__inner {
+    width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    margin-inline: auto;
+  }
+
+  .contact-page__header {
+    display: grid;
+    gap: 0.9rem;
+    margin-bottom: clamp(2.25rem, 5vw, 3.75rem);
+    max-width: 42rem;
+  }
+
+  .contact-page__header--center {
+    margin-inline: auto;
+    text-align: center;
+    justify-items: center;
+  }
+
+  .contact-page__header--left {
+    text-align: left;
+    justify-items: start;
+  }
+
+  .contact-page__eyebrow {
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--cp-mute, var(--color-text-muted));
+  }
+
+  .contact-page__heading {
+    margin: 0;
+    max-width: 14ch;
+    font-size: clamp(2.5rem, 7vw, 4.5rem);
+    font-weight: 500;
+    letter-spacing: -0.055em;
+    line-height: 0.98;
+  }
+
+  .contact-page__rule {
+    display: block;
+    width: 3rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.85;
+  }
+
+  .contact-page__header--center .contact-page__rule {
+    margin-inline: auto;
+  }
+
+  .contact-page__subheading {
+    margin: 0;
+    max-width: 38rem;
+    font-size: clamp(1rem, 1.5vw, 1.125rem);
+    line-height: 1.65;
+    color: var(--cp-mute, var(--color-text-muted));
+  }
+
+  .contact-page__subheading p {
+    margin: 0;
+  }
+
+  .contact-page__subheading p + p {
+    margin-top: 0.75rem;
+  }
+
+  .contact-page__layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+
+  @media (min-width: 990px) {
+    .contact-page__layout {
+      grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+      gap: clamp(3rem, 6vw, 5.5rem);
+    }
+  }
+
+  .contact-page__aside {
+    display: grid;
+    gap: 1.25rem;
+    align-content: start;
+  }
+
+  .contact-page__aside-heading {
+    margin: 0;
+    font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+    font-weight: 550;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+  }
+
+  .contact-page__aside-text {
+    margin: 0;
+    max-width: 28rem;
+    font-size: 0.975rem;
+    line-height: 1.65;
+    color: var(--cp-mute, var(--color-text-muted));
+  }
+
+  .contact-page__aside-text p {
+    margin: 0;
+  }
+
+  .contact-page__details {
+    display: grid;
+    gap: 0;
+    margin: 0.5rem 0 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--cp-line);
+  }
+
+  .contact-page__detail {
+    display: grid;
+    gap: 0.35rem;
+    padding: 1.15rem 0;
+    border-bottom: 1px solid var(--cp-line);
+  }
+
+  .contact-page__detail-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cp-mute, var(--color-text-muted));
+  }
+
+  .contact-page__detail-value {
+    color: inherit;
+    text-decoration: none;
+    font-size: 1.05rem;
+    font-weight: 550;
+    letter-spacing: -0.015em;
+    line-height: 1.45;
+  }
+
+  a.contact-page__detail-value:hover,
+  a.contact-page__detail-value:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+
+  .contact-page__whatsapp {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    width: fit-content;
+    min-height: 3rem;
+    margin-top: 0.5rem;
+    padding: 0 1.2rem;
+    border-radius: 999px;
+    background: var(--color-button);
+    color: var(--color-button-text);
+    text-decoration: none;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: background-color 160ms ease, transform 160ms var(--cp-ease);
+  }
+
+  .contact-page__whatsapp:hover,
+  .contact-page__whatsapp:focus-visible {
+    background: var(--color-button-hover);
+    transform: translateY(-1px);
+  }
+
+  .contact-page__whatsapp-icon {
+    flex: 0 0 auto;
+  }
+
+  .contact-page__form-panel {
+    display: grid;
+    gap: 1.35rem;
+    padding: clamp(1.35rem, 3vw, 2rem);
+    border: 1px solid var(--cp-line);
+    border-radius: var(--cp-radius, 16px);
+    background: var(--cp-surface, var(--color-surface));
+  }
+
+  .contact-page__form-intro {
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  .contact-page__form-heading {
+    margin: 0;
+    font-size: clamp(1.25rem, 2.2vw, 1.55rem);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+  }
+
+  .contact-page__form-text {
+    margin: 0;
+    font-size: 0.925rem;
+    line-height: 1.55;
+    color: var(--cp-mute, var(--color-text-muted));
+  }
+
+  .contact-page__form {
+    display: grid;
+    gap: 1.15rem;
+  }
+
+  .contact-page__banner {
+    margin: 0;
+    padding: 0.95rem 1rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .contact-page__banner--success {
+    background: color-mix(in srgb, var(--color-success) 10%, var(--color-background));
+    color: var(--color-success);
+  }
+
+  .contact-page__banner--error {
+    background: color-mix(in srgb, var(--color-error) 8%, var(--color-background));
+    color: var(--color-error);
+  }
+
+  .contact-page__banner-title {
+    margin: 0 0 0.35rem;
+    font-weight: 700;
+  }
+
+  .contact-page__errors {
+    margin: 0;
+    padding-left: 1.1rem;
+  }
+
+  .contact-page__errors a {
+    color: inherit;
+  }
+
+  .contact-page__fields {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  @media (min-width: 750px) {
+    .contact-page__fields {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .contact-page__field--full {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .contact-page__field {
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  .contact-page__label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cp-mute, var(--color-text-muted));
+  }
+
+  .contact-page__input {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid color-mix(in srgb, var(--color-heading) 14%, transparent);
+    border-radius: 12px;
+    background: var(--color-background);
+    color: inherit;
+    font: inherit;
+    font-size: 0.975rem;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+  }
+
+  .contact-page__input:hover {
+    border-color: color-mix(in srgb, var(--color-heading) 28%, transparent);
+  }
+
+  .contact-page__input:focus {
+    outline: none;
+    border-color: var(--color-button);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-heading) 8%, transparent);
+  }
+
+  .contact-page__input[aria-invalid='true'] {
+    border-color: var(--color-error);
+  }
+
+  .contact-page__textarea {
+    min-height: 9.5rem;
+    resize: vertical;
+    line-height: 1.55;
+  }
+
+  .contact-page__field-error {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--color-error);
+  }
+
+  .contact-page__submit {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 3.25rem;
+    border: 0;
+    border-radius: 12px;
+    background: var(--color-button);
+    color: var(--color-button-text);
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 160ms ease, transform 160ms var(--cp-ease);
+  }
+
+  .contact-page__submit:hover,
+  .contact-page__submit:focus-visible {
+    background: var(--color-button-hover);
+    transform: translateY(-1px);
+  }
+
+  .contact-page__map {
+    margin-top: clamp(2.75rem, 6vw, 4.5rem);
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .contact-page__map-intro {
+    display: grid;
+    gap: 0.45rem;
+    max-width: 36rem;
+  }
+
+  .contact-page__map-intro--center {
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .contact-page__map-heading {
+    margin: 0;
+    font-size: clamp(1.35rem, 2.4vw, 1.85rem);
+    font-weight: 550;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+  }
+
+  .contact-page__map-text {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--cp-mute, var(--color-text-muted));
+  }
+
+  .contact-page__map-frame {
+    overflow: hidden;
+    width: 100%;
+    min-height: var(--cp-map-height, 360px);
+    border: 1px solid var(--cp-line);
+    border-radius: var(--cp-radius, 16px);
+    background: var(--color-border);
+  }
+
+  .contact-page__map-frame iframe {
+    display: block;
+    width: 100%;
+    height: var(--cp-map-height, 360px);
+    border: 0;
+  }
+
+  .contact-page__map-empty {
+    margin: 0;
+    padding: 2.5rem 1.25rem;
+    text-align: center;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--cp-mute, var(--color-text-muted));
+    border: 1px dashed color-mix(in srgb, var(--color-heading) 16%, transparent);
+    border-radius: var(--cp-radius, 16px);
+    background: var(--cp-surface, var(--color-surface));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .contact-page__whatsapp,
+    .contact-page__submit {
+      transition: none;
+    }
+
+    .contact-page__whatsapp:hover,
+    .contact-page__submit:hover {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.contact.name",
+  "tag": "section",
+  "class": "contact-page-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_theme_colors",
+      "label": "t:labels.use_theme_colors",
+      "info": "t:info.use_theme_colors",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:general.content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:labels.eyebrow",
+      "default": "Get in touch"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "info": "t:info.contact_heading_fallback"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "t:labels.subheading",
+      "default": "<p>Questions about an order, styling advice, or a custom piece — we’re here to help.</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_page_content",
+      "label": "t:labels.show_page_content",
+      "default": false,
+      "info": "t:info.show_page_content"
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "t:labels.alignment",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:labels.contact_details"
+    },
+    {
+      "type": "text",
+      "id": "aside_heading",
+      "label": "t:labels.aside_heading",
+      "default": "Visit or message us"
+    },
+    {
+      "type": "richtext",
+      "id": "aside_text",
+      "label": "t:labels.aside_text",
+      "default": "<p>Our team typically replies within a few hours during business days.</p>"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "t:labels.contact_phone",
+      "default": "+92 300 0000000"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "t:labels.contact_email",
+      "default": "hello@example.com"
+    },
+    {
+      "type": "textarea",
+      "id": "address",
+      "label": "t:labels.contact_address",
+      "default": "Lahore, Pakistan"
+    },
+    {
+      "type": "textarea",
+      "id": "hours",
+      "label": "t:labels.hours",
+      "default": "Mon–Sat · 10:00 AM – 7:00 PM"
+    },
+    {
+      "type": "text",
+      "id": "whatsapp_number",
+      "label": "t:labels.whatsapp_number",
+      "default": "923001234567",
+      "info": "t:info.whatsapp_number"
+    },
+    {
+      "type": "text",
+      "id": "whatsapp_label",
+      "label": "t:labels.whatsapp_label",
+      "default": "Chat on WhatsApp"
+    },
+    {
+      "type": "text",
+      "id": "whatsapp_message",
+      "label": "t:labels.whatsapp_message",
+      "default": "Hi, I have a question."
+    },
+    {
+      "type": "header",
+      "content": "t:labels.contact_form"
+    },
+    {
+      "type": "text",
+      "id": "form_heading",
+      "label": "t:labels.form_heading",
+      "default": "Send a message"
+    },
+    {
+      "type": "text",
+      "id": "form_text",
+      "label": "t:labels.form_text",
+      "default": "Fill in the form and we’ll get back to you soon."
+    },
+    {
+      "type": "text",
+      "id": "submit_label",
+      "label": "t:labels.submit_label",
+      "default": "Send message"
+    },
+    {
+      "type": "header",
+      "content": "t:labels.map"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_map",
+      "label": "t:labels.show_map",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "map_heading",
+      "label": "t:labels.map_heading",
+      "default": "Find us"
+    },
+    {
+      "type": "text",
+      "id": "map_text",
+      "label": "t:labels.map_text",
+      "default": "Visit our studio or share your location for delivery help."
+    },
+    {
+      "type": "html",
+      "id": "map_embed",
+      "label": "t:labels.map_embed",
+      "info": "t:info.map_embed"
+    },
+    {
+      "type": "range",
+      "id": "map_height",
+      "label": "t:labels.map_height",
+      "min": 240,
+      "max": 560,
+      "step": 20,
+      "unit": "px",
+      "default": 380
+    },
+    {
+      "type": "header",
+      "content": "t:general.layout"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "surface_color",
+      "label": "t:labels.surface",
+      "default": "#F7F7F5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "t:labels.muted_text",
+      "default": "#6B6B6B"
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "t:labels.corner_radius",
+      "min": 0,
+      "max": 28,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "t:labels.padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "t:labels.padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 88
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.contact.presets.name"
+    }
+  ],
+  "enabled_on": {
+    "templates": ["page"]
+  }
+}
+{% endschema %}

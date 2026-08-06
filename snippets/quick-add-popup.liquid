@@ -1,0 +1,729 @@
+{% doc %}
+  Global quick-add popup for product cards with variants.
+  Opens via `quick-add:open` event or `document.querySelector('quick-add-popup').open(url)`.
+  Loads product JSON over AJAX, shows options with sold-out states, then adds to cart.
+
+  @example
+  {% render 'quick-add-popup' %}
+{% enddoc %}
+
+<quick-add-popup
+  class="quick-add"
+  data-cart-add-url="{{ routes.cart_add_url }}"
+  data-money-format="{{ shop.money_with_currency_format | escape }}"
+  data-add-label="{{ 'products.add_to_cart' | t | escape }}"
+  data-sold-out-label="{{ 'products.sold_out' | t | escape }}"
+  data-loading-label="{{ 'products.loading' | t | escape }}"
+  data-error-label="{{ 'products.quick_add_error' | t | escape }}"
+  hidden
+>
+  <div class="quick-add__backdrop" data-quick-add-close tabindex="-1"></div>
+
+  <div
+    class="quick-add__dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="QuickAddTitle"
+    aria-describedby="QuickAddStatus"
+  >
+    <button
+      type="button"
+      class="quick-add__close"
+      data-quick-add-close
+      aria-label="{{ 'accessibility.close' | t }}"
+    >
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M3.5 3.5 12.5 12.5M12.5 3.5 3.5 12.5" stroke="currentColor" stroke-width="1.6"/>
+      </svg>
+    </button>
+
+    <div class="quick-add__status" id="QuickAddStatus" data-quick-add-status role="status"></div>
+
+    <div class="quick-add__body" data-quick-add-body hidden>
+      <div class="quick-add__media">
+        <img class="quick-add__image" data-quick-add-image alt="" width="640" height="640">
+      </div>
+
+      <div class="quick-add__content">
+        <p class="quick-add__vendor" data-quick-add-vendor hidden></p>
+        <h2 class="quick-add__title" id="QuickAddTitle" data-quick-add-title></h2>
+
+        <div class="quick-add__price-row">
+          <span class="quick-add__price" data-quick-add-price></span>
+          <s class="quick-add__compare" data-quick-add-compare hidden></s>
+        </div>
+
+        <div class="quick-add__options" data-quick-add-options></div>
+
+        <button type="button" class="quick-add__submit" data-quick-add-submit disabled>
+          <span data-quick-add-submit-label>{{ 'products.add_to_cart' | t }}</span>
+        </button>
+
+        <a class="quick-add__details" data-quick-add-link href="#">
+          {{ 'products.view_details' | t }}
+        </a>
+      </div>
+    </div>
+  </div>
+</quick-add-popup>
+
+{% stylesheet %}
+  .quick-add {
+    --qa-ink: var(--color-heading);
+    --qa-mute: var(--color-text-muted);
+    --qa-line: var(--color-border);
+    --qa-btn: var(--color-button);
+    --qa-btn-text: var(--color-button-text);
+    --qa-btn-hover: var(--color-button-hover);
+    --qa-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: end center;
+    padding: 0;
+  }
+
+  .quick-add[hidden] {
+    display: none;
+  }
+
+  .quick-add__backdrop {
+    position: absolute;
+    inset: 0;
+    background: color-mix(in srgb, var(--color-heading) 48%, transparent);
+    border: 0;
+    cursor: pointer;
+  }
+
+  .quick-add__dialog {
+    position: relative;
+    z-index: 1;
+    width: min(920px, 100%);
+    max-height: min(92vh, 760px);
+    overflow: auto;
+    background: var(--color-background);
+    color: var(--qa-ink);
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -18px 50px color-mix(in srgb, var(--color-heading) 22%, transparent);
+    padding: 1.15rem 1.15rem 1.35rem;
+    animation: quick-add-rise 280ms var(--qa-ease);
+  }
+
+  .quick-add__close {
+    position: absolute;
+    top: 0.85rem;
+    right: 0.85rem;
+    z-index: 2;
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1px solid var(--qa-line);
+    border-radius: 999px;
+    background: var(--color-background);
+    color: var(--qa-ink);
+    cursor: pointer;
+  }
+
+  .quick-add__status {
+    min-height: 4rem;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    color: var(--qa-mute);
+    font-size: 0.9375rem;
+  }
+
+  .quick-add__status[hidden],
+  .quick-add__body[hidden] {
+    display: none;
+  }
+
+  .quick-add__status.is-error {
+    color: var(--color-error);
+  }
+
+  .quick-add__body {
+    display: grid;
+    gap: 1.15rem;
+  }
+
+  .quick-add__media {
+    aspect-ratio: 1 / 1;
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--color-surface);
+  }
+
+  .quick-add__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .quick-add__content {
+    display: grid;
+    gap: 0.85rem;
+    align-content: start;
+  }
+
+  .quick-add__vendor {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 650;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--qa-mute);
+  }
+
+  .quick-add__title {
+    margin: 0;
+    padding-right: 2rem;
+    font-size: clamp(1.2rem, 3vw, 1.55rem);
+    font-weight: 750;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .quick-add__price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+  }
+
+  .quick-add__price {
+    font-size: 1.35rem;
+    font-weight: 750;
+    letter-spacing: -0.03em;
+  }
+
+  .quick-add__compare {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+  }
+
+  .quick-add__options {
+    display: grid;
+    gap: 0.95rem;
+  }
+
+  .quick-add__option {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .quick-add__option-label {
+    display: block;
+    margin: 0 0 0.45rem;
+    padding: 0;
+    font-size: 0.8125rem;
+    font-weight: 650;
+    color: var(--qa-mute);
+  }
+
+  .quick-add__option-label strong {
+    color: var(--qa-ink);
+    font-weight: 750;
+  }
+
+  .quick-add__option-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .quick-add__option-btn {
+    appearance: none;
+    position: relative;
+    min-height: 2.35rem;
+    padding: 0.4rem 0.85rem;
+    border: 1px solid var(--qa-line);
+    border-radius: 999px;
+    background: var(--color-background);
+    color: var(--qa-ink);
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 650;
+    cursor: pointer;
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease,
+      color 150ms ease;
+  }
+
+  .quick-add__option-btn:hover,
+  .quick-add__option-btn:focus-visible {
+    border-color: var(--qa-btn);
+  }
+
+  .quick-add__option-btn.is-selected {
+    background: var(--qa-btn);
+    border-color: var(--qa-btn);
+    color: var(--qa-btn-text);
+  }
+
+  .quick-add__option-btn.is-soldout {
+    opacity: 0.7;
+    text-decoration: line-through;
+  }
+
+  .quick-add__soldout-tag {
+    display: inline-block;
+    margin-left: 0.35rem;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    vertical-align: middle;
+  }
+
+  .quick-add__option-btn.is-selected .quick-add__soldout-tag {
+    background: color-mix(in srgb, var(--color-background) 18%, transparent);
+    color: var(--color-button-text);
+  }
+
+  .quick-add__submit {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 3.25rem;
+    margin-top: 0.25rem;
+    border: 0;
+    border-radius: 12px;
+    background: var(--qa-btn);
+    color: var(--qa-btn-text);
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: 750;
+    cursor: pointer;
+    transition: background-color 160ms ease, opacity 160ms ease;
+  }
+
+  .quick-add__submit:hover,
+  .quick-add__submit:focus-visible {
+    background: var(--qa-btn-hover);
+  }
+
+  .quick-add__submit:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .quick-add__submit.is-loading {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  .quick-add__details {
+    justify-self: center;
+    color: var(--qa-ink);
+    font-size: 0.8125rem;
+    font-weight: 650;
+    text-underline-offset: 0.18em;
+  }
+
+  @media (min-width: 750px) {
+    .quick-add {
+      place-items: center;
+      padding: 1.5rem;
+    }
+
+    .quick-add__dialog {
+      border-radius: 18px;
+      padding: 1.5rem;
+      animation: quick-add-scale 260ms var(--qa-ease);
+    }
+
+    .quick-add__body {
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .quick-add__media {
+      position: sticky;
+      top: 0;
+    }
+  }
+
+  @keyframes quick-add-rise {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes quick-add-scale {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .quick-add__dialog {
+      animation: none;
+    }
+  }
+
+  body.quick-add-open {
+    overflow: hidden;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class QuickAddPopup extends HTMLElement {
+    connectedCallback() {
+      if (this._ready) return;
+      this._ready = true;
+
+      this.cartAddUrl = this.dataset.cartAddUrl;
+      this.moneyFormat = this.dataset.moneyFormat || '${{amount}}';
+      this.addLabel = this.dataset.addLabel || 'Add to cart';
+      this.soldOutLabel = this.dataset.soldOutLabel || 'Sold out';
+      this.loadingLabel = this.dataset.loadingLabel || 'Loading…';
+      this.errorLabel = this.dataset.errorLabel || 'Unable to load product.';
+
+      this.statusEl = this.querySelector('[data-quick-add-status]');
+      this.bodyEl = this.querySelector('[data-quick-add-body]');
+      this.imageEl = this.querySelector('[data-quick-add-image]');
+      this.vendorEl = this.querySelector('[data-quick-add-vendor]');
+      this.titleEl = this.querySelector('[data-quick-add-title]');
+      this.priceEl = this.querySelector('[data-quick-add-price]');
+      this.compareEl = this.querySelector('[data-quick-add-compare]');
+      this.optionsEl = this.querySelector('[data-quick-add-options]');
+      this.submitBtn = this.querySelector('[data-quick-add-submit]');
+      this.submitLabel = this.querySelector('[data-quick-add-submit-label]');
+      this.linkEl = this.querySelector('[data-quick-add-link]');
+
+      this.product = null;
+      this.selectedOptions = [];
+      this.selectedVariant = null;
+      this.lastFocus = null;
+
+      this.onCloseClick = (event) => {
+        if (event.target.closest('[data-quick-add-close]')) {
+          event.preventDefault();
+          this.close();
+        }
+      };
+      this.onKeyDown = (event) => {
+        if (event.key === 'Escape' && !this.hidden) this.close();
+      };
+      this.onOptionClick = (event) => {
+        const button = event.target.closest('[data-option-value]');
+        if (!button || !this.optionsEl.contains(button)) return;
+        const index = Number(button.closest('[data-option-index]')?.dataset.optionIndex);
+        if (Number.isNaN(index)) return;
+        this.selectedOptions[index] = button.dataset.optionValue;
+        this.renderOptions();
+        this.syncVariant();
+      };
+      this.onSubmit = (event) => {
+        event.preventDefault();
+        this.addToCart();
+      };
+      this.onOpenEvent = (event) => {
+        const url = event.detail?.productUrl;
+        if (url) this.open(url);
+      };
+
+      this.addEventListener('click', this.onCloseClick);
+      this.optionsEl?.addEventListener('click', this.onOptionClick);
+      this.submitBtn?.addEventListener('click', this.onSubmit);
+      document.addEventListener('keydown', this.onKeyDown);
+      document.addEventListener('quick-add:open', this.onOpenEvent);
+    }
+
+    disconnectedCallback() {
+      this.removeEventListener('click', this.onCloseClick);
+      this.optionsEl?.removeEventListener('click', this.onOptionClick);
+      this.submitBtn?.removeEventListener('click', this.onSubmit);
+      document.removeEventListener('keydown', this.onKeyDown);
+      document.removeEventListener('quick-add:open', this.onOpenEvent);
+      document.body.classList.remove('quick-add-open');
+    }
+
+    async open(productUrl) {
+      if (!productUrl) return;
+      this.lastFocus = document.activeElement;
+      this.hidden = false;
+      document.body.classList.add('quick-add-open');
+      this.showStatus(this.loadingLabel);
+      this.bodyEl.hidden = true;
+      this.submitBtn.disabled = true;
+
+      try {
+        const endpoint = productUrl.includes('.js') ? productUrl : `${productUrl.split('?')[0]}.js`;
+        const response = await fetch(endpoint, {
+          headers: { Accept: 'application/json' },
+        });
+        if (!response.ok) throw new Error('Product fetch failed');
+        this.product = await response.json();
+        this.prepareProduct();
+        this.renderProduct();
+        this.statusEl.hidden = true;
+        this.bodyEl.hidden = false;
+        this.querySelector('.quick-add__close')?.focus();
+      } catch (error) {
+        console.error(error);
+        this.showStatus(this.errorLabel, true);
+      }
+    }
+
+    close() {
+      this.hidden = true;
+      document.body.classList.remove('quick-add-open');
+      this.product = null;
+      this.selectedOptions = [];
+      this.selectedVariant = null;
+      if (this.lastFocus && typeof this.lastFocus.focus === 'function') {
+        this.lastFocus.focus();
+      }
+    }
+
+    showStatus(message, isError = false) {
+      this.statusEl.hidden = false;
+      this.statusEl.textContent = message;
+      this.statusEl.classList.toggle('is-error', Boolean(isError));
+    }
+
+    prepareProduct() {
+      const variants = this.product.variants || [];
+      const firstAvailable = variants.find((variant) => variant.available) || variants[0];
+      this.selectedOptions = [
+        firstAvailable?.option1 || null,
+        firstAvailable?.option2 || null,
+        firstAvailable?.option3 || null,
+      ].slice(0, (this.product.options || []).length);
+    }
+
+    getOptionValues(index) {
+      const key = `option${index + 1}`;
+      const values = [];
+      (this.product.variants || []).forEach((variant) => {
+        const value = variant[key];
+        if (value && !values.includes(value)) values.push(value);
+      });
+      return values;
+    }
+
+    findVariant(options) {
+      return (this.product.variants || []).find((variant) =>
+        options.every((value, index) => {
+          if (!value) return true;
+          return variant[`option${index + 1}`] === value;
+        })
+      );
+    }
+
+    isValueSoldOut(optionIndex, value) {
+      const probe = [...this.selectedOptions];
+      probe[optionIndex] = value;
+      const matches = (this.product.variants || []).filter((variant) =>
+        probe.every((selected, index) => {
+          if (!selected) return true;
+          return variant[`option${index + 1}`] === selected;
+        })
+      );
+      if (!matches.length) return true;
+      return matches.every((variant) => !variant.available);
+    }
+
+    renderProduct() {
+      const image =
+        this.product.featured_image ||
+        this.product.images?.[0] ||
+        '';
+      this.imageEl.src = image ? (image.startsWith('//') ? `https:${image}` : image) : '';
+      this.imageEl.alt = this.product.title || '';
+
+      if (this.product.vendor) {
+        this.vendorEl.hidden = false;
+        this.vendorEl.textContent = this.product.vendor;
+      } else {
+        this.vendorEl.hidden = true;
+      }
+
+      this.titleEl.textContent = this.product.title || '';
+      this.linkEl.href = `/products/${this.product.handle}`;
+      this.renderOptions();
+      this.syncVariant();
+    }
+
+    renderOptions() {
+      const options = this.product.options || [];
+      this.optionsEl.innerHTML = options
+        .map((name, index) => {
+          const selected = this.selectedOptions[index] || '';
+          const values = this.getOptionValues(index)
+            .map((value) => {
+              const soldOut = this.isValueSoldOut(index, value);
+              const selectedClass = value === selected ? ' is-selected' : '';
+              const soldOutClass = soldOut ? ' is-soldout' : '';
+              const soldTag = soldOut
+                ? `<span class="quick-add__soldout-tag">${this.escapeHtml(this.soldOutLabel)}</span>`
+                : '';
+              return `
+                <button
+                  type="button"
+                  class="quick-add__option-btn${selectedClass}${soldOutClass}"
+                  data-option-value="${this.escapeHtml(value)}"
+                  data-soldout-text="${this.escapeHtml(this.soldOutLabel)}"
+                  aria-pressed="${value === selected ? 'true' : 'false'}"
+                >
+                  ${this.escapeHtml(value)}${soldTag}
+                </button>
+              `;
+            })
+            .join('');
+
+          return `
+            <fieldset class="quick-add__option" data-option-index="${index}">
+              <legend class="quick-add__option-label">
+                ${this.escapeHtml(name)}:
+                <strong>${this.escapeHtml(selected)}</strong>
+              </legend>
+              <div class="quick-add__option-values">${values}</div>
+            </fieldset>
+          `;
+        })
+        .join('');
+    }
+
+    syncVariant() {
+      const variant = this.findVariant(this.selectedOptions);
+      this.selectedVariant = variant || null;
+
+      if (!variant) {
+        this.priceEl.textContent = '';
+        this.compareEl.hidden = true;
+        this.submitBtn.disabled = true;
+        this.submitLabel.textContent = this.soldOutLabel;
+        return;
+      }
+
+      this.priceEl.textContent = this.formatMoney(variant.price);
+      if (variant.compare_at_price && variant.compare_at_price > variant.price) {
+        this.compareEl.hidden = false;
+        this.compareEl.textContent = this.formatMoney(variant.compare_at_price);
+      } else {
+        this.compareEl.hidden = true;
+      }
+
+      const image =
+        variant.featured_image?.src ||
+        this.product.featured_image ||
+        this.product.images?.[0] ||
+        '';
+      if (image) {
+        this.imageEl.src = image.startsWith('//') ? `https:${image}` : image;
+      }
+
+      if (variant.available) {
+        this.submitBtn.disabled = false;
+        this.submitLabel.textContent = this.addLabel;
+      } else {
+        this.submitBtn.disabled = true;
+        this.submitLabel.textContent = this.soldOutLabel;
+      }
+    }
+
+    async addToCart() {
+      if (!this.selectedVariant?.available || !this.cartAddUrl) return;
+
+      const cartDrawer = document.querySelector('cart-drawer');
+      const sectionId = cartDrawer?.dataset.sectionId;
+
+      this.submitBtn.classList.add('is-loading');
+      this.submitBtn.setAttribute('aria-busy', 'true');
+
+      try {
+        const payload = {
+          items: [{ id: this.selectedVariant.id, quantity: 1 }],
+        };
+        if (sectionId) {
+          payload.sections = sectionId;
+          payload.sections_url = window.location.pathname;
+        }
+
+        const response = await fetch(this.cartAddUrl, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.description || data.message || 'Add to cart failed');
+        }
+
+        this.close();
+        document.dispatchEvent(
+          new CustomEvent('cart:refresh', {
+            detail: {
+              open: true,
+              sections: data.sections,
+              itemCount: data.item_count,
+              cart: data,
+            },
+          })
+        );
+      } catch (error) {
+        console.error(error);
+        this.showStatus(error.message || this.errorLabel, true);
+        this.bodyEl.hidden = true;
+      } finally {
+        this.submitBtn.classList.remove('is-loading');
+        this.submitBtn.removeAttribute('aria-busy');
+      }
+    }
+
+    formatMoney(cents) {
+      if (window.Shopify?.formatMoney) {
+        return window.Shopify.formatMoney(cents, this.moneyFormat);
+      }
+      const amount = (Number(cents) / 100).toFixed(2);
+      return this.moneyFormat
+        .replace(/\{\{\s*amount_with_comma_separator\s*\}\}/g, amount.replace('.', ','))
+        .replace(/\{\{\s*amount_no_decimals\s*\}\}/g, String(Math.round(Number(cents) / 100)))
+        .replace(/\{\{\s*amount\s*\}\}/g, amount);
+    }
+
+    escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+  }
+
+  if (!customElements.get('quick-add-popup')) {
+    customElements.define('quick-add-popup', QuickAddPopup);
+  }
+{% endjavascript %}

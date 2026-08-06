@@ -1,0 +1,360 @@
+{% doc %}
+  Premium article card for the blog listing page.
+  Supports a featured (wide) layout and a standard grid card.
+
+  @param {article} article - Article object
+  @param {boolean} [featured] - Use featured / horizontal layout
+  @param {boolean} [show_author] - Show author
+  @param {boolean} [show_date] - Show publish date
+  @param {boolean} [show_excerpt] - Show excerpt
+  @param {boolean} [show_tags] - Show first tags
+  @param {boolean} [loading] - Eager-load image when true
+
+  @example
+  {% render 'article-card', article: article %}
+{% enddoc %}
+
+{%- if article != blank -%}
+  {%- liquid
+    assign featured = featured | default: false, allow_false: true
+    assign show_author = show_author | default: true, allow_false: true
+    assign show_date = show_date | default: true, allow_false: true
+    assign show_excerpt = show_excerpt | default: true, allow_false: true
+    assign show_tags = show_tags | default: true, allow_false: true
+    assign loading_attr = 'lazy'
+    if loading
+      assign loading_attr = 'eager'
+    endif
+
+    assign excerpt_words = 22
+    assign image_sizes = '(min-width: 990px) 30vw, (min-width: 750px) 45vw, 100vw'
+    if featured
+      assign excerpt_words = 36
+      assign image_sizes = '(min-width: 990px) 55vw, 100vw'
+    endif
+  -%}
+
+  <article class="article-card{% if featured %} article-card--featured{% endif %}">
+    <a
+      class="article-card__media"
+      href="{{ article.url }}"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      {%- if article.image -%}
+        {%- assign image_alt = article.image.alt | default: article.title -%}
+        {{
+          article.image
+          | image_url: width: 1600
+          | image_tag:
+            loading: loading_attr,
+            widths: '480, 720, 960, 1200, 1600',
+            sizes: image_sizes,
+            class: 'article-card__image',
+            alt: image_alt
+        }}
+      {%- else -%}
+        <div class="article-card__placeholder" aria-hidden="true">
+          {{ 'image' | placeholder_svg_tag: 'article-card__placeholder-svg' }}
+        </div>
+      {%- endif -%}
+    </a>
+
+    <div class="article-card__body">
+      {%- if show_tags and article.tags.size > 0 -%}
+        <ul class="article-card__tags" role="list">
+          {%- for tag in article.tags limit: 2 -%}
+            <li>
+              <a class="article-card__tag" href="{{ blog.url }}/tagged/{{ tag | handle }}">
+                {{ tag | escape }}
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+      {%- if show_date or show_author -%}
+        <div class="article-card__meta">
+          {%- if show_date -%}
+            <time class="article-card__date" datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+              {{ article.published_at | date: '%b %d, %Y' }}
+            </time>
+          {%- endif -%}
+
+          {%- if show_author and article.author != blank -%}
+            {%- if show_date -%}
+              <span class="article-card__dot" aria-hidden="true"></span>
+            {%- endif -%}
+            <span class="article-card__author">
+              {{ 'blog.by_author' | t: author: article.author }}
+            </span>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      <h2 class="article-card__title">
+        <a href="{{ article.url }}">{{ article.title | escape }}</a>
+      </h2>
+
+      {%- if show_excerpt and article.excerpt_or_content != blank -%}
+        <p class="article-card__excerpt">
+          {{ article.excerpt_or_content | strip_html | truncatewords: excerpt_words }}
+        </p>
+      {%- endif -%}
+
+      <a class="article-card__link" href="{{ article.url }}">
+        {{ 'blog.read_more' | t }}
+        <span class="article-card__link-icon" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </article>
+{%- endif -%}
+
+{% stylesheet %}
+  .article-card {
+    --ac-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    color: var(--bp-text, var(--color-text));
+    border: 0;
+    border-radius: 0;
+  }
+
+  .article-card:hover,
+  .article-card:focus-within {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .article-card__media {
+    display: block;
+    overflow: hidden;
+    background: var(--color-border);
+    border-radius: var(--bp-radius, 10px);
+  }
+
+  .article-card__image,
+  .article-card__placeholder,
+  .article-card__placeholder-svg {
+    display: block;
+    width: 100%;
+    aspect-ratio: var(--bp-ratio, 16 / 10);
+    object-fit: cover;
+  }
+
+  .article-card__image {
+    transition: transform 700ms var(--ac-ease);
+  }
+
+  .article-card:hover .article-card__image,
+  .article-card:focus-within .article-card__image {
+    transform: scale(1.05);
+  }
+
+  .article-card__placeholder {
+    display: grid;
+    place-items: center;
+    background: linear-gradient(145deg, var(--color-border), var(--color-surface));
+  }
+
+  .article-card__placeholder-svg {
+    opacity: 0.4;
+  }
+
+  .article-card__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    gap: 0.75rem;
+    padding: 1rem 0 0;
+  }
+
+  .article-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .article-card__tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: auto;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--bp-mute, var(--color-text-muted));
+    text-decoration: none;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .article-card__tag:hover,
+  .article-card__tag:focus-visible {
+    background: transparent;
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2rem;
+  }
+
+  .article-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0.55rem;
+  }
+
+  .article-card__date,
+  .article-card__author {
+    margin: 0;
+    font-size: 0.7rem;
+    font-weight: 650;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--bp-mute, var(--color-text-muted));
+  }
+
+  .article-card__dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--color-border);
+  }
+
+  .article-card__title {
+    margin: 0;
+    font-size: clamp(1.2rem, 2vw, 1.45rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1.22;
+  }
+
+  .article-card__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .article-card__title a:hover,
+  .article-card__title a:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  .article-card__excerpt {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: var(--bp-mute, var(--color-text-muted));
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .article-card__link {
+    margin-top: 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding-top: 0;
+    color: inherit;
+    text-decoration: none;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .article-card__link-icon {
+    transition: transform 180ms var(--ac-ease);
+  }
+
+  .article-card__link:hover .article-card__link-icon,
+  .article-card:hover .article-card__link-icon,
+  .article-card:focus-within .article-card__link-icon {
+    transform: translateX(3px);
+  }
+
+  /* Featured / spotlight card */
+  .article-card--featured {
+    display: grid;
+    grid-template-columns: 1fr;
+    overflow: hidden;
+    background: var(--color-surface);
+    border-radius: calc(var(--bp-radius, 10px) + 2px);
+  }
+
+  .article-card--featured .article-card__image,
+  .article-card--featured .article-card__placeholder,
+  .article-card--featured .article-card__placeholder-svg {
+    aspect-ratio: 16 / 10;
+  }
+
+  .article-card--featured .article-card__body {
+    justify-content: center;
+    gap: 0.85rem;
+    padding: clamp(1.5rem, 4vw, 2.25rem);
+  }
+
+  .article-card--featured .article-card__title {
+    max-width: 18ch;
+    font-size: clamp(1.75rem, 4vw, 3rem);
+    font-weight: 550;
+    letter-spacing: -0.045em;
+    line-height: 1.05;
+  }
+
+  .article-card--featured .article-card__excerpt {
+    -webkit-line-clamp: 4;
+    font-size: 1rem;
+    max-width: 38rem;
+  }
+
+  @media (min-width: 990px) {
+    .article-card--featured {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      align-items: stretch;
+    }
+
+    .article-card--featured .article-card__media {
+      height: 100%;
+    }
+
+    .article-card--featured .article-card__image,
+    .article-card--featured .article-card__placeholder,
+    .article-card--featured .article-card__placeholder-svg {
+      height: 100%;
+      min-height: 22rem;
+      aspect-ratio: auto;
+    }
+
+    .article-card--featured .article-card__body {
+      padding: clamp(2.25rem, 5vw, 4rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .article-card,
+    .article-card__image,
+    .article-card__link-icon {
+      transition: none;
+    }
+
+    .article-card:hover,
+    .article-card:focus-within {
+      transform: none;
+    }
+
+    .article-card:hover .article-card__image,
+    .article-card:focus-within .article-card__image {
+      transform: none;
+    }
+  }
+{% endstylesheet %}

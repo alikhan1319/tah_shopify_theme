@@ -1,0 +1,339 @@
+{
+  "accessibility": {
+    "account": "Account",
+    "back_to_top": "Back to top",
+    "carousel": "Carousel",
+    "close": "Close",
+    "next_slide": "Next slide",
+    "previous_slide": "Previous slide",
+    "clear_search": "Clear search",
+    "close_cart": "Close cart",
+    "close_menu": "Close menu",
+    "close_search": "Close search",
+    "decrease_quantity": "Decrease quantity",
+    "increase_quantity": "Increase quantity",
+    "main_navigation": "Main navigation",
+    "menu": "Menu",
+    "mobile_navigation": "Mobile navigation",
+    "open_cart": "Open cart",
+    "open_menu": "Open menu",
+    "open_search": "Open search",
+    "product_images": "Product images",
+    "image_of": "Image {{ index }} of {{ count }}",
+    "video_of": "Video {{ index }} of {{ count }}",
+    "slide": "Slide",
+    "slide_of": "Announcement {{ index }} of {{ count }}",
+    "previous_announcement": "Previous announcement",
+    "next_announcement": "Next announcement",
+    "close_announcement": "Close announcement bar",
+    "social_media": "Social media",
+    "social_facebook": "Facebook",
+    "social_instagram": "Instagram",
+    "social_x": "X",
+    "social_tiktok": "TikTok",
+    "social_pinterest": "Pinterest",
+    "social_youtube": "YouTube",
+    "social_linkedin": "LinkedIn",
+    "breadcrumb": "Breadcrumb"
+  },
+  "general": {
+    "home": "Home",
+    "view_all": "View all",
+    "loading": "Loading",
+    "pagination": {
+      "label": "Pagination",
+      "previous": "Previous",
+      "next": "Next",
+      "page_of": "Page {{ page }} of {{ pages }}"
+    }
+  },
+  "sections": {
+    "announcement_bar": {
+      "announcements": "Announcements",
+      "language": "Language",
+      "currency": "Country / currency"
+    },
+    "collection_hero": {
+      "product_count": {
+        "one": "{{ count }} product",
+        "other": "{{ count }} products"
+      }
+    },
+    "collection": {
+      "empty": "No products",
+      "no_products": "No products found in this collection.",
+      "continue_shopping": "Continue shopping",
+      "sort_by": "Sort by",
+      "product_count": {
+        "one": "{{ count }} product",
+        "other": "{{ count }} products"
+      }
+    },
+    "blog_posts": {
+      "empty": "Select a blog in the theme editor to display articles.",
+      "no_articles": "No articles published yet.",
+      "by_author": "By {{ author }}",
+      "read_more": "Read more"
+    },
+    "new_arrivals": {
+      "empty_collection": "Select a collection to display new arrivals.",
+      "no_products": "This collection has no products yet."
+    },
+    "shop_catalog": {
+      "empty": "Add category blocks (or a collection list) to build the catalog mosaic. Every 5 categories repeats the premium layout."
+    },
+    "featured_collection": {
+      "empty_collection": "Select a collection to feature products.",
+      "empty_products": "Select products to feature in this section.",
+      "no_products": "This collection has no products yet."
+    },
+    "hero": {
+      "categories": "Category banners",
+      "shop_category": "Shop now",
+      "add_banners": "Add category banners"
+    },
+    "bridal_lehenga": {
+      "empty_collection": "Select your bridal lehenga collection to display products.",
+      "no_products": "This collection has no products yet."
+    },
+    "customer_review_videos": {
+      "carousel_label": "Customer reviews",
+      "empty_blocks": "Add review blocks with photos or videos to display customer stories.",
+      "play_video": "Play {{ name }}'s review video",
+      "view_image": "View {{ name }}'s review photo",
+      "rating_label": "Rated {{ rating }} out of {{ max }} stars",
+      "video_dialog_title": "{{ name }}'s review video",
+      "image_dialog_title": "{{ name }}'s review photo",
+      "badge_video": "Video",
+      "badge_photo": "Photo"
+    },
+    "customer_testimonials": {
+      "empty_blocks": "Add testimonial blocks with a name, review text, and rating.",
+      "rating_label": "Rated {{ rating }} out of {{ max }} stars"
+    },
+    "customer_reviews": {
+      "empty_blocks": "Add review blocks with a customer name, review text, and rating.",
+      "rating_label": "Rated {{ rating }} out of {{ max }} stars",
+      "review_count": "{{ count }} reviews",
+      "verified_buyer": "Verified buyer"
+    },
+    "related_products": {
+      "empty_products": "No related products yet. Pick products manually or wait for Shopify recommendations.",
+      "loading_hint": "Related products load automatically from Shopify recommendations."
+    },
+    "product_card_preview": {
+      "empty_collection": "Select a collection to preview real product cards from your store.",
+      "no_products": "This collection has no products yet."
+    },
+    "footer": {
+      "newsletter_email": "Email address",
+      "newsletter_placeholder": "Email address",
+      "newsletter_submit": "Subscribe",
+      "newsletter_success": "Thank you for subscribing.",
+      "newsletter_error": "Please enter a valid email address.",
+      "copyright_html": "© {{ year }} {{ shop_name }}. All rights reserved.",
+      "secondary_navigation": "Footer links",
+      "payment_methods": "Accepted payment methods",
+      "select_menu": "Select a menu for this column.",
+      "we_accept": "We accept",
+      "contact_us": "Contact us",
+      "phone": "Phone",
+      "email": "Email",
+      "address": "Address"
+    }
+  },
+  "products": {
+    "add_to_cart": "Add to cart",
+    "choose_options": "Choose options",
+    "select_options": "Select options",
+    "view_details": "View full details",
+    "loading": "Loading…",
+    "quick_add_error": "Unable to load this product. Please try again.",
+    "quick_view": "Quick view",
+    "brand_label": "Brand:",
+    "add_to_wishlist": "Add to wishlist",
+    "remove_from_wishlist": "Remove from wishlist",
+    "preview_only": "Preview only",
+    "on_sale": "Sale",
+    "sold_out": "Sold out",
+    "percent_off": "{{ percent }}% OFF",
+    "quantity": "Quantity",
+    "description": "Description",
+    "sku": "SKU",
+    "reviews": "reviews",
+    "more": "more",
+    "read_more": "Read more",
+    "buy_this_item": "Buy this item",
+    "buy_now": "Buy now",
+    "order_via_whatsapp": "Order via WhatsApp",
+    "in_stock": "In stock",
+    "only_left": "Only {{ count }} left",
+    "save_amount": "Save {{ amount }}",
+    "verified_reviews": "Verified reviews",
+    "best_seller": "Best seller",
+    "secure_payments": "Secure payments",
+    "delivery": {
+      "shipping_title": "Delivery",
+      "cod_title": "Cash on delivery",
+      "returns_title": "Easy returns",
+      "warranty_title": "Warranty"
+    },
+    "trust_highlights": "Trust highlights",
+    "trust": {
+      "save_return": "14-day return",
+      "cod": "Cash on delivery",
+      "fast_delivery": "Fast shipping",
+      "secure": "Secure checkout"
+    },
+    "chat": "Chat",
+    "wishlist": "Wishlist",
+    "share": "Share",
+    "product_info": "Product information",
+    "no_description": "No description available for this product.",
+    "no_reviews": "No reviews yet. Be the first to share your experience.",
+    "sort_reviews": "Sort reviews",
+    "latest": "Latest",
+    "reply": "Reply",
+    "product_rating": "Product rating",
+    "discussion_placeholder": "Have a question about this product? Reach out through chat and we’ll help you shortly.",
+    "rating_aria": "Rated {{ rating }} from {{ count }} reviews",
+    "tabs": {
+      "details": "Details",
+      "reviews": "Reviews",
+      "discussion": "Discussion"
+    },
+    "price": {
+      "regular": "Regular price",
+      "sale": "Sale price"
+    }
+  },
+  "404": {
+    "title": "404",
+    "not_found": "Page not found.",
+    "back_to_shopping": "Back to shopping"
+  },
+  "blog": {
+    "article_comments": "Comments",
+    "article_metadata_html": "{{ date }} by {{ author }}",
+    "article_count": {
+      "one": "{{ count }} story",
+      "other": "{{ count }} stories"
+    },
+    "all_posts": "All",
+    "tags_label": "Filter by tag",
+    "by_author": "By {{ author }}",
+    "read_more": "Read more",
+    "empty": "No articles published yet.",
+    "back_to_blog": "Back to {{ title }}",
+    "share": "Share",
+    "share_facebook": "Facebook",
+    "share_x": "X",
+    "share_whatsapp": "WhatsApp",
+    "keep_reading": "Keep reading",
+    "more_stories": "More stories",
+    "latest_posts": "Latest posts",
+    "view_all_posts": "View all posts",
+    "sidebar_label": "Blog sidebar",
+    "comment_form_body": "Comment",
+    "comment_form_email": "Email",
+    "comment_form_name": "Name",
+    "comment_form_submit": "Post comment",
+    "comment_form_title": "Leave a comment",
+    "comment_success": "Thanks — your comment has been posted.",
+    "comment_success_moderated": "Thanks — your comment was submitted and is awaiting moderation.",
+    "comment_error_heading": "Please fix the following:"
+  },
+  "contact": {
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "hours": "Hours",
+    "name": "Name",
+    "message": "Message",
+    "form_heading": "Send a message",
+    "success": "Thanks for contacting us. We’ll get back to you as soon as possible.",
+    "error_heading": "Please fix the following:",
+    "map_empty": "Paste a Google Maps iframe embed code in the theme editor to show the map."
+  },
+  "about": {
+    "mission_label": "Mission",
+    "vision_label": "Vision",
+    "trust_money_title": "Money guarantee",
+    "trust_money_text": "Within 7 days for an exchange.",
+    "trust_support_title": "Online support",
+    "trust_support_text": "24 hours a day, 7 days a week.",
+    "trust_delivery_title": "World-wide delivery",
+    "trust_delivery_text": "Shipping available across Pakistan and beyond.",
+    "trust_secure_title": "100% safe and secure",
+    "trust_secure_text": "100% original products."
+  },
+  "legal": {
+    "contents": "On this page",
+    "last_updated": "Last updated:",
+    "questions": "Questions?",
+    "contact_help": "Contact us and our team will be happy to help.",
+    "support": "Support",
+    "legal_label": "Legal"
+  },
+  "cart": {
+    "checkout": "Checkout",
+    "continue_shopping": "Continue shopping",
+    "empty": "Your cart is empty",
+    "item_count": {
+      "one": "{{ count }} item",
+      "other": "{{ count }} items"
+    },
+    "quantity": "Quantity",
+    "remove": "Remove",
+    "shipping_note": "Shipping and taxes calculated at checkout",
+    "subtotal": "Subtotal",
+    "title": "Cart",
+    "update": "Update",
+    "view_cart": "View cart"
+  },
+  "customers": {
+    "account": "Account",
+    "login": {
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "title": "Login"
+    }
+  },
+  "collections": {
+    "title": "Collections",
+    "count": {
+      "one": "{{ count }} collection",
+      "other": "{{ count }} collections"
+    },
+    "product_count": {
+      "one": "{{ count }} piece",
+      "other": "{{ count }} pieces"
+    },
+    "shop_now": "Shop",
+    "shop_collection": "Shop {{ title }}",
+    "empty": "No collections to show yet. Add collections in your Shopify admin, or pick them in this section."
+  },
+  "gift_card": {
+    "add_to_apple_wallet": "Add to Apple Wallet",
+    "card": "Gift card",
+    "expired": "This gift card has expired",
+    "expires_on": "Expires on {{ expires_on }}",
+    "use_at_checkout": "Use this gift card at checkout"
+  },
+  "password": {
+    "title": "This shop is private",
+    "password": "Password",
+    "enter": "Enter"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search products",
+    "submit": "Search",
+    "searching": "Searching…",
+    "no_results_short": "No products found",
+    "no_results_html": "No results found for {{ terms }}",
+    "results_for_html": "{{ count }} results found for {{ terms }}",
+    "view_all": "View all results"
+  }
+}

@@ -1,0 +1,566 @@
+{% doc %}
+  Modern minimal cinematic page preloader.
+  Editable from Theme settings → Page loader (image, text, colors, exit style).
+
+  @example
+  {% render 'page-loader' %}
+{% enddoc %}
+
+{%- unless settings.enable_page_loader == false -%}
+  {%- liquid
+    assign loader_image = settings.page_loader_image
+    assign image_width = settings.page_loader_image_width | default: 120
+    assign image_width_2x = image_width | times: 2
+    assign image_sizes = image_width | append: 'px'
+
+    if settings.page_loader_text != blank
+      assign brand_text = settings.page_loader_text
+    else
+      assign brand_text = shop.name
+    endif
+
+    assign show_text = true
+    if settings.page_loader_show_text == false
+      assign show_text = false
+    endif
+
+    if settings.page_loader_caption != blank
+      assign caption_text = settings.page_loader_caption
+    else
+      assign caption_text = 'general.loading' | t
+    endif
+
+    assign show_caption = true
+    if settings.page_loader_show_caption == false
+      assign show_caption = false
+    endif
+
+    assign show_progress = true
+    if settings.page_loader_show_progress == false
+      assign show_progress = false
+    endif
+
+    assign show_percent = false
+    if settings.page_loader_show_percent
+      assign show_percent = true
+    endif
+
+    assign brand_initial = shop.name | slice: 0 | upcase
+    assign once_session = settings.page_loader_once_per_session
+    assign min_ms = settings.page_loader_min_duration | default: 1400
+    assign exit_style = settings.page_loader_exit | default: 'curtain'
+    assign mood = settings.page_loader_style | default: 'cinematic'
+
+    assign has_image = false
+    if loader_image != blank
+      assign has_image = true
+    endif
+
+    case mood
+      when 'light'
+        assign pl_bg = settings.page_loader_bg | default: '#F7F7F5'
+        assign pl_text = settings.page_loader_fg | default: '#111111'
+        assign pl_muted = settings.page_loader_muted | default: '#6B6B6B'
+        assign pl_accent = settings.page_loader_accent | default: '#111111'
+      when 'brand'
+        assign pl_bg = settings.page_loader_bg | default: settings.color_background | default: '#FFFFFF'
+        assign pl_text = settings.page_loader_fg | default: settings.color_heading | default: '#111111'
+        assign pl_muted = settings.page_loader_muted | default: settings.color_text_muted | default: '#6B6B6B'
+        assign pl_accent = settings.page_loader_accent | default: settings.color_button | default: '#111111'
+      else
+        assign pl_bg = settings.page_loader_bg | default: '#0B0B0B'
+        assign pl_text = settings.page_loader_fg | default: '#F5F5F2'
+        assign pl_muted = settings.page_loader_muted | default: '#9A9A96'
+        assign pl_accent = settings.page_loader_accent | default: '#F5F5F2'
+    endcase
+  -%}
+
+<style>
+  .page-loader {
+    --pl-ease: cubic-bezier(0.76, 0, 0.24, 1);
+    --pl-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --pl-bg: {{ pl_bg }};
+    --pl-text: {{ pl_text }};
+    --pl-mute: {{ pl_muted }};
+    --pl-accent: {{ pl_accent }};
+    --pl-image-width: {{ image_width }}px;
+    --pl-progress: 0%;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: grid;
+    place-items: center;
+    background: var(--pl-bg);
+    color: var(--pl-text);
+    overflow: hidden;
+  }
+
+  html.tah-loader-skip .page-loader {
+    display: none !important;
+  }
+
+  .page-loader__atmosphere {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 45%, color-mix(in srgb, var(--pl-text) 8%, transparent), transparent 70%),
+      linear-gradient(180deg, color-mix(in srgb, var(--pl-text) 4%, transparent), transparent 35%, color-mix(in srgb, var(--pl-text) 6%, transparent));
+  }
+
+  .page-loader__grain {
+    position: absolute;
+    inset: -20%;
+    pointer-events: none;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+    animation: pl-grain 1.2s steps(3) infinite;
+    mix-blend-mode: overlay;
+  }
+
+  .page-loader__frame {
+    position: absolute;
+    inset: clamp(0.85rem, 2vw, 1.5rem);
+    border: 1px solid color-mix(in srgb, var(--pl-text) 12%, transparent);
+    pointer-events: none;
+    opacity: 0;
+    animation: pl-fade-in 900ms var(--pl-ease-out) 180ms both;
+  }
+
+  .page-loader__content {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    justify-items: center;
+    gap: clamp(1.1rem, 2.5vw, 1.75rem);
+    padding: 2rem;
+    text-align: center;
+    width: min(28rem, calc(100% - 3rem));
+  }
+
+  .page-loader__mark {
+    position: relative;
+    display: grid;
+    place-items: center;
+    opacity: 0;
+    transform: scale(0.92) translateY(10px);
+    animation: pl-mark-in 1100ms var(--pl-ease-out) 120ms both;
+  }
+
+  .page-loader__mark--mono {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
+
+  .page-loader__ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1px solid color-mix(in srgb, var(--pl-text) 22%, transparent);
+  }
+
+  .page-loader__ring::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    border-top-color: var(--pl-accent);
+    animation: pl-spin 1.4s linear infinite;
+  }
+
+  .page-loader__initial {
+    font-family: var(--font-heading--family, inherit);
+    font-weight: var(--font-heading--weight, 500);
+    font-size: 1.4rem;
+    letter-spacing: 0.12em;
+    line-height: 1;
+  }
+
+  .page-loader__logo {
+    display: block;
+    width: var(--pl-image-width, 120px);
+    max-width: min(72vw, 240px);
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 12px 40px color-mix(in srgb, var(--pl-text) 18%, transparent));
+  }
+
+  .page-loader__rule {
+    width: 2.5rem;
+    height: 1px;
+    background: var(--pl-accent);
+    transform: scaleX(0);
+    transform-origin: center;
+    animation: pl-rule 900ms var(--pl-ease-out) 480ms both;
+  }
+
+  .page-loader__brand {
+    margin: 0;
+    max-width: 16ch;
+    font-family: var(--font-heading--family, inherit);
+    font-style: var(--font-heading--style, normal);
+    font-weight: var(--font-heading--weight, 500);
+    font-size: clamp(1.5rem, 4.2vw, 2.35rem);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    line-height: 1.15;
+    text-wrap: balance;
+    overflow: hidden;
+  }
+
+  .page-loader__brand-inner {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(110%);
+    animation: pl-text-up 1000ms var(--pl-ease-out) 420ms both;
+  }
+
+  .page-loader__caption {
+    margin: 0;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--pl-mute);
+    opacity: 0;
+    animation: pl-fade-in 800ms var(--pl-ease-out) 700ms both;
+  }
+
+  .page-loader__meta {
+    position: absolute;
+    left: clamp(1rem, 3vw, 2rem);
+    right: clamp(1rem, 3vw, 2rem);
+    bottom: clamp(1.1rem, 3vw, 2rem);
+    z-index: 3;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .page-loader__meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .page-loader__percent {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.72rem;
+    font-weight: 650;
+    letter-spacing: 0.18em;
+    color: var(--pl-mute);
+  }
+
+  .page-loader__track {
+    width: 100%;
+    height: 1px;
+    background: color-mix(in srgb, var(--pl-text) 14%, transparent);
+    overflow: hidden;
+  }
+
+  .page-loader__bar {
+    display: block;
+    height: 100%;
+    width: var(--pl-progress, 0%);
+    background: var(--pl-accent);
+    transform-origin: left center;
+    transition: width 180ms linear;
+  }
+
+  /* Exit: fade */
+  .page-loader.is-leaving.page-loader--exit-fade {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 700ms var(--pl-ease), visibility 0s linear 700ms;
+  }
+
+  /* Exit: scale bloom */
+  .page-loader.is-leaving.page-loader--exit-bloom {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(1.04);
+    filter: blur(6px);
+    transition:
+      opacity 780ms var(--pl-ease),
+      transform 780ms var(--pl-ease),
+      filter 780ms var(--pl-ease),
+      visibility 0s linear 780ms;
+  }
+
+  /* Exit: cinematic curtains */
+  .page-loader__curtain {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    display: none;
+  }
+
+  .page-loader--exit-curtain .page-loader__curtain {
+    display: block;
+  }
+
+  .page-loader__curtain-panel {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50.2%;
+    background: var(--pl-bg);
+    transform: translateY(0);
+  }
+
+  .page-loader__curtain-panel--left { left: 0; }
+  .page-loader__curtain-panel--right { right: 0; }
+
+  .page-loader.is-leaving.page-loader--exit-curtain .page-loader__content,
+  .page-loader.is-leaving.page-loader--exit-curtain .page-loader__meta,
+  .page-loader.is-leaving.page-loader--exit-curtain .page-loader__frame,
+  .page-loader.is-leaving.page-loader--exit-curtain .page-loader__atmosphere,
+  .page-loader.is-leaving.page-loader--exit-curtain .page-loader__grain {
+    opacity: 0;
+    transition: opacity 320ms ease;
+  }
+
+  .page-loader.is-leaving.page-loader--exit-curtain .page-loader__curtain-panel--left {
+    animation: pl-curtain-left 900ms var(--pl-ease) forwards;
+  }
+
+  .page-loader.is-leaving.page-loader--exit-curtain .page-loader__curtain-panel--right {
+    animation: pl-curtain-right 900ms var(--pl-ease) forwards;
+  }
+
+  .page-loader.is-leaving.page-loader--exit-curtain {
+    background: transparent;
+    transition: visibility 0s linear 900ms;
+    visibility: hidden;
+  }
+
+  html.is-page-loading,
+  html.is-page-loading body {
+    overflow: hidden !important;
+  }
+
+  @keyframes pl-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes pl-mark-in {
+    from { opacity: 0; transform: scale(0.92) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  @keyframes pl-text-up {
+    from { opacity: 0; transform: translateY(110%); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pl-rule {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
+  @keyframes pl-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes pl-grain {
+    0%, 100% { transform: translate(0, 0); }
+    33% { transform: translate(-1.5%, 1%); }
+    66% { transform: translate(1%, -1.5%); }
+  }
+
+  @keyframes pl-curtain-left {
+    to { transform: translateX(-101%); }
+  }
+
+  @keyframes pl-curtain-right {
+    to { transform: translateX(101%); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .page-loader *,
+    .page-loader {
+      animation: none !important;
+      transition: opacity 220ms ease !important;
+    }
+
+    .page-loader__content,
+    .page-loader__mark,
+    .page-loader__brand-inner,
+    .page-loader__caption,
+    .page-loader__frame,
+    .page-loader__rule {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
+    .page-loader.is-leaving {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+</style>
+
+<div
+  class="page-loader page-loader--{{ mood }} page-loader--exit-{{ exit_style }}"
+  id="PageLoader"
+  data-page-loader
+  data-once="{{ once_session }}"
+  data-min-duration="{{ min_ms }}"
+  data-exit="{{ exit_style }}"
+  role="status"
+  aria-live="polite"
+  aria-busy="true"
+  aria-label="{{ caption_text | escape }}"
+>
+  <div class="page-loader__atmosphere" aria-hidden="true"></div>
+  {%- if mood == 'cinematic' -%}
+    <div class="page-loader__grain" aria-hidden="true"></div>
+  {%- endif -%}
+  <div class="page-loader__frame" aria-hidden="true"></div>
+
+  <div class="page-loader__content">
+    {%- if has_image -%}
+      <div class="page-loader__mark">
+        {{
+          loader_image
+          | image_url: width: image_width_2x
+          | image_tag:
+            class: 'page-loader__logo',
+            loading: 'eager',
+            fetchpriority: 'high',
+            widths: '96, 128, 160, 192, 240, 320, 440',
+            sizes: image_sizes,
+            alt: brand_text
+        }}
+      </div>
+    {%- else -%}
+      <div class="page-loader__mark page-loader__mark--mono" aria-hidden="true">
+        <span class="page-loader__ring"></span>
+        <span class="page-loader__initial">{{ brand_initial | escape }}</span>
+      </div>
+    {%- endif -%}
+
+    <span class="page-loader__rule" aria-hidden="true"></span>
+
+    {%- if show_text and brand_text != blank -%}
+      <p class="page-loader__brand">
+        <span class="page-loader__brand-inner">{{ brand_text | escape }}</span>
+      </p>
+    {%- endif -%}
+
+    {%- if show_caption and caption_text != blank -%}
+      <p class="page-loader__caption">{{ caption_text | escape }}</p>
+    {%- endif -%}
+  </div>
+
+  {%- if show_progress or show_percent -%}
+    <div class="page-loader__meta">
+      {%- if show_percent -%}
+        <div class="page-loader__meta-row">
+          <p class="page-loader__percent" data-pl-percent>0%</p>
+        </div>
+      {%- endif -%}
+      {%- if show_progress -%}
+        <div class="page-loader__track" aria-hidden="true">
+          <span class="page-loader__bar" data-pl-bar></span>
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="page-loader__curtain" aria-hidden="true">
+    <span class="page-loader__curtain-panel page-loader__curtain-panel--left"></span>
+    <span class="page-loader__curtain-panel page-loader__curtain-panel--right"></span>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var loader = document.getElementById('PageLoader');
+    if (!loader) return;
+
+    if (document.documentElement.classList.contains('tah-loader-skip')) {
+      loader.remove();
+      return;
+    }
+
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var once = loader.getAttribute('data-once') === 'true';
+    var minDuration = Number(loader.getAttribute('data-min-duration') || 1400);
+    var exitStyle = loader.getAttribute('data-exit') || 'curtain';
+    var storageKey = 'tah-page-loader-seen';
+    var start = Date.now();
+    var progress = 0;
+    var target = 0;
+    var rafId = 0;
+    var percentEl = loader.querySelector('[data-pl-percent]');
+
+    document.documentElement.classList.add('is-page-loading');
+
+    function setProgress(value) {
+      target = Math.max(target, Math.min(100, value));
+    }
+
+    function tick() {
+      progress += (target - progress) * (reduceMotion ? 1 : 0.12);
+      if (Math.abs(target - progress) < 0.2) progress = target;
+      loader.style.setProperty('--pl-progress', progress.toFixed(2) + '%');
+      if (percentEl) percentEl.textContent = Math.round(progress) + '%';
+      if (progress < 100 || target < 100) {
+        rafId = window.requestAnimationFrame(tick);
+      }
+    }
+
+    rafId = window.requestAnimationFrame(tick);
+
+    // Simulated cinematic fill while assets load
+    setProgress(18);
+    window.setTimeout(function () { setProgress(42); }, 180);
+    window.setTimeout(function () { setProgress(68); }, 420);
+    window.setTimeout(function () { setProgress(84); }, 760);
+
+    function exitDelay() {
+      if (reduceMotion) return 220;
+      if (exitStyle === 'curtain') return 920;
+      if (exitStyle === 'bloom') return 800;
+      return 720;
+    }
+
+    function finish() {
+      if (loader.dataset.done === '1') return;
+      loader.dataset.done = '1';
+
+      setProgress(100);
+      var elapsed = Date.now() - start;
+      var wait = reduceMotion ? 0 : Math.max(0, minDuration - elapsed);
+
+      window.setTimeout(function () {
+        loader.classList.add('is-leaving');
+        loader.setAttribute('aria-busy', 'false');
+        document.documentElement.classList.remove('is-page-loading');
+
+        try {
+          if (once) window.sessionStorage.setItem(storageKey, '1');
+        } catch (e) {}
+
+        window.setTimeout(function () {
+          window.cancelAnimationFrame(rafId);
+          if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
+        }, exitDelay());
+      }, wait);
+    }
+
+    if (document.readyState === 'complete') {
+      finish();
+    } else {
+      window.addEventListener('load', finish, { once: true });
+      window.setTimeout(finish, Math.max(minDuration + 2800, 4500));
+    }
+  })();
+</script>
+{%- endunless -%}

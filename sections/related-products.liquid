@@ -1,0 +1,598 @@
+{%- liquid
+  assign products_to_show = section.settings.products_to_show | default: 4
+  assign intent = section.settings.recommendation_intent | default: 'related'
+  assign manual_products = section.settings.products
+  assign use_manual = false
+  if manual_products != blank and manual_products.size > 0
+    assign use_manual = true
+  endif
+
+  assign fallback_collection = product.collections.first
+  if fallback_collection == blank and collections.all.products_count > 1
+    assign fallback_collection = collections.all
+  endif
+
+  assign show_grid = false
+  assign source = blank
+
+  if use_manual
+    assign source = 'manual'
+    assign show_grid = true
+  elsif recommendations.performed? and recommendations.products_count > 0
+    assign source = 'recommendations'
+    assign show_grid = true
+  elsif fallback_collection != blank
+    comment
+      Covers both first paint (recommendations not performed) and the
+      recommendations endpoint returning zero products. Shows a relevant grid
+      immediately; JavaScript swaps in live recommendations when available.
+    endcomment
+    assign source = 'fallback'
+    assign show_grid = true
+  endif
+-%}
+
+<related-products
+  class="related-products full-width"
+  id="RelatedProducts-{{ section.id }}"
+  data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ products_to_show }}&intent={{ intent }}"
+  data-use-manual="{{ use_manual }}"
+  style="
+    --rp-padding-top: {{ section.settings.padding_top }}px;
+    --rp-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --rp-cols-mobile: {{ section.settings.columns_mobile }};
+    --rp-cols-tablet: {{ section.settings.columns_tablet }};
+    --rp-cols-desktop: {{ section.settings.columns_desktop }};
+    {%- if section.settings.use_theme_colors == false %}--rp-bg: {{ section.settings.background_color }};{% endif -%}
+    --rp-gap: {{ section.settings.grid_gap }}px;
+  "
+  {{ section.shopify_attributes }}
+>
+  <div class="related-products__shell" data-related-content>
+    {%- if show_grid -%}
+      {%- capture related_items -%}
+        {%- liquid
+          assign shown = 0
+        -%}
+        {%- if source == 'manual' -%}
+          {%- for related_product in manual_products -%}
+            {%- if related_product.id == product.id -%}
+              {%- continue -%}
+            {%- endif -%}
+            {%- if shown >= products_to_show -%}
+              {%- break -%}
+            {%- endif -%}
+            <li class="related-products__item" data-reveal>
+              {%- liquid
+                assign card_loading = 'lazy'
+                assign eager_limit = section.settings.columns_mobile | plus: 0
+                if shown < eager_limit
+                  assign card_loading = 'eager'
+                endif
+              -%}
+              {% render 'product-card',
+                product: related_product,
+                show_vendor: section.settings.show_vendor,
+                show_description: section.settings.show_description,
+                show_rating: section.settings.show_rating,
+                show_quick_view: section.settings.show_quick_view,
+                show_add_to_cart: section.settings.show_add_to_cart,
+                loading: card_loading
+              %}
+            </li>
+            {%- assign shown = shown | plus: 1 -%}
+          {%- endfor -%}
+        {%- elsif source == 'recommendations' -%}
+          {%- for related_product in recommendations.products limit: products_to_show -%}
+            <li class="related-products__item" data-reveal>
+              {%- liquid
+                assign card_loading = 'lazy'
+                assign eager_limit = section.settings.columns_mobile | plus: 0
+                if forloop.index <= eager_limit
+                  assign card_loading = 'eager'
+                endif
+              -%}
+              {% render 'product-card',
+                product: related_product,
+                show_vendor: section.settings.show_vendor,
+                show_description: section.settings.show_description,
+                show_rating: section.settings.show_rating,
+                show_quick_view: section.settings.show_quick_view,
+                show_add_to_cart: section.settings.show_add_to_cart,
+                loading: card_loading
+              %}
+            </li>
+            {%- assign shown = shown | plus: 1 -%}
+          {%- endfor -%}
+        {%- elsif source == 'fallback' -%}
+          {%- for related_product in fallback_collection.products limit: 16 -%}
+            {%- if related_product.id == product.id -%}
+              {%- continue -%}
+            {%- endif -%}
+            {%- if shown >= products_to_show -%}
+              {%- break -%}
+            {%- endif -%}
+            <li class="related-products__item" data-reveal>
+              {% render 'product-card',
+                product: related_product,
+                show_vendor: section.settings.show_vendor,
+                show_description: section.settings.show_description,
+                show_rating: section.settings.show_rating,
+                show_quick_view: section.settings.show_quick_view,
+                show_add_to_cart: section.settings.show_add_to_cart,
+                loading: 'lazy'
+              %}
+            </li>
+            {%- assign shown = shown | plus: 1 -%}
+          {%- endfor -%}
+        {%- endif -%}
+      {%- endcapture -%}
+
+      {%- if shown > 0 -%}
+        <div class="related-products__inner">
+          <header class="related-products__header related-products__header--{{ section.settings.header_alignment }}">
+            {%- if section.settings.eyebrow != blank -%}
+              <p class="related-products__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+            {%- endif -%}
+
+            {%- if section.settings.heading != blank -%}
+              <h2 class="related-products__heading">{{ section.settings.heading | escape }}</h2>
+            {%- endif -%}
+
+            <span class="related-products__rule" aria-hidden="true"></span>
+
+            {%- if section.settings.subheading != blank -%}
+              <div class="related-products__subheading">{{ section.settings.subheading }}</div>
+            {%- endif -%}
+          </header>
+
+          <ul class="related-products__grid" role="list" data-reveal-stagger>
+            {{ related_items }}
+          </ul>
+        </div>
+      {%- elsif request.design_mode -%}
+        <div class="related-products__inner">
+          <header class="related-products__header related-products__header--{{ section.settings.header_alignment }}">
+            {%- if section.settings.heading != blank -%}
+              <h2 class="related-products__heading">{{ section.settings.heading | escape }}</h2>
+            {%- endif -%}
+            <span class="related-products__rule" aria-hidden="true"></span>
+          </header>
+          <p class="related-products__empty">{{ 'sections.related_products.empty_products' | t }}</p>
+        </div>
+      {%- endif -%}
+    {%- elsif request.design_mode -%}
+      <div class="related-products__inner">
+        <header class="related-products__header related-products__header--{{ section.settings.header_alignment }}">
+          {%- if section.settings.eyebrow != blank -%}
+            <p class="related-products__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+          {%- endif -%}
+          {%- if section.settings.heading != blank -%}
+            <h2 class="related-products__heading">{{ section.settings.heading | escape }}</h2>
+          {%- endif -%}
+          <span class="related-products__rule" aria-hidden="true"></span>
+        </header>
+        <p class="related-products__empty">{{ 'sections.related_products.loading_hint' | t }}</p>
+      </div>
+    {%- else -%}
+      <div class="related-products__inner" data-related-skeleton>
+        <header class="related-products__header related-products__header--{{ section.settings.header_alignment }}">
+          {%- if section.settings.heading != blank -%}
+            <h2 class="related-products__heading">{{ section.settings.heading | escape }}</h2>
+          {%- endif -%}
+          <span class="related-products__rule" aria-hidden="true"></span>
+        </header>
+        <ul class="related-products__grid" role="list" aria-busy="true" aria-label="{{ 'general.loading' | t }}">
+          {%- for i in (1..4) -%}
+            <li class="related-products__item">
+              {% render 'product-card-skeleton' %}
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endif -%}
+  </div>
+</related-products>
+
+{% stylesheet %}
+  .related-products {
+    --rp-ink: var(--color-heading);
+    --rp-mute: var(--color-text-muted);
+    --rp-line: var(--color-border);
+    display: block;
+    background: var(--rp-bg, var(--color-background));
+    color: var(--rp-ink);
+  }
+
+  .related-products.is-empty:not(.is-design-mode) {
+    display: none;
+  }
+
+  .related-products__shell {
+    padding-block: var(--rp-padding-top) var(--rp-padding-bottom);
+  }
+
+  .related-products__inner {
+    width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    margin-inline: auto;
+  }
+
+  .related-products__header {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: clamp(1.75rem, 4vw, 2.75rem);
+    max-width: 40rem;
+  }
+
+  .related-products__header--center {
+    margin-inline: auto;
+    text-align: center;
+    justify-items: center;
+  }
+
+  .related-products__header--left {
+    text-align: left;
+    justify-items: start;
+  }
+
+  .related-products__eyebrow {
+    margin: 0;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rp-mute);
+  }
+
+  .related-products__heading {
+    margin: 0;
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-weight: 550;
+    letter-spacing: -0.03em;
+    line-height: 1.12;
+    color: var(--rp-ink);
+  }
+
+  .related-products__rule {
+    display: block;
+    width: 2.5rem;
+    height: 1px;
+    background: var(--rp-ink);
+    opacity: 0.85;
+  }
+
+  .related-products__header--center .related-products__rule {
+    margin-inline: auto;
+  }
+
+  .related-products__subheading {
+    margin: 0;
+    max-width: 34rem;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--rp-mute);
+  }
+
+  .related-products__subheading p {
+    margin: 0;
+  }
+
+  .related-products__empty {
+    margin: 0;
+    padding: 2.75rem 1.5rem;
+    text-align: center;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--rp-mute);
+    background: var(--color-surface);
+    border: 1px dashed var(--rp-line);
+    border-radius: 12px;
+  }
+
+  .related-products__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--rp-cols-mobile), minmax(0, 1fr));
+    gap: max(0.85rem, calc(var(--rp-gap) * 0.75));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .related-products__grid:empty {
+    display: none;
+  }
+
+  .related-products__item {
+    min-width: 0;
+    display: flex;
+  }
+
+  .related-products__item > * {
+    width: 100%;
+  }
+
+  @media (min-width: 750px) {
+    .related-products__grid {
+      grid-template-columns: repeat(var(--rp-cols-tablet), minmax(0, 1fr));
+      gap: var(--rp-gap);
+    }
+  }
+
+  @media (min-width: 990px) {
+    .related-products__grid {
+      grid-template-columns: repeat(var(--rp-cols-desktop), minmax(0, 1fr));
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class RelatedProducts extends HTMLElement {
+    connectedCallback() {
+      if (this.dataset.useManual === 'true') return;
+      if (this.dataset.loaded === 'true') return;
+
+      this.content = this.querySelector('[data-related-content]');
+      if (!this.content) return;
+
+      const url = this.dataset.url;
+      if (!url) return;
+
+      const load = () => {
+        if (this.dataset.loaded === 'true') return;
+        this.dataset.loaded = 'true';
+
+        fetch(url)
+          .then((response) => {
+            if (!response.ok) throw new Error('Recommendations request failed');
+            return response.text();
+          })
+          .then((text) => {
+            const doc = new DOMParser().parseFromString(text, 'text/html');
+            const fetched = doc.querySelector('[data-related-content]');
+            if (!fetched) return;
+
+            const hasProducts = fetched.querySelector('.related-products__item');
+            if (!hasProducts) {
+              // No live recommendations: keep the first-paint fallback grid.
+              return;
+            }
+
+            // Assign innerHTML from a string so the injected <product-card>
+            // custom elements are reliably upgraded and their click handlers run.
+            this.content.innerHTML = fetched.innerHTML;
+            this.classList.remove('is-empty');
+            if (window.TahReveal?.boot) {
+              window.TahReveal.boot(this);
+            }
+          })
+          .catch(() => {
+            this.dataset.loaded = 'false';
+          });
+      };
+
+      if ('IntersectionObserver' in window) {
+        this._observer = new IntersectionObserver(
+          (entries, observer) => {
+            if (!entries.some((entry) => entry.isIntersecting)) return;
+            observer.unobserve(this);
+            load();
+          },
+          { rootMargin: '200px 0px' }
+        );
+        this._observer.observe(this);
+      } else {
+        load();
+      }
+    }
+
+    disconnectedCallback() {
+      this._observer?.disconnect();
+    }
+  }
+
+  if (!customElements.get('related-products')) {
+    customElements.define('related-products', RelatedProducts);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.related_products.name",
+  "tag": "section",
+  "class": "related-products-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_theme_colors",
+      "label": "t:labels.use_theme_colors",
+      "info": "t:info.use_theme_colors",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:general.content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:labels.eyebrow",
+      "default": "Complete the look"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "Related products"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "t:labels.subheading",
+      "default": "<p>More pieces customers often view with this one.</p>"
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "t:labels.alignment",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:general.product"
+    },
+    {
+      "type": "select",
+      "id": "recommendation_intent",
+      "label": "t:labels.recommendation_intent",
+      "default": "related",
+      "options": [
+        { "value": "related", "label": "t:options.recommendation_intent.related" },
+        { "value": "complementary", "label": "t:options.recommendation_intent.complementary" }
+      ],
+      "info": "t:info.recommendation_intent"
+    },
+    {
+      "type": "product_list",
+      "id": "products",
+      "label": "t:labels.manual_products",
+      "limit": 8,
+      "info": "t:info.manual_related_products"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "t:labels.products_to_show",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "t:labels.show_vendor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "t:labels.show_description",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "t:labels.show_rating",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quick_view",
+      "label": "t:labels.show_quick_view",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_add_to_cart",
+      "label": "t:labels.show_add_to_cart",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:general.layout"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "t:labels.grid_gap",
+      "min": 12,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "t:labels.columns_mobile",
+      "default": "2",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "columns_tablet",
+      "label": "t:labels.columns_tablet",
+      "default": "3",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "t:labels.columns_desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "t:labels.padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "t:labels.padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.related_products.presets.name",
+      "settings": {
+        "eyebrow": "Complete the look",
+        "heading": "Related products",
+        "subheading": "<p>More pieces customers often view with this one.</p>",
+        "header_alignment": "center",
+        "recommendation_intent": "related",
+        "products_to_show": 4,
+        "columns_mobile": "2",
+        "columns_tablet": "3",
+        "columns_desktop": 4
+      }
+    }
+  ],
+  "enabled_on": {
+    "templates": ["product"]
+  }
+}
+{% endschema %}

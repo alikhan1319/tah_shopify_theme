@@ -1,0 +1,510 @@
+{%- liquid
+  assign heading = section.settings.heading
+  if heading == blank
+    assign heading = page.title
+  endif
+
+  assign body = section.settings.content
+  if body == blank and page.content != blank
+    assign body = page.content
+  endif
+
+  assign section_blocks = section.blocks | where: 'type', 'section'
+  assign has_sections = false
+  if section_blocks.size > 0
+    assign has_sections = true
+  endif
+-%}
+
+<div
+  class="legal-page full-width"
+  id="LegalPage-{{ section.id }}"
+  style="
+    --lg-pad-top: {{ section.settings.padding_top }}px;
+    --lg-pad-bottom: {{ section.settings.padding_bottom }}px;
+    {%- if section.settings.use_theme_colors == false %}--lg-bg: {{ section.settings.background_color }};{% endif -%}
+    {%- if section.settings.use_theme_colors == false %}--lg-surface: {{ section.settings.surface_color }};{% endif -%}
+    {%- if section.settings.use_theme_colors == false %}--lg-text: {{ section.settings.text_color }};{% endif -%}
+    {%- if section.settings.use_theme_colors == false %}--lg-mute: {{ section.settings.muted_color }};{% endif -%}
+    --lg-radius: {{ section.settings.corner_radius }}px;
+  "
+  {{ section.shopify_attributes }}
+>
+  <div class="legal-page__shell">
+    <div class="legal-page__inner">
+      <header class="legal-page__header">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="legal-page__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+
+        <h1 class="legal-page__heading">{{ heading | escape }}</h1>
+
+        <span class="legal-page__rule" aria-hidden="true"></span>
+
+        {%- if section.settings.updated_at != blank -%}
+          <p class="legal-page__updated">
+            {{ 'legal.last_updated' | t }} {{ section.settings.updated_at | escape }}
+          </p>
+        {%- endif -%}
+
+        {%- if section.settings.intro != blank -%}
+          <div class="legal-page__intro">{{ section.settings.intro }}</div>
+        {%- endif -%}
+      </header>
+
+      <div class="legal-page__layout{% unless has_sections %} legal-page__layout--single{% endunless %}">
+        {%- if has_sections -%}
+          <aside class="legal-page__toc" aria-label="{{ 'legal.contents' | t }}">
+            <p class="legal-page__toc-title">{{ 'legal.contents' | t }}</p>
+            <nav class="legal-page__toc-nav">
+              <ol role="list">
+                {%- for block in section_blocks -%}
+                  {%- if block.settings.title != blank -%}
+                    <li>
+                      <a href="#legal-{{ section.id }}-{{ forloop.index }}">
+                        {{ block.settings.title | escape }}
+                      </a>
+                    </li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ol>
+            </nav>
+          </aside>
+        {%- endif -%}
+
+        <div class="legal-page__body rte">
+          {%- if body != blank -%}
+            {{ body }}
+          {%- endif -%}
+
+          {%- if has_sections -%}
+            {%- for block in section_blocks -%}
+              <section
+                class="legal-page__section"
+                id="legal-{{ section.id }}-{{ forloop.index }}"
+                {{ block.shopify_attributes }}
+              >
+                {%- if block.settings.title != blank -%}
+                  <h2 class="legal-page__section-title">{{ block.settings.title | escape }}</h2>
+                {%- endif -%}
+                {%- if block.settings.text != blank -%}
+                  <div class="legal-page__section-text">{{ block.settings.text }}</div>
+                {%- endif -%}
+              </section>
+            {%- endfor -%}
+          {%- endif -%}
+
+          {%- if section.settings.show_contact_note -%}
+            <div class="legal-page__note">
+              <p class="legal-page__note-title">{{ section.settings.note_heading | default: 'Questions?' | escape }}</p>
+              <p class="legal-page__note-text">
+                {{ section.settings.note_text | default: 'Contact us and our team will be happy to help.' | escape }}
+                {%- if section.settings.note_email != blank -%}
+                  <a href="mailto:{{ section.settings.note_email | escape }}">{{ section.settings.note_email | escape }}</a>
+                {%- endif -%}
+              </p>
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .legal-page {
+    display: block;
+    color: var(--lg-text, var(--color-text));
+    background: var(--lg-bg, var(--color-background));
+  }
+
+  .legal-page__shell {
+    padding-block: var(--lg-pad-top) var(--lg-pad-bottom);
+  }
+
+  .legal-page__inner {
+    width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    margin-inline: auto;
+  }
+
+  .legal-page__header {
+    display: grid;
+    gap: 0.85rem;
+    max-width: 46rem;
+    margin-bottom: clamp(2rem, 5vw, 3.25rem);
+  }
+
+  .legal-page__eyebrow {
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--lg-mute, var(--color-text-muted));
+  }
+
+  .legal-page__heading {
+    margin: 0;
+    font-size: clamp(2.25rem, 6vw, 3.75rem);
+    font-weight: 500;
+    letter-spacing: -0.05em;
+    line-height: 1.02;
+  }
+
+  .legal-page__rule {
+    display: block;
+    width: 3rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.85;
+  }
+
+  .legal-page__updated {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 650;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--lg-mute, var(--color-text-muted));
+  }
+
+  .legal-page__intro {
+    margin: 0;
+    max-width: 40rem;
+    font-size: clamp(1rem, 1.5vw, 1.125rem);
+    line-height: 1.65;
+    color: var(--lg-mute, var(--color-text-muted));
+  }
+
+  .legal-page__intro p {
+    margin: 0;
+  }
+
+  .legal-page__layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(1.75rem, 4vw, 3rem);
+    align-items: start;
+  }
+
+  @media (min-width: 990px) {
+    .legal-page__layout:not(.legal-page__layout--single) {
+      grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+      gap: clamp(2.5rem, 5vw, 4.5rem);
+    }
+  }
+
+  .legal-page__toc {
+    align-self: start;
+  }
+
+  @media (min-width: 990px) {
+    .legal-page__toc {
+      position: sticky;
+      top: 2rem;
+    }
+  }
+
+  .legal-page__toc-title {
+    margin: 0 0 0.85rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--lg-mute, var(--color-text-muted));
+  }
+
+  .legal-page__toc-nav ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.55rem;
+    counter-reset: toc;
+  }
+
+  .legal-page__toc-nav li {
+    counter-increment: toc;
+  }
+
+  .legal-page__toc-nav a {
+    display: flex;
+    gap: 0.55rem;
+    color: var(--lg-mute, var(--color-text-muted));
+    text-decoration: none;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    transition: color 150ms ease;
+  }
+
+  .legal-page__toc-nav a::before {
+    content: counter(toc, decimal-leading-zero);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: color-mix(in srgb, var(--color-heading) 35%, transparent);
+    padding-top: 0.1rem;
+  }
+
+  .legal-page__toc-nav a:hover,
+  .legal-page__toc-nav a:focus-visible {
+    color: var(--lg-text, var(--color-text));
+  }
+
+  .legal-page__body {
+    min-width: 0;
+    max-width: 46rem;
+    font-size: 1rem;
+    line-height: 1.75;
+    color: color-mix(in srgb, var(--color-heading) 78%, transparent);
+  }
+
+  .legal-page__body > *:first-child {
+    margin-top: 0;
+  }
+
+  .legal-page__body p {
+    margin: 0 0 1.1rem;
+  }
+
+  .legal-page__body a {
+    color: var(--lg-text, var(--color-text));
+    text-underline-offset: 0.2em;
+  }
+
+  .legal-page__body ul,
+  .legal-page__body ol {
+    margin: 0 0 1.3rem;
+    padding-left: 1.25rem;
+  }
+
+  .legal-page__body li {
+    margin-bottom: 0.5rem;
+  }
+
+  .legal-page__section {
+    padding-top: 1.75rem;
+    margin-top: 1.75rem;
+    border-top: 1px solid color-mix(in srgb, var(--color-heading) 10%, transparent);
+    scroll-margin-top: 2rem;
+  }
+
+  .legal-page__section:first-of-type {
+    border-top: 0;
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  .legal-page__section-title {
+    margin: 0 0 0.75rem;
+    font-size: clamp(1.25rem, 2.4vw, 1.6rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    color: var(--lg-text, var(--color-text));
+  }
+
+  .legal-page__section-text > *:first-child {
+    margin-top: 0;
+  }
+
+  .legal-page__section-text > *:last-child {
+    margin-bottom: 0;
+  }
+
+  .legal-page__note {
+    margin-top: 2rem;
+    padding: 1.35rem 1.4rem;
+    border-radius: var(--lg-radius, 16px);
+    background: var(--lg-surface, var(--color-surface));
+    border: 1px solid color-mix(in srgb, var(--color-heading) 8%, transparent);
+  }
+
+  .legal-page__note-title {
+    margin: 0 0 0.35rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--lg-text, var(--color-text));
+  }
+
+  .legal-page__note-text {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--lg-mute, var(--color-text-muted));
+  }
+
+  .legal-page__note-text a {
+    color: var(--lg-text, var(--color-text));
+    font-weight: 650;
+    margin-left: 0.25rem;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.legal.name",
+  "tag": "section",
+  "class": "legal-page-section",
+  "max_blocks": 20,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_theme_colors",
+      "label": "t:labels.use_theme_colors",
+      "info": "t:info.use_theme_colors",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:general.content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:labels.eyebrow",
+      "default": "Legal"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "info": "t:info.legal_heading_fallback"
+    },
+    {
+      "type": "text",
+      "id": "updated_at",
+      "label": "t:labels.updated_at",
+      "default": "January 2026"
+    },
+    {
+      "type": "richtext",
+      "id": "intro",
+      "label": "t:labels.intro"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "t:labels.content",
+      "info": "t:info.legal_content"
+    },
+    {
+      "type": "header",
+      "content": "t:labels.contact_note"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_contact_note",
+      "label": "t:labels.show_contact_note",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "note_heading",
+      "label": "t:labels.note_heading",
+      "default": "Questions?"
+    },
+    {
+      "type": "text",
+      "id": "note_text",
+      "label": "t:labels.note_text",
+      "default": "Contact us and our team will be happy to help."
+    },
+    {
+      "type": "text",
+      "id": "note_email",
+      "label": "t:labels.note_email",
+      "default": "starfabricsshop@gmail.com"
+    },
+    {
+      "type": "header",
+      "content": "t:general.layout"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "surface_color",
+      "label": "t:labels.surface",
+      "default": "#F7F7F5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "t:labels.muted_text",
+      "default": "#6B6B6B"
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "t:labels.corner_radius",
+      "min": 0,
+      "max": 28,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "t:labels.padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "t:labels.padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 88
+    }
+  ],
+  "blocks": [
+    {
+      "type": "section",
+      "name": "t:sections.legal.blocks.section.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:labels.title",
+          "default": "Section title"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "t:labels.text",
+          "default": "<p>Describe this part of your policy.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.legal.presets.name"
+    }
+  ],
+  "enabled_on": {
+    "templates": ["page"]
+  }
+}
+{% endschema %}

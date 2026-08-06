@@ -1,0 +1,789 @@
+{%- liquid
+  assign collection = section.settings.collection
+  assign products_limit = section.settings.products_to_show
+  assign link_url = section.settings.cta_link
+  if link_url == blank and collection != blank
+    assign link_url = collection.url
+  endif
+
+  assign cta_label = section.settings.link_label
+  if cta_label == blank
+    assign cta_label = section.settings.cta_label
+  endif
+
+  assign show_footer_cta = false
+  if section.settings.show_cta and link_url != blank and cta_label != blank
+    assign show_footer_cta = true
+  endif
+
+  assign scroll_seconds = section.settings.scroll_speed | default: 40
+  assign products_shown = 0
+  if collection != blank
+    assign products_shown = collection.products_count | at_most: products_limit
+  endif
+
+  assign fill_copies = 1
+  if products_shown > 0 and products_shown < 4
+    assign fill_copies = 3
+  elsif products_shown > 0 and products_shown < 7
+    assign fill_copies = 2
+  endif
+-%}
+
+<div
+  class="new-arrivals full-width"
+  id="NewArrivals-{{ section.id }}"
+  style="
+    --na-padding-top: {{ section.settings.padding_top }}px;
+    --na-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --na-cols-mobile: {{ section.settings.columns_mobile }};
+    --na-cols-tablet: {{ section.settings.columns_tablet }};
+    --na-cols-desktop: {{ section.settings.columns_desktop }};
+    {%- if section.settings.use_theme_colors == false %}--na-bg: {{ section.settings.background_color }};{% endif -%}
+    --na-gap: {{ section.settings.grid_gap }}px;
+    --na-scroll-duration: {{ scroll_seconds }}s;
+  "
+  {{ section.shopify_attributes }}
+>
+  <div class="new-arrivals__shell">
+    <div class="new-arrivals__inner">
+      <header class="new-arrivals__header new-arrivals__header--{{ section.settings.header_alignment }}">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="new-arrivals__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.heading != blank -%}
+          <h2 class="new-arrivals__heading">{{ section.settings.heading | escape }}</h2>
+        {%- endif -%}
+
+        <span class="new-arrivals__rule" aria-hidden="true"></span>
+
+        {%- if section.settings.subheading != blank -%}
+          <div class="new-arrivals__subheading">{{ section.settings.subheading }}</div>
+        {%- endif -%}
+      </header>
+    </div>
+
+    {%- if collection == blank -%}
+      {%- if request.design_mode -%}
+        <div class="new-arrivals__inner">
+          <p class="new-arrivals__empty">{{ 'sections.new_arrivals.empty_collection' | t }}</p>
+        </div>
+      {%- endif -%}
+    {%- elsif collection.products_count == 0 -%}
+      {%- if request.design_mode -%}
+        <div class="new-arrivals__inner">
+          <p class="new-arrivals__empty">{{ 'sections.new_arrivals.no_products' | t }}</p>
+        </div>
+      {%- endif -%}
+    {%- else -%}
+      <new-arrivals-scroll
+        class="new-arrivals__scroll{% unless section.settings.enable_auto_scroll %} is-paused{% endunless %}"
+        data-autoplay="{{ section.settings.enable_auto_scroll }}"
+        {% if section.settings.heading != blank %}
+          aria-label="{{ section.settings.heading | escape }}"
+        {% endif %}
+      >
+        <div class="new-arrivals__viewport">
+          <div class="new-arrivals__track" data-track>
+            {%- for copy in (1..2) -%}
+              <ul
+                class="new-arrivals__list"
+                data-na-group
+                role="{% if copy == 1 %}list{% else %}presentation{% endif %}"
+                {% if copy == 2 %}aria-hidden="true"{% endif %}
+              >
+                {%- for fill in (1..fill_copies) -%}
+                  {%- for product in collection.products limit: products_limit -%}
+                    <li class="new-arrivals__item" data-reveal>
+                      {%- liquid
+                        assign card_loading = 'lazy'
+                        if copy == 1 and fill == 1 and forloop.index <= 2
+                          assign card_loading = 'eager'
+                        endif
+                      -%}
+                      {% render 'product-card',
+                        product: product,
+                        show_vendor: section.settings.show_vendor,
+                        show_description: section.settings.show_description,
+                        show_rating: section.settings.show_rating,
+                        show_quick_view: section.settings.show_quick_view,
+                        show_add_to_cart: section.settings.show_add_to_cart,
+                        loading: card_loading
+                      %}
+                    </li>
+                  {%- endfor -%}
+                {%- endfor -%}
+              </ul>
+            {%- endfor -%}
+          </div>
+        </div>
+      </new-arrivals-scroll>
+
+      {%- if show_footer_cta -%}
+        <div class="new-arrivals__inner">
+          <div class="new-arrivals__footer">
+            <a class="new-arrivals__cta" href="{{ link_url }}">
+              {{ cta_label | escape }}
+              <span class="new-arrivals__cta-icon" aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .new-arrivals {
+    --na-ink: var(--color-heading);
+    --na-mute: var(--color-text-muted);
+    --na-line: var(--color-border);
+    --na-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    padding: 0;
+    background: var(--na-bg, var(--color-background));
+    color: var(--na-ink);
+    overflow: hidden;
+  }
+
+  .new-arrivals__shell {
+    padding-block: var(--na-padding-top) var(--na-padding-bottom);
+  }
+
+  .new-arrivals__inner {
+    width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    margin-inline: auto;
+  }
+
+  .new-arrivals__header {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: clamp(1.75rem, 4vw, 2.75rem);
+    max-width: 40rem;
+  }
+
+  .new-arrivals__header--center {
+    margin-inline: auto;
+    text-align: center;
+    justify-items: center;
+  }
+
+  .new-arrivals__header--left {
+    text-align: left;
+    justify-items: start;
+  }
+
+  .new-arrivals__eyebrow {
+    margin: 0;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--na-mute);
+  }
+
+  .new-arrivals__heading {
+    margin: 0;
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-weight: 550;
+    letter-spacing: -0.03em;
+    line-height: 1.12;
+    color: var(--na-ink);
+  }
+
+  .new-arrivals__rule {
+    display: block;
+    width: 2.5rem;
+    height: 1px;
+    background: var(--na-ink);
+    opacity: 0.85;
+  }
+
+  .new-arrivals__header--center .new-arrivals__rule {
+    margin-inline: auto;
+  }
+
+  .new-arrivals__subheading {
+    margin: 0;
+    max-width: 34rem;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--na-mute);
+  }
+
+  .new-arrivals__subheading p {
+    margin: 0;
+  }
+
+  .new-arrivals__empty {
+    margin: 0;
+    padding: 2.75rem 1.5rem;
+    text-align: center;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--na-mute);
+    background: var(--color-background);
+    border: 1px dashed var(--na-line);
+    border-radius: 12px;
+  }
+
+  /* —— Auto-scroll carousel —— */
+  .new-arrivals__scroll {
+    display: block;
+    width: 100%;
+  }
+
+  .new-arrivals__viewport {
+    overflow: hidden;
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #000 3%,
+      #000 97%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #000 3%,
+      #000 97%,
+      transparent 100%
+    );
+  }
+
+  .new-arrivals__track {
+    display: flex;
+    width: max-content;
+    gap: var(--na-gap);
+    will-change: transform;
+    animation: new-arrivals-scroll var(--na-scroll-duration) linear infinite;
+  }
+
+  .new-arrivals__scroll.is-paused .new-arrivals__track,
+  .new-arrivals__scroll:hover .new-arrivals__track,
+  .new-arrivals__scroll:focus-within .new-arrivals__track {
+    animation-play-state: paused;
+  }
+
+  @keyframes new-arrivals-scroll {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(calc(-1 * var(--na-loop-distance, 50%)), 0, 0);
+    }
+  }
+
+  .new-arrivals__list {
+    display: flex;
+    gap: var(--na-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .new-arrivals__item {
+    flex: 0 0 auto;
+    /* Wider cards on phones so content stays readable */
+    width: min(82vw, 300px);
+    min-width: 260px;
+    display: flex;
+  }
+
+  .new-arrivals__item > * {
+    width: 100%;
+  }
+
+  .new-arrivals__footer {
+    display: flex;
+    justify-content: center;
+    margin-top: clamp(1.75rem, 4vw, 2.5rem);
+  }
+
+  .new-arrivals__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 48px;
+    padding: 0 1.85rem;
+    border: 1px solid var(--na-ink);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--na-ink);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition:
+      background-color 180ms ease,
+      color 180ms ease,
+      transform 180ms var(--na-ease),
+      gap 180ms var(--na-ease);
+  }
+
+  .new-arrivals__cta:hover {
+    background: var(--color-button);
+    color: var(--color-button-text);
+    transform: translateY(-1px);
+    gap: 0.75rem;
+  }
+
+  .new-arrivals__cta-icon {
+    font-size: 1em;
+    line-height: 1;
+  }
+
+  @media (min-width: 480px) {
+    .new-arrivals__item {
+      width: calc(
+        (
+            min(100vw, var(--page-width)) - (var(--page-margin) * 2) -
+              (var(--na-gap) * (var(--na-cols-mobile) - 1))
+          ) / var(--na-cols-mobile)
+      );
+      min-width: 240px;
+      max-width: 320px;
+    }
+  }
+
+  @media (min-width: 750px) {
+    .new-arrivals__item {
+      width: calc(
+        (
+            min(100vw, var(--page-width)) - (var(--page-margin) * 2) -
+              (var(--na-gap) * (var(--na-cols-tablet) - 1))
+          ) / var(--na-cols-tablet)
+      );
+      min-width: 0;
+      max-width: 340px;
+    }
+
+    .new-arrivals__viewport {
+      mask-image: linear-gradient(
+        90deg,
+        transparent 0,
+        #000 4%,
+        #000 96%,
+        transparent 100%
+      );
+      -webkit-mask-image: linear-gradient(
+        90deg,
+        transparent 0,
+        #000 4%,
+        #000 96%,
+        transparent 100%
+      );
+    }
+  }
+
+  @media (min-width: 990px) {
+    .new-arrivals__item {
+      width: calc(
+        (
+            min(100vw, var(--page-width)) - (var(--page-margin) * 2) -
+              (var(--na-gap) * (var(--na-cols-desktop) - 1))
+          ) / var(--na-cols-desktop)
+      );
+      max-width: 360px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .new-arrivals__track {
+      animation: none;
+    }
+
+    .new-arrivals__viewport {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+      mask-image: none;
+      -webkit-mask-image: none;
+    }
+
+    .new-arrivals__track {
+      width: max-content;
+      padding-inline: var(--page-margin);
+    }
+
+    .new-arrivals__list[aria-hidden='true'] {
+      display: none;
+    }
+
+    .new-arrivals__item {
+      scroll-snap-align: start;
+    }
+
+    .new-arrivals__cta:hover {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class NewArrivalsScroll extends HTMLElement {
+    connectedCallback() {
+      if (this._ready) return;
+      this._ready = true;
+
+      this.reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      this.autoplay = this.dataset.autoplay === 'true';
+      this.track = this.querySelector('[data-track]');
+      this.viewport = this.querySelector('.new-arrivals__viewport');
+
+      if (!this.autoplay || this.reduceMotion) {
+        this.classList.add('is-paused');
+      }
+
+      this.onMouseEnter = () => this.classList.add('is-paused');
+      this.onMouseLeave = () => {
+        if (this.autoplay && !this.reduceMotion) this.classList.remove('is-paused');
+      };
+      this.onFocusIn = () => this.classList.add('is-paused');
+      this.onFocusOut = (event) => {
+        if (!this.contains(event.relatedTarget) && this.autoplay && !this.reduceMotion) {
+          this.classList.remove('is-paused');
+        }
+      };
+      this.onVisibility = () => {
+        if (document.hidden) {
+          this.classList.add('is-paused');
+        } else if (this.autoplay && !this.reduceMotion) {
+          this.classList.remove('is-paused');
+        }
+      };
+      this.onResize = () => {
+        window.clearTimeout(this._resizeTimer);
+        this._resizeTimer = window.setTimeout(() => this.syncLoopDistance(), 120);
+      };
+
+      this.addEventListener('mouseenter', this.onMouseEnter);
+      this.addEventListener('mouseleave', this.onMouseLeave);
+      this.addEventListener('focusin', this.onFocusIn);
+      this.addEventListener('focusout', this.onFocusOut);
+      document.addEventListener('visibilitychange', this.onVisibility);
+      window.addEventListener('resize', this.onResize, { passive: true });
+
+      if (typeof ResizeObserver !== 'undefined' && this.viewport) {
+        this._resizeObserver = new ResizeObserver(() => this.syncLoopDistance());
+        this._resizeObserver.observe(this.viewport);
+      }
+
+      this.syncLoopDistance();
+      requestAnimationFrame(() => this.syncLoopDistance());
+
+      // Re-measure after product images settle so card widths are final.
+      this.querySelectorAll('img').forEach((img) => {
+        if (img.complete) return;
+        img.addEventListener('load', () => this.syncLoopDistance(), { once: true });
+      });
+    }
+
+    disconnectedCallback() {
+      this.removeEventListener('mouseenter', this.onMouseEnter);
+      this.removeEventListener('mouseleave', this.onMouseLeave);
+      this.removeEventListener('focusin', this.onFocusIn);
+      this.removeEventListener('focusout', this.onFocusOut);
+      document.removeEventListener('visibilitychange', this.onVisibility);
+      window.removeEventListener('resize', this.onResize);
+      window.clearTimeout(this._resizeTimer);
+      if (this._resizeObserver) {
+        this._resizeObserver.disconnect();
+        this._resizeObserver = null;
+      }
+    }
+
+    syncLoopDistance() {
+      if (!this.track || this.reduceMotion || this._syncing) return;
+
+      const source = this.track.querySelector('[data-na-group]');
+      if (!source) return;
+
+      const styles = window.getComputedStyle(this.track);
+      const gap = Number.parseFloat(styles.columnGap || styles.gap) || 0;
+      const groupWidth = source.getBoundingClientRect().width;
+      if (groupWidth <= 0) return;
+
+      const loopDistance = groupWidth + gap;
+      const viewportWidth = (this.viewport || this).getBoundingClientRect().width;
+      const needed = Math.max(2, Math.ceil(viewportWidth / loopDistance) + 1);
+
+      this._syncing = true;
+
+      let groups = this.track.querySelectorAll('[data-na-group]').length;
+      const template = this.track.querySelectorAll('[data-na-group]')[1] || source;
+
+      while (groups < needed) {
+        const clone = template.cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        clone.setAttribute('role', 'presentation');
+        clone.setAttribute('data-na-clone', '');
+        clone.querySelectorAll('a, button').forEach((el) => el.setAttribute('tabindex', '-1'));
+        this.track.appendChild(clone);
+        groups += 1;
+      }
+
+      while (groups > needed) {
+        const last = this.track.lastElementChild;
+        if (!last || !last.hasAttribute('data-na-clone')) break;
+        last.remove();
+        groups -= 1;
+      }
+
+      this.track.style.setProperty('--na-loop-distance', `${loopDistance}px`);
+      this._syncing = false;
+    }
+  }
+
+  if (!customElements.get('new-arrivals-scroll')) {
+    customElements.define('new-arrivals-scroll', NewArrivalsScroll);
+  }
+
+  document.addEventListener('shopify:section:load', (event) => {
+    const scroller =
+      event.target.querySelector?.('new-arrivals-scroll') ||
+      (event.target.matches?.('new-arrivals-scroll') ? event.target : null);
+    if (scroller && typeof scroller.syncLoopDistance === 'function') {
+      scroller.syncLoopDistance();
+    }
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.new_arrivals.name",
+  "tag": "section",
+  "class": "new-arrivals-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_theme_colors",
+      "label": "t:labels.use_theme_colors",
+      "info": "t:info.use_theme_colors",
+      "default": true
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:labels.collection"
+    },
+    {
+      "type": "header",
+      "content": "t:general.content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:labels.eyebrow",
+      "default": "Just landed"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "New arrivals"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "t:labels.subheading",
+      "default": "<p>Discover the latest additions to our curated collection.</p>"
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "t:labels.alignment",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:general.call_to_action"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cta",
+      "label": "t:labels.show_cta",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "t:labels.link_label",
+      "default": "View all"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "t:labels.cta_label",
+      "default": "Shop new arrivals"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "t:labels.cta_link",
+      "info": "t:info.cta_link_collection"
+    },
+    {
+      "type": "header",
+      "content": "t:general.behavior"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_auto_scroll",
+      "label": "t:labels.enable_auto_scroll",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "scroll_speed",
+      "label": "t:labels.scroll_speed",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "s",
+      "default": 40,
+      "info": "t:info.scroll_speed"
+    },
+    {
+      "type": "header",
+      "content": "t:general.product"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "t:labels.products_to_show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "t:labels.show_vendor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "t:labels.show_description",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "t:labels.show_rating",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quick_view",
+      "label": "t:labels.show_quick_view",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_add_to_cart",
+      "label": "t:labels.show_add_to_cart",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:general.layout"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background",
+      "default": "#FAFAFA"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "t:labels.grid_gap",
+      "min": 12,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "t:labels.columns_mobile",
+      "default": "2",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "columns_tablet",
+      "label": "t:labels.columns_tablet",
+      "default": "3",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "t:labels.columns_desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "t:labels.padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "t:labels.padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.new_arrivals.presets.name",
+      "settings": {
+        "eyebrow": "Just landed",
+        "heading": "New arrivals",
+        "subheading": "<p>Discover the latest additions to our curated collection.</p>",
+        "link_label": "View all",
+        "show_cta": true,
+        "enable_auto_scroll": true,
+        "scroll_speed": 40,
+        "background_color": "#FAFAFA",
+        "columns_mobile": "2",
+        "columns_tablet": "3",
+        "columns_desktop": 4,
+        "products_to_show": 8
+      }
+    }
+  ]
+}
+{% endschema %}

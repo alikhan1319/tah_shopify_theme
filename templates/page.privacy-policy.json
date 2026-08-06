@@ -1,0 +1,80 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "legal",
+      "blocks": {
+        "s1": {
+          "type": "section",
+          "settings": {
+            "title": "Information we collect",
+            "text": "<p>When you place an order or contact us, we may collect your name, email address, phone number, shipping and billing address, and order details. We also collect basic usage data such as pages visited and device information to improve our store.</p>"
+          }
+        },
+        "s2": {
+          "type": "section",
+          "settings": {
+            "title": "How we use your information",
+            "text": "<p>We use your information to process and deliver orders, provide customer support, send order updates, and, where you have opted in, share offers and news. We never sell your personal information.</p>"
+          }
+        },
+        "s3": {
+          "type": "section",
+          "settings": {
+            "title": "Payments and security",
+            "text": "<p>Payments are processed through secure, PCI-compliant providers. We do not store full card details on our servers. All sensitive data is transmitted over encrypted connections.</p>"
+          }
+        },
+        "s4": {
+          "type": "section",
+          "settings": {
+            "title": "Cookies",
+            "text": "<p>We use cookies to keep your cart, remember preferences, and measure site performance. You can control cookies through your browser settings, though some features may not work without them.</p>"
+          }
+        },
+        "s5": {
+          "type": "section",
+          "settings": {
+            "title": "Sharing with third parties",
+            "text": "<p>We share information only with trusted partners who help us operate the store, such as payment processors and delivery couriers, and only to the extent needed to provide their service.</p>"
+          }
+        },
+        "s6": {
+          "type": "section",
+          "settings": {
+            "title": "Your rights",
+            "text": "<p>You may request access to, correction of, or deletion of your personal data at any time by contacting us. We will respond in line with applicable laws.</p>"
+          }
+        }
+      },
+      "block_order": ["s1", "s2", "s3", "s4", "s5", "s6"],
+      "settings": {
+        "eyebrow": "Legal",
+        "heading": "Privacy policy",
+        "updated_at": "January 2026",
+        "intro": "<p>This Privacy Policy explains how Star Fabrics collects, uses, and protects your information when you shop with us.</p>",
+        "content": "",
+        "show_contact_note": true,
+        "note_heading": "Questions about your privacy?",
+        "note_text": "Reach out any time and we'll help:",
+        "note_email": "starfabricsshop@gmail.com",
+        "background_color": "#FFFFFF",
+        "surface_color": "#F7F7F5",
+        "text_color": "#111111",
+        "muted_color": "#6B6B6B",
+        "corner_radius": 16,
+        "padding_top": 64,
+        "padding_bottom": 88
+      }
+    }
+  },
+  "order": ["main"]
+}

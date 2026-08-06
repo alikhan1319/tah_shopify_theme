@@ -1,0 +1,686 @@
+{%- liquid
+  assign review_count = section.blocks.size
+  assign scroll_seconds = section.settings.scroll_speed | default: 40
+
+  assign rating_total = 0
+  for block in section.blocks
+    assign block_rating = block.settings.rating | default: 5
+    assign rating_total = rating_total | plus: block_rating
+  endfor
+
+  assign average_rating = 0
+  if review_count > 0
+    assign average_rating = rating_total | times: 1.0 | divided_by: review_count
+  endif
+-%}
+
+<customer-reviews-scroll
+  class="customer-reviews full-width{% unless section.settings.enable_auto_scroll %} is-paused{% endunless %}"
+  id="CustomerReviews-{{ section.id }}"
+  data-autoplay="{{ section.settings.enable_auto_scroll }}"
+  style="
+    --cr-padding-top: {{ section.settings.padding_top }}px;
+    --cr-padding-bottom: {{ section.settings.padding_bottom }}px;
+    {%- if section.settings.use_theme_colors == false %}--cr-bg: {{ section.settings.background_color }};{% endif -%}
+    {%- if section.settings.use_theme_colors == false %}--cr-text: {{ section.settings.text_color }};{% endif -%}
+    {%- if section.settings.use_theme_colors == false %}--cr-card-bg: {{ section.settings.card_background }};{% endif -%}
+    --cr-star: {{ section.settings.star_color }};
+    --cr-gap: {{ section.settings.card_gap }}px;
+    --cr-scroll-duration: {{ scroll_seconds }}s;
+  "
+  {{ section.shopify_attributes }}
+>
+  <div class="customer-reviews__shell">
+    <div class="customer-reviews__inner">
+      <header class="customer-reviews__header customer-reviews__header--{{ section.settings.header_alignment }}">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="customer-reviews__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.heading != blank -%}
+          <h2 class="customer-reviews__heading">{{ section.settings.heading | escape }}</h2>
+        {%- endif -%}
+
+        <span class="customer-reviews__rule" aria-hidden="true"></span>
+
+        {%- if section.settings.show_summary and review_count > 0 -%}
+          <div class="customer-reviews__summary">
+            <span class="customer-reviews__score">{{ average_rating | round: 1 }}</span>
+            <span
+              class="customer-reviews__stars"
+              role="img"
+              aria-label="{{ 'sections.customer_reviews.rating_label' | t: rating: average_rating, max: 5 }}"
+            >
+              {%- for i in (1..5) -%}
+                <span class="customer-reviews__star{% if i <= average_rating %} is-on{% endif %}" aria-hidden="true">★</span>
+              {%- endfor -%}
+            </span>
+            <span class="customer-reviews__count">
+              {{ 'sections.customer_reviews.review_count' | t: count: review_count }}
+            </span>
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.subheading != blank -%}
+          <div class="customer-reviews__subheading">{{ section.settings.subheading }}</div>
+        {%- endif -%}
+      </header>
+    </div>
+
+    {%- if review_count == 0 -%}
+      {%- if request.design_mode -%}
+        <div class="customer-reviews__inner">
+          <p class="customer-reviews__empty">{{ 'sections.customer_reviews.empty_blocks' | t }}</p>
+        </div>
+      {%- endif -%}
+    {%- else -%}
+      <div class="customer-reviews__viewport">
+        <div class="customer-reviews__track" data-track>
+          {%- liquid
+            assign loop_repeats = 1
+            if review_count < 4
+              assign loop_repeats = 3
+            elsif review_count < 7
+              assign loop_repeats = 2
+            endif
+          -%}
+          {%- for copy in (1..2) -%}
+            <ul
+              class="customer-reviews__list"
+              role="{% if copy == 1 %}list{% else %}presentation{% endif %}"
+              {% if copy == 2 %}
+                aria-hidden="true"
+              {% endif %}
+              data-review-group
+            >
+              {%- for repeat in (1..loop_repeats) -%}
+                {%- for block in section.blocks -%}
+                  {%- liquid
+                    assign rating = block.settings.rating | default: 5
+                    assign customer_name = block.settings.customer_name
+                    assign review_text = block.settings.review_text
+                    assign is_primary = false
+                    if copy == 1 and repeat == 1
+                      assign is_primary = true
+                    endif
+                  -%}
+                  <li
+                    class="customer-reviews__item"
+                    {% if is_primary %}
+                      id="CustomerReview-{{ section.id }}-{{ block.id }}"
+                      {{ block.shopify_attributes }}
+                    {% endif %}
+                  >
+                    <article class="review-card">
+                      <div
+                        class="review-card__rating"
+                        role="img"
+                        aria-label="{{ 'sections.customer_reviews.rating_label' | t: rating: rating, max: 5 }}"
+                      >
+                        {%- for i in (1..5) -%}
+                          <span class="review-card__star{% if i <= rating %} is-on{% endif %}" aria-hidden="true">★</span>
+                        {%- endfor -%}
+                      </div>
+
+                      {%- if review_text != blank -%}
+                        <blockquote class="review-card__quote">
+                          <p>{{ review_text | escape }}</p>
+                        </blockquote>
+                      {%- endif -%}
+
+                      <footer class="review-card__footer">
+                        {%- if customer_name != blank -%}
+                          <p class="review-card__name">{{ customer_name | escape }}</p>
+                        {%- endif -%}
+
+                        {%- if block.settings.verified -%}
+                          <span class="review-card__verified">
+                            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false">
+                              <path d="m4.5 10.5 3.2 3.2 7.8-7.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            {{ 'sections.customer_reviews.verified_buyer' | t }}
+                          </span>
+                        {%- endif -%}
+                      </footer>
+                    </article>
+                  </li>
+                {%- endfor -%}
+              {%- endfor -%}
+            </ul>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</customer-reviews-scroll>
+
+{% stylesheet %}
+  .customer-reviews {
+    display: block;
+    background: var(--cr-bg, var(--color-background));
+    color: var(--cr-text, var(--color-text));
+    overflow: hidden;
+  }
+
+  .customer-reviews__shell {
+    padding-block: var(--cr-padding-top) var(--cr-padding-bottom);
+  }
+
+  .customer-reviews__inner {
+    width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    margin-inline: auto;
+  }
+
+  .customer-reviews__header {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: clamp(1.75rem, 4vw, 2.75rem);
+    max-width: 40rem;
+  }
+
+  .customer-reviews__header--center {
+    margin-inline: auto;
+    text-align: center;
+    justify-items: center;
+  }
+
+  .customer-reviews__header--left {
+    text-align: left;
+    justify-items: start;
+  }
+
+  .customer-reviews__eyebrow {
+    margin: 0;
+    font-size: 0.6875rem;
+    font-weight: 650;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.5;
+  }
+
+  .customer-reviews__heading {
+    margin: 0;
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-weight: 550;
+    letter-spacing: -0.03em;
+    line-height: 1.12;
+  }
+
+  .customer-reviews__rule {
+    display: block;
+    width: 2.5rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.85;
+  }
+
+  .customer-reviews__header--center .customer-reviews__rule {
+    margin-inline: auto;
+  }
+
+  .customer-reviews__summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid color-mix(in srgb, var(--color-heading) 10%, transparent);
+    border-radius: 999px;
+    background: var(--cr-card-bg, var(--color-surface));
+    font-size: 0.85rem;
+  }
+
+  .customer-reviews__score {
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .customer-reviews__stars {
+    display: inline-flex;
+    gap: 0.1rem;
+  }
+
+  .customer-reviews__star {
+    font-size: 0.85rem;
+    line-height: 1;
+    color: color-mix(in srgb, var(--color-heading) 18%, transparent);
+  }
+
+  .customer-reviews__star.is-on {
+    color: var(--cr-star, var(--color-star));
+  }
+
+  .customer-reviews__count {
+    opacity: 0.62;
+  }
+
+  .customer-reviews__subheading {
+    margin: 0;
+    max-width: 34rem;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    opacity: 0.62;
+  }
+
+  .customer-reviews__subheading p {
+    margin: 0;
+  }
+
+  .customer-reviews__empty {
+    margin: 0;
+    padding: 2.75rem 1.5rem;
+    text-align: center;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    opacity: 0.62;
+    border: 1px dashed color-mix(in srgb, var(--color-heading) 18%, transparent);
+    border-radius: 12px;
+  }
+
+  .customer-reviews__viewport {
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent 0, #000 4%, #000 96%, transparent 100%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 4%, #000 96%, transparent 100%);
+  }
+
+  .customer-reviews__track {
+    display: flex;
+    width: max-content;
+    will-change: transform;
+    animation: customer-reviews-scroll var(--cr-scroll-duration) linear infinite;
+  }
+
+  .customer-reviews.is-paused .customer-reviews__track,
+  .customer-reviews:hover .customer-reviews__track,
+  .customer-reviews:focus-within .customer-reviews__track {
+    animation-play-state: paused;
+  }
+
+  @keyframes customer-reviews-scroll {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(calc(-1 * var(--cr-loop-distance, 50%)), 0, 0);
+    }
+  }
+
+  .customer-reviews__list {
+    display: flex;
+    flex-shrink: 0;
+    align-items: stretch;
+    gap: var(--cr-gap);
+    margin: 0;
+    padding: 0;
+    padding-inline-end: var(--cr-gap);
+    list-style: none;
+  }
+
+  .customer-reviews__item {
+    flex: 0 0 auto;
+    width: min(82vw, 340px);
+  }
+
+  @media (min-width: 750px) {
+    .customer-reviews__item {
+      width: min(46vw, 360px);
+    }
+  }
+
+  @media (min-width: 990px) {
+    .customer-reviews__item {
+      width: min(28vw, 380px);
+    }
+  }
+
+  .review-card {
+    height: 100%;
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+    padding: 1.5rem 1.4rem 1.45rem;
+    background: var(--cr-card-bg, var(--color-surface));
+    border: 1px solid color-mix(in srgb, var(--color-heading) 6%, transparent);
+    border-radius: 1.25rem;
+    box-shadow:
+      0 14px 34px color-mix(in srgb, var(--color-heading) 5%, transparent),
+      0 2px 6px color-mix(in srgb, var(--color-heading) 3%, transparent);
+  }
+
+  .review-card__rating {
+    display: inline-flex;
+    gap: 0.15rem;
+  }
+
+  .review-card__star {
+    font-size: 0.9rem;
+    line-height: 1;
+    color: color-mix(in srgb, var(--color-heading) 18%, transparent);
+  }
+
+  .review-card__star.is-on {
+    color: var(--cr-star, var(--color-star));
+  }
+
+  .review-card__quote {
+    margin: 0;
+  }
+
+  .review-card__quote p {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.55;
+    letter-spacing: -0.015em;
+    color: inherit;
+  }
+
+  .review-card__footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+  }
+
+  .review-card__name {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.55;
+  }
+
+  .review-card__verified {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.7rem;
+    font-weight: 650;
+    color: var(--color-success);
+  }
+
+  .review-card__verified svg {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .customer-reviews__track {
+      animation: none;
+      padding-inline: var(--page-margin);
+    }
+
+    .customer-reviews__viewport {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+      mask-image: none;
+      -webkit-mask-image: none;
+    }
+
+    .customer-reviews__list[aria-hidden='true'] {
+      display: none;
+    }
+
+    .customer-reviews__item {
+      scroll-snap-align: start;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class CustomerReviewsScroll extends HTMLElement {
+    connectedCallback() {
+      if (this._ready) return;
+      this._ready = true;
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const autoplay = this.dataset.autoplay === 'true';
+
+      if (!autoplay || reduceMotion) {
+        this.classList.add('is-paused');
+      }
+
+      this.track = this.querySelector('[data-track]');
+      this.syncLoopDistance = () => {
+        const group = this.track?.querySelector('[data-review-group], .customer-reviews__list');
+        if (!this.track || !group) return;
+        const distance = group.getBoundingClientRect().width;
+        if (distance > 0) {
+          this.track.style.setProperty('--cr-loop-distance', `${distance}px`);
+        }
+      };
+
+      this.onResize = () => {
+        window.clearTimeout(this._resizeTimer);
+        this._resizeTimer = window.setTimeout(() => this.syncLoopDistance(), 120);
+      };
+
+      this.syncLoopDistance();
+      requestAnimationFrame(() => this.syncLoopDistance());
+      window.addEventListener('resize', this.onResize, { passive: true });
+    }
+
+    disconnectedCallback() {
+      window.removeEventListener('resize', this.onResize);
+      window.clearTimeout(this._resizeTimer);
+      this._ready = false;
+    }
+  }
+
+  if (!customElements.get('customer-reviews-scroll')) {
+    customElements.define('customer-reviews-scroll', CustomerReviewsScroll);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.customer_reviews.name",
+  "tag": "section",
+  "class": "customer-reviews-section",
+  "max_blocks": 20,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_theme_colors",
+      "label": "t:labels.use_theme_colors",
+      "info": "t:info.use_theme_colors",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:general.content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:labels.eyebrow",
+      "default": "Customer review"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "What buyers say about this piece"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "t:labels.subheading",
+      "default": "<p>Real feedback from customers who ordered from TAH.</p>"
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "t:labels.alignment",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "show_summary",
+      "label": "t:labels.show_rating_summary",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:general.behavior"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_auto_scroll",
+      "label": "t:labels.enable_auto_scroll",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "scroll_speed",
+      "label": "t:labels.scroll_speed",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "s",
+      "default": 40,
+      "info": "t:info.scroll_speed"
+    },
+    {
+      "type": "header",
+      "content": "t:general.layout"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "t:labels.card_background",
+      "default": "#F8F9FA"
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "t:labels.star_color",
+      "default": "#C4A35A"
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "t:labels.grid_gap",
+      "min": 12,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "t:labels.padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "t:labels.padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "t:sections.customer_reviews.blocks.review.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "customer_name",
+          "label": "t:labels.customer_name",
+          "default": "Customer name"
+        },
+        {
+          "type": "textarea",
+          "id": "review_text",
+          "label": "t:labels.review_text",
+          "default": "Share what the customer said about this product."
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "t:labels.rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "checkbox",
+          "id": "verified",
+          "label": "t:labels.verified_buyer",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.customer_reviews.presets.name",
+      "blocks": [
+        {
+          "type": "review",
+          "settings": {
+            "customer_name": "Ayesha M.",
+            "review_text": "The stitching and fabric feel exactly like the photos. Worth every rupee.",
+            "rating": 5
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "customer_name": "Hassan R.",
+            "review_text": "Ordered on Monday, delivered by Wednesday. Packaging was premium.",
+            "rating": 5
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "customer_name": "Sara K.",
+            "review_text": "Colour is rich and true to the pictures. I get compliments every time.",
+            "rating": 5
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "customer_name": "Nadia F.",
+            "review_text": "Size guide was accurate and the fit was perfect straight out of the box.",
+            "rating": 4
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,843 @@
+{%- liquid
+  assign use_blocks = false
+  if section.blocks.size > 0
+    assign use_blocks = true
+  endif
+
+  assign show_count = section.settings.show_product_count
+  assign layout_style = section.settings.layout_style | default: 'bento'
+-%}
+
+<div
+  class="catalog full-width catalog--{{ layout_style }}"
+  id="Catalog-{{ section.id }}"
+  style="
+    --catalog-padding-top: {{ section.settings.padding_top }}px;
+    --catalog-padding-bottom: {{ section.settings.padding_bottom }}px;
+    {%- if section.settings.use_theme_colors == false %}--catalog-bg: {{ section.settings.background_color }};{% endif -%}
+    --catalog-gap: {{ section.settings.grid_gap }}px;
+    --catalog-radius: {{ section.settings.corner_radius }}px;
+    {%- if section.settings.use_theme_colors == false %}--catalog-text: {{ section.settings.text_color }};{% endif -%}
+    {%- if section.settings.use_theme_colors == false %}--catalog-mute: {{ section.settings.muted_color }};{% endif -%}
+  "
+  {{ section.shopify_attributes }}
+>
+  <div class="catalog__shell">
+    <div class="catalog__inner">
+      {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subheading != blank -%}
+        <header class="catalog__header catalog__header--{{ section.settings.header_alignment }}">
+          {%- if section.settings.eyebrow != blank -%}
+            <p class="catalog__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+          {%- endif -%}
+
+          {%- if section.settings.heading != blank -%}
+            <h2 class="catalog__heading">{{ section.settings.heading | escape }}</h2>
+          {%- endif -%}
+
+          <span class="catalog__rule" aria-hidden="true"></span>
+
+          {%- if section.settings.subheading != blank -%}
+            <div class="catalog__subheading">{{ section.settings.subheading }}</div>
+          {%- endif -%}
+        </header>
+      {%- endif -%}
+
+      {%- if use_blocks -%}
+        {%- if layout_style == 'grid' -%}
+          <div class="catalog__grid" role="list">
+            {%- for block in section.blocks -%}
+              {%- liquid
+                assign category_title = block.settings.title
+                assign category_link = block.settings.link
+                assign category_image = block.settings.image
+                assign count_label = blank
+
+                if block.settings.collection != blank
+                  assign picked_collection = block.settings.collection
+                  if category_title == blank
+                    assign category_title = picked_collection.title
+                  endif
+                  if category_link == blank
+                    assign category_link = picked_collection.url
+                  endif
+                  if category_image == blank and picked_collection.featured_image
+                    assign category_image = picked_collection.featured_image
+                  endif
+                  if show_count
+                    assign count_label = 'collections.product_count' | t: count: picked_collection.products_count
+                  endif
+                endif
+
+                assign slot = 'grid'
+                if forloop.first
+                  assign slot = 'grid_featured'
+                endif
+              -%}
+              {% render 'catalog-tile',
+                title: category_title,
+                url: category_link,
+                image: category_image,
+                slot: slot,
+                count_label: count_label,
+                block: block
+              %}
+            {%- endfor -%}
+          </div>
+        {%- else -%}
+          {%- for block in section.blocks -%}
+            {%- liquid
+              assign category_title = block.settings.title
+              assign category_link = block.settings.link
+              assign category_image = block.settings.image
+              assign count_label = blank
+              assign pos = forloop.index0 | modulo: 6
+
+              if block.settings.collection != blank
+                assign picked_collection = block.settings.collection
+                if category_title == blank
+                  assign category_title = picked_collection.title
+                endif
+                if category_link == blank
+                  assign category_link = picked_collection.url
+                endif
+                if category_image == blank and picked_collection.featured_image
+                  assign category_image = picked_collection.featured_image
+                endif
+                if show_count
+                  assign count_label = 'collections.product_count' | t: count: picked_collection.products_count
+                endif
+              endif
+
+              case pos
+                when 0
+                  assign slot = 'tall_left'
+                when 1
+                  assign slot = 'mid_tl'
+                when 2
+                  assign slot = 'mid_tr'
+                when 3
+                  assign slot = 'mid_bl'
+                when 4
+                  assign slot = 'mid_br'
+                else
+                  assign slot = 'tall_right'
+              endcase
+            -%}
+
+            {%- if pos == 0 -%}
+              {%- liquid
+                assign remaining = section.blocks.size | minus: forloop.index0
+                if remaining < 6
+                  assign row_class = 'catalog__mosaic catalog__mosaic--partial catalog__mosaic--count-' | append: remaining
+                else
+                  assign row_class = 'catalog__mosaic'
+                endif
+              -%}
+              <div class="{{ row_class }}" role="list">
+            {%- endif -%}
+
+            {% render 'catalog-tile',
+              title: category_title,
+              url: category_link,
+              image: category_image,
+              slot: slot,
+              count_label: count_label,
+              block: block
+            %}
+
+            {%- if pos == 5 or forloop.last -%}
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+      {%- elsif section.settings.collection_list != blank -%}
+        {%- assign collections = section.settings.collection_list -%}
+        {%- if layout_style == 'grid' -%}
+          <div class="catalog__grid" role="list">
+            {%- for picked_collection in collections -%}
+              {%- liquid
+                assign count_label = blank
+                if show_count
+                  assign count_label = 'collections.product_count' | t: count: picked_collection.products_count
+                endif
+                assign slot = 'grid'
+                if forloop.first
+                  assign slot = 'grid_featured'
+                endif
+              -%}
+              {% render 'catalog-tile',
+                title: picked_collection.title,
+                url: picked_collection.url,
+                image: picked_collection.featured_image,
+                slot: slot,
+                count_label: count_label
+              %}
+            {%- endfor -%}
+          </div>
+        {%- else -%}
+          {%- for picked_collection in collections -%}
+            {%- liquid
+              assign count_label = blank
+              if show_count
+                assign count_label = 'collections.product_count' | t: count: picked_collection.products_count
+              endif
+              assign pos = forloop.index0 | modulo: 6
+              case pos
+                when 0
+                  assign slot = 'tall_left'
+                when 1
+                  assign slot = 'mid_tl'
+                when 2
+                  assign slot = 'mid_tr'
+                when 3
+                  assign slot = 'mid_bl'
+                when 4
+                  assign slot = 'mid_br'
+                else
+                  assign slot = 'tall_right'
+              endcase
+            -%}
+
+            {%- if pos == 0 -%}
+              {%- liquid
+                assign remaining = collections.size | minus: forloop.index0
+                if remaining < 6
+                  assign row_class = 'catalog__mosaic catalog__mosaic--partial catalog__mosaic--count-' | append: remaining
+                else
+                  assign row_class = 'catalog__mosaic'
+                endif
+              -%}
+              <div class="{{ row_class }}" role="list">
+            {%- endif -%}
+
+            {% render 'catalog-tile',
+              title: picked_collection.title,
+              url: picked_collection.url,
+              image: picked_collection.featured_image,
+              slot: slot,
+              count_label: count_label
+            %}
+
+            {%- if pos == 5 or forloop.last -%}
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+      {%- elsif request.design_mode -%}
+        <p class="catalog__empty">{{ 'sections.shop_catalog.empty' | t }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .catalog {
+    --catalog-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --catalog-ink: var(--catalog-text, var(--color-text));
+    background: var(--catalog-bg, var(--color-background));
+    color: var(--catalog-ink);
+  }
+
+  .catalog__shell {
+    padding-block: var(--catalog-padding-top) var(--catalog-padding-bottom);
+  }
+
+  .catalog__inner {
+    width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    margin-inline: auto;
+    display: grid;
+    gap: clamp(1.25rem, 3vw, 2rem);
+  }
+
+  .catalog__header {
+    display: grid;
+    gap: 0.85rem;
+    max-width: 40rem;
+  }
+
+  .catalog__header--center {
+    margin-inline: auto;
+    text-align: center;
+    justify-items: center;
+  }
+
+  .catalog__header--left {
+    text-align: left;
+    justify-items: start;
+  }
+
+  .catalog__eyebrow {
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--catalog-mute, var(--color-text-muted));
+  }
+
+  .catalog__heading {
+    margin: 0;
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    font-weight: 500;
+    letter-spacing: -0.045em;
+    line-height: 1.05;
+  }
+
+  .catalog__rule {
+    display: block;
+    width: 3rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.85;
+  }
+
+  .catalog__header--center .catalog__rule {
+    margin-inline: auto;
+  }
+
+  .catalog__subheading {
+    margin: 0;
+    max-width: 34rem;
+    font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+    line-height: 1.65;
+    color: var(--catalog-mute, var(--color-text-muted));
+  }
+
+  .catalog__subheading p {
+    margin: 0;
+  }
+
+  .catalog__empty {
+    margin: 0;
+    padding: 2.75rem 1.5rem;
+    text-align: center;
+    color: var(--catalog-mute, var(--color-text-muted));
+    border-radius: var(--catalog-radius, 16px);
+    background: var(--color-surface);
+  }
+
+  /* —— Tiles —— */
+  .catalog__tile {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: var(--catalog-radius, 16px);
+    color: var(--color-button-text);
+    text-decoration: none;
+    background: var(--color-surface);
+    isolation: isolate;
+    min-height: 0;
+  }
+
+  .catalog__media {
+    position: absolute;
+    inset: 0;
+  }
+
+  .catalog__image,
+  .catalog__placeholder,
+  .catalog__placeholder-svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .catalog__image {
+    transition: transform 750ms var(--catalog-ease);
+  }
+
+  .catalog__placeholder {
+    display: grid;
+    place-items: center;
+    background: linear-gradient(145deg, var(--color-border), var(--color-surface));
+  }
+
+  .catalog__placeholder-svg {
+    opacity: 0.45;
+  }
+
+  .catalog__veil {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, transparent 28%, color-mix(in srgb, var(--color-heading) 55%, transparent) 100%),
+      linear-gradient(90deg, color-mix(in srgb, var(--color-heading) 18%, transparent) 0%, transparent 45%);
+    transition: opacity 280ms var(--catalog-ease);
+  }
+
+  .catalog__content {
+    position: absolute;
+    inset: auto 0 0 0;
+    z-index: 2;
+    display: grid;
+    gap: 0.35rem;
+    justify-items: start;
+    padding: 1.15rem 1.2rem 1.25rem;
+  }
+
+  .catalog__meta {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.82;
+  }
+
+  .catalog__title {
+    font-size: clamp(1.15rem, 2.4vw, 1.55rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+
+  .catalog__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.35rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.92;
+    transform: translateY(0);
+    transition: transform 220ms var(--catalog-ease), opacity 220ms var(--catalog-ease);
+  }
+
+  .catalog__cta-icon {
+    transition: transform 220ms var(--catalog-ease);
+  }
+
+  .catalog__tile:hover .catalog__image,
+  .catalog__tile:focus-visible .catalog__image {
+    transform: scale(1.06);
+  }
+
+  .catalog__tile:hover .catalog__cta,
+  .catalog__tile:focus-visible .catalog__cta {
+    opacity: 1;
+  }
+
+  .catalog__tile:hover .catalog__cta-icon,
+  .catalog__tile:focus-visible .catalog__cta-icon {
+    transform: translateX(4px);
+  }
+
+  /* —— Bento mosaic: 2 tall sides + 4 equal center —— */
+  .catalog__mosaic {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--catalog-gap, 14px);
+  }
+
+  .catalog__tile--tall_left,
+  .catalog__tile--tall_right {
+    grid-column: 1 / -1;
+    aspect-ratio: 4 / 5;
+  }
+
+  .catalog__tile--mid_tl,
+  .catalog__tile--mid_tr,
+  .catalog__tile--mid_bl,
+  .catalog__tile--mid_br {
+    aspect-ratio: 1 / 1;
+  }
+
+  .catalog__mosaic--partial .catalog__tile {
+    grid-column: auto;
+    aspect-ratio: 4 / 5;
+  }
+
+  .catalog__mosaic--count-1 .catalog__tile {
+    grid-column: 1 / -1;
+    aspect-ratio: 16 / 10;
+  }
+
+  .catalog__mosaic--count-3 .catalog__tile:nth-child(1) {
+    grid-column: 1 / -1;
+    aspect-ratio: 16 / 10;
+  }
+
+  /* —— Equal / featured grid —— */
+  .catalog__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--catalog-gap, 14px);
+  }
+
+  .catalog__tile--grid,
+  .catalog__tile--grid_featured {
+    aspect-ratio: 4 / 5;
+  }
+
+  @media (min-width: 750px) {
+    .catalog__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .catalog__tile--grid_featured {
+      grid-column: 1 / -1;
+      aspect-ratio: 21 / 9;
+    }
+
+    .catalog__tile--grid_featured .catalog__title {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+    }
+
+    .catalog__mosaic:not(.catalog__mosaic--partial) {
+      grid-template-columns: 1.15fr 1fr 1fr 1.15fr;
+      grid-template-rows: 1fr 1fr;
+      min-height: min(68vh, 680px);
+      height: min(68vh, 680px);
+    }
+
+    .catalog__mosaic:not(.catalog__mosaic--partial) .catalog__tile {
+      aspect-ratio: auto;
+      grid-column: auto;
+    }
+
+    .catalog__mosaic:not(.catalog__mosaic--partial) .catalog__tile--tall_left {
+      grid-column: 1;
+      grid-row: 1 / 3;
+    }
+
+    .catalog__mosaic:not(.catalog__mosaic--partial) .catalog__tile--mid_tl {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .catalog__mosaic:not(.catalog__mosaic--partial) .catalog__tile--mid_tr {
+      grid-column: 3;
+      grid-row: 1;
+    }
+
+    .catalog__mosaic:not(.catalog__mosaic--partial) .catalog__tile--mid_bl {
+      grid-column: 2;
+      grid-row: 2;
+    }
+
+    .catalog__mosaic:not(.catalog__mosaic--partial) .catalog__tile--mid_br {
+      grid-column: 3;
+      grid-row: 2;
+    }
+
+    .catalog__mosaic:not(.catalog__mosaic--partial) .catalog__tile--tall_right {
+      grid-column: 4;
+      grid-row: 1 / 3;
+    }
+
+    .catalog__mosaic:not(.catalog__mosaic--partial) .catalog__tile--tall_right {
+      grid-column: 4;
+      grid-row: 1 / 3;
+    }
+
+    .catalog__mosaic--partial {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      height: auto;
+      min-height: 0;
+    }
+
+    .catalog__mosaic--partial .catalog__tile {
+      grid-column: auto;
+      grid-row: auto;
+      aspect-ratio: 4 / 5;
+    }
+
+    .catalog__mosaic--count-1 {
+      grid-template-columns: 1fr;
+    }
+
+    .catalog__mosaic--count-1 .catalog__tile {
+      aspect-ratio: 21 / 9;
+      max-height: 480px;
+    }
+
+    .catalog__mosaic--count-3 {
+      grid-template-columns: 1.15fr 1fr 1.15fr;
+    }
+
+    .catalog__mosaic--count-3 .catalog__tile {
+      aspect-ratio: 4 / 5;
+    }
+
+    .catalog__mosaic--count-4 {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto;
+      height: auto;
+      min-height: 0;
+    }
+
+    .catalog__mosaic--count-4 .catalog__tile {
+      aspect-ratio: 4 / 5;
+      grid-column: auto;
+      grid-row: auto;
+    }
+
+    .catalog__mosaic--count-5 {
+      grid-template-columns: 1.1fr 1fr 1fr 1.1fr;
+      grid-template-rows: 1fr 1fr;
+      min-height: min(60vh, 620px);
+      height: min(60vh, 620px);
+    }
+
+    .catalog__mosaic--count-5 .catalog__tile {
+      aspect-ratio: auto;
+    }
+
+    .catalog__mosaic--count-5 .catalog__tile--tall_left {
+      grid-column: 1;
+      grid-row: 1 / 3;
+    }
+
+    .catalog__mosaic--count-5 .catalog__tile--mid_tl {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .catalog__mosaic--count-5 .catalog__tile--mid_tr {
+      grid-column: 3;
+      grid-row: 1;
+    }
+
+    .catalog__mosaic--count-5 .catalog__tile--mid_bl {
+      grid-column: 2;
+      grid-row: 2;
+    }
+
+    .catalog__mosaic--count-5 .catalog__tile--mid_br,
+    .catalog__mosaic--count-5 .catalog__tile--tall_right {
+      grid-column: 4;
+      grid-row: 1 / 3;
+    }
+
+    .catalog__content {
+      padding: 1.35rem 1.4rem 1.45rem;
+    }
+  }
+
+  @media (min-width: 990px) {
+    .catalog__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .catalog__tile--grid_featured {
+      grid-column: span 2;
+      aspect-ratio: 4 / 5;
+    }
+
+    .catalog--grid .catalog__tile--grid_featured:first-child {
+      grid-row: span 2;
+      aspect-ratio: auto;
+      min-height: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .catalog__image,
+    .catalog__cta,
+    .catalog__cta-icon {
+      transition: none;
+    }
+
+    .catalog__tile:hover .catalog__image {
+      transform: none;
+    }
+
+    .catalog__tile:hover .catalog__cta-icon {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.catalog",
+  "tag": "section",
+  "class": "catalog-section",
+  "max_blocks": 20,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_theme_colors",
+      "label": "t:labels.use_theme_colors",
+      "info": "t:info.use_theme_colors",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:general.content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:labels.eyebrow",
+      "default": "Collections"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "Shop the catalog"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "t:labels.subheading",
+      "default": "<p>Explore curated looks for every celebration.</p>"
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "t:labels.alignment",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:general.collections"
+    },
+    {
+      "type": "collection_list",
+      "id": "collection_list",
+      "label": "t:labels.collections",
+      "limit": 20,
+      "info": "t:info.catalog_collections_fallback"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_count",
+      "label": "t:labels.show_product_count",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:general.layout"
+    },
+    {
+      "type": "select",
+      "id": "layout_style",
+      "label": "t:labels.layout_style",
+      "default": "bento",
+      "options": [
+        { "value": "bento", "label": "t:options.layout_style.bento" },
+        { "value": "grid", "label": "t:options.layout_style.grid" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "t:labels.muted_text",
+      "default": "#6B6B6B"
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "t:labels.corner_radius",
+      "min": 0,
+      "max": 28,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "t:labels.grid_gap",
+      "min": 8,
+      "max": 28,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "t:labels.padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "t:labels.padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "t:general.category",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "t:labels.collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:labels.image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:labels.title",
+          "default": "Category"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:labels.link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.catalog",
+      "blocks": [
+        { "type": "category", "settings": { "title": "Latest" } },
+        { "type": "category", "settings": { "title": "Summer" } },
+        { "type": "category", "settings": { "title": "Gents" } },
+        { "type": "category", "settings": { "title": "Sale" } },
+        { "type": "category", "settings": { "title": "Bridal" } },
+        { "type": "category", "settings": { "title": "Festive" } }
+      ],
+      "settings": {
+        "eyebrow": "Collections",
+        "heading": "Shop the catalog",
+        "subheading": "<p>Explore curated looks for every celebration.</p>",
+        "header_alignment": "left",
+        "layout_style": "bento"
+      }
+    }
+  ]
+}
+{% endschema %}

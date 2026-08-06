@@ -1,0 +1,640 @@
+{%- liquid
+  assign layout = section.settings.layout | default: 'badges'
+  assign columns = section.settings.columns | default: 4
+
+  if section.settings.use_theme_colors == false
+    assign tb_bg = section.settings.background_color
+    assign tb_text = section.settings.color_text
+    assign tb_wave = section.settings.wave_color
+  else
+    assign tb_bg = settings.color_background
+    assign tb_text = settings.color_text
+    assign tb_wave = settings.color_wave
+  endif
+-%}
+
+<div
+  class="trusted-by full-width trusted-by--{{ layout }}"
+  id="TrustedBy-{{ section.id }}"
+  style="
+    --tb-bg: {{ tb_bg }};
+    --tb-text: {{ tb_text }};
+    --tb-wave: {{ tb_wave }};
+    --tb-columns: {{ columns }};
+    --tb-padding-top: {{ section.settings.padding_top }}px;
+    --tb-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --tb-wave-speed: {{ section.settings.wave_speed }}s;
+  "
+  {{ section.shopify_attributes }}
+>
+  <div class="trusted-by__header-wrap">
+    <div class="trusted-by__inner">
+      <header class="trusted-by__header trusted-by__header--{{ section.settings.header_alignment }}">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="trusted-by__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.heading != blank -%}
+          <h2 class="trusted-by__heading">{{ section.settings.heading | escape }}</h2>
+        {%- endif -%}
+
+        <span class="trusted-by__rule" aria-hidden="true"></span>
+
+        {%- if section.settings.subheading != blank -%}
+          <div class="trusted-by__subheading">
+            {%- if section.settings.subheading contains '<p>' -%}
+              {{ section.settings.subheading }}
+            {%- else -%}
+              <p>{{ section.settings.subheading | escape | newline_to_br }}</p>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </header>
+    </div>
+  </div>
+
+  {%- if section.blocks.size > 0 -%}
+    <div class="trusted-by__wave-band">
+      <div class="trusted-by__waves" aria-hidden="true">
+        <div class="trusted-by__wave trusted-by__wave--back">
+          <div class="trusted-by__wave-track trusted-by__wave-track--left">
+            {%- for i in (1..2) -%}
+              <svg class="trusted-by__wave-svg" viewBox="0 0 1440 140" preserveAspectRatio="none" focusable="false">
+                <path d="M0,18 C120,0 240,36 360,18 C480,0 600,36 720,18 C840,0 960,36 1080,18 C1200,0 1320,36 1440,18 L1440,140 L0,140 Z"></path>
+              </svg>
+            {%- endfor -%}
+          </div>
+        </div>
+
+        <div class="trusted-by__wave trusted-by__wave--mid">
+          <div class="trusted-by__wave-track trusted-by__wave-track--right">
+            {%- for i in (1..2) -%}
+              <svg class="trusted-by__wave-svg" viewBox="0 0 1440 140" preserveAspectRatio="none" focusable="false">
+                <path d="M0,30 C160,48 320,12 480,30 C640,48 800,12 960,30 C1120,48 1280,12 1440,30 L1440,140 L0,140 Z"></path>
+              </svg>
+            {%- endfor -%}
+          </div>
+        </div>
+
+        <div class="trusted-by__wave trusted-by__wave--front">
+          <div class="trusted-by__wave-track trusted-by__wave-track--left">
+            {%- for i in (1..2) -%}
+              <svg class="trusted-by__wave-svg" viewBox="0 0 1440 140" preserveAspectRatio="none" focusable="false">
+                <path d="M0,42 C180,26 300,58 480,42 C660,26 780,58 960,42 C1140,26 1260,58 1440,42 L1440,140 L0,140 Z"></path>
+              </svg>
+            {%- endfor -%}
+          </div>
+        </div>
+      </div>
+
+      <div class="trusted-by__on-wave">
+        <div class="trusted-by__marquee">
+          <div class="trusted-by__marquee-track">
+            {%- for copy in (1..2) -%}
+              <div
+                class="trusted-by__marquee-group"
+                {% if copy == 2 %}aria-hidden="true"{% endif %}
+              >
+                {%- for repeat in (1..3) -%}
+                  {%- if layout == 'badges' -%}
+                    {%- for block in section.blocks -%}
+                      {%- if block.type == 'trust_item' and block.settings.text != blank -%}
+                        <div
+                          class="trusted-by__chip"
+                          {% if copy == 1 and repeat == 1 %}
+                            {{ block.shopify_attributes }}
+                          {% endif %}
+                        >
+                          <span class="trusted-by__chip-mark" aria-hidden="true">✓</span>
+                          <span class="trusted-by__chip-text">{{ block.settings.text | escape }}</span>
+                        </div>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  {%- else -%}
+                    {%- for block in section.blocks -%}
+                      {%- if block.type == 'logo' -%}
+                        <div
+                          class="trusted-by__chip trusted-by__chip--logo"
+                          {% if copy == 1 and repeat == 1 %}
+                            {{ block.shopify_attributes }}
+                          {% endif %}
+                        >
+                          {%- if block.settings.image != blank -%}
+                            {{
+                              block.settings.image
+                              | image_url: width: 280
+                              | image_tag:
+                                loading: 'lazy',
+                                widths: '140,200,280',
+                                sizes: '120px',
+                                class: 'trusted-by__logo-image',
+                                alt: block.settings.title
+                            }}
+                          {%- elsif block.settings.title != blank -%}
+                            <span class="trusted-by__chip-text">{{ block.settings.title | escape }}</span>
+                          {%- endif -%}
+                        </div>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+
+        {%- if layout == 'badges' -%}
+          <ul class="trusted-by__sr-list visually-hidden" role="list">
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'trust_item' and block.settings.text != blank -%}
+                <li>{{ block.settings.text | escape }}</li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      </div>
+    </div>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .trusted-by {
+    --tb-mute: var(--color-text-muted);
+    --tb-chip-gap: 1rem;
+    position: relative;
+    overflow: hidden;
+    background: var(--tb-bg, var(--color-background));
+    color: var(--tb-text, var(--color-text));
+    padding-top: var(--tb-padding-top);
+    padding-bottom: var(--tb-padding-bottom);
+  }
+
+  .trusted-by__header-wrap {
+    position: relative;
+    z-index: 1;
+    margin-bottom: clamp(1.25rem, 2.5vw, 1.75rem);
+  }
+
+  .trusted-by__inner {
+    width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    margin-inline: auto;
+  }
+
+  .trusted-by__header {
+    display: grid;
+    gap: 0.75rem;
+    max-width: 40rem;
+  }
+
+  .trusted-by__header--center {
+    margin-inline: auto;
+    text-align: center;
+    justify-items: center;
+  }
+
+  .trusted-by__header--left {
+    text-align: left;
+    justify-items: start;
+  }
+
+  .trusted-by__eyebrow {
+    margin: 0;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--tb-mute);
+  }
+
+  .trusted-by__heading {
+    margin: 0;
+    font-size: clamp(1.65rem, 3.5vw, 2.5rem);
+    font-weight: 550;
+    letter-spacing: -0.03em;
+    line-height: 1.12;
+  }
+
+  .trusted-by__rule {
+    display: block;
+    width: 2.5rem;
+    height: 1px;
+    background: var(--tb-text, var(--color-text));
+    opacity: 0.85;
+  }
+
+  .trusted-by__header--center .trusted-by__rule {
+    margin-inline: auto;
+  }
+
+  .trusted-by__subheading {
+    margin: 0;
+    max-width: 34rem;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--tb-mute);
+  }
+
+  .trusted-by__subheading p {
+    margin: 0;
+  }
+
+  /* Compact wave band — only behind trust pills */
+  .trusted-by__wave-band {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    height: clamp(120px, 16vw, 148px);
+  }
+
+  .trusted-by__waves {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .trusted-by__wave {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .trusted-by__wave-track {
+    display: flex;
+    width: max-content;
+    height: 100%;
+    will-change: transform;
+  }
+
+  .trusted-by__wave-svg {
+    display: block;
+    flex: 0 0 100vw;
+    width: 100vw;
+    height: 100%;
+    min-width: 100vw;
+  }
+
+  .trusted-by__wave-svg path {
+    fill: var(--tb-wave, var(--color-wave));
+  }
+
+  .trusted-by__wave--back {
+    opacity: 0.06;
+  }
+
+  .trusted-by__wave--mid {
+    opacity: 0.1;
+  }
+
+  .trusted-by__wave--front {
+    opacity: 0.14;
+  }
+
+  .trusted-by__wave-track--left {
+    animation: trusted-wave-left var(--tb-wave-speed, 18s) linear infinite;
+  }
+
+  .trusted-by__wave-track--right {
+    animation: trusted-wave-right calc(var(--tb-wave-speed, 18s) * 0.92) linear infinite;
+  }
+
+  .trusted-by__wave--front .trusted-by__wave-track--left {
+    animation-duration: calc(var(--tb-wave-speed, 18s) * 1.18);
+  }
+
+  @keyframes trusted-wave-left {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  @keyframes trusted-wave-right {
+    from {
+      transform: translate3d(-50%, 0, 0);
+    }
+    to {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  /* Sit pills in the middle of the gray wave body (below the crest) */
+  .trusted-by__on-wave {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 62%;
+    z-index: 1;
+    width: 100%;
+    transform: translateY(-50%);
+    overflow: hidden;
+  }
+
+  .trusted-by__marquee {
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .trusted-by__marquee-track {
+    display: flex;
+    width: max-content;
+    align-items: center;
+    will-change: transform;
+    animation: trusted-chip-scroll 32s linear infinite;
+  }
+
+  .trusted-by__marquee-group {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: var(--tb-chip-gap);
+    padding-inline-end: var(--tb-chip-gap);
+  }
+
+  @keyframes trusted-chip-scroll {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  .trusted-by__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    flex: 0 0 auto;
+    padding: 0.72rem 1.1rem;
+    white-space: nowrap;
+    background: color-mix(in srgb, var(--color-background) 94%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-heading) 8%, transparent);
+    border-radius: 999px;
+    box-shadow: 0 8px 22px color-mix(in srgb, var(--color-heading) 5%, transparent);
+    backdrop-filter: blur(6px);
+  }
+
+  .trusted-by__chip-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 50%;
+    background: var(--color-button);
+    color: var(--color-button-text);
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .trusted-by__chip-text {
+    font-size: 0.72rem;
+    font-weight: 650;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    line-height: 1.2;
+  }
+
+  .trusted-by__chip--logo {
+    min-height: 2.75rem;
+    padding-inline: 1.25rem;
+  }
+
+  .trusted-by__logo-image {
+    display: block;
+    width: auto;
+    max-width: 7rem;
+    max-height: 1.6rem;
+    filter: grayscale(1);
+    opacity: 0.7;
+  }
+
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .trusted-by__wave-track--left,
+    .trusted-by__wave-track--right,
+    .trusted-by__marquee-track {
+      animation: none;
+    }
+
+    .trusted-by__marquee-track {
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: var(--tb-chip-gap);
+      padding-inline: 1rem;
+    }
+
+    .trusted-by__marquee-group {
+      flex-wrap: wrap;
+      justify-content: center;
+      padding-inline-end: 0;
+    }
+
+    .trusted-by__marquee-group[aria-hidden='true'],
+    .trusted-by__marquee-group:not(:first-child) {
+      display: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.trusted_by",
+  "tag": "section",
+  "class": "trusted-by-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:general.content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:labels.eyebrow",
+      "default": "Trusted"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "Trusted by discerning homes"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "t:labels.subheading",
+      "default": "Quality, care, and craftsmanship you can count on."
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "t:labels.alignment",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:general.layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "t:labels.layout",
+      "default": "badges",
+      "options": [
+        { "value": "badges", "label": "Badges" },
+        { "value": "logos", "label": "Logos" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "t:labels.columns_desktop",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "t:general.style"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_theme_colors",
+      "label": "t:labels.use_theme_colors",
+      "default": true,
+      "info": "t:info.use_theme_colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "color_text",
+      "label": "t:labels.foreground",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "wave_color",
+      "label": "t:labels.wave_color",
+      "default": "#111111"
+    },
+    {
+      "type": "range",
+      "id": "wave_speed",
+      "label": "t:labels.wave_speed",
+      "min": 10,
+      "max": 40,
+      "step": 2,
+      "unit": "s",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "t:labels.padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "t:labels.padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "Logo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:labels.logo"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:labels.title"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:labels.link"
+        }
+      ]
+    },
+    {
+      "type": "trust_item",
+      "name": "Trust badge",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "t:labels.icon"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:labels.text",
+          "default": "Complimentary shipping"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.trusted_by",
+      "settings": {
+        "eyebrow": "Trusted",
+        "heading": "Trusted by discerning homes",
+        "subheading": "Quality, care, and craftsmanship you can count on.",
+        "layout": "badges",
+        "columns": 4
+      },
+      "blocks": [
+        { "type": "trust_item", "settings": { "text": "Complimentary shipping" } },
+        { "type": "trust_item", "settings": { "text": "Secure checkout" } },
+        { "type": "trust_item", "settings": { "text": "Expert craftsmanship" } },
+        { "type": "trust_item", "settings": { "text": "30-day returns" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

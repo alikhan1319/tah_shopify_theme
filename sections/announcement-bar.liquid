@@ -1,0 +1,1003 @@
+{%- liquid
+  assign show_social = false
+  if section.settings.show_social_icons
+    if section.settings.social_facebook != blank or section.settings.social_instagram != blank or section.settings.social_x != blank or section.settings.social_tiktok != blank or section.settings.social_pinterest != blank or section.settings.social_youtube != blank or section.settings.social_linkedin != blank
+      assign show_social = true
+    endif
+  endif
+
+  assign show_language = false
+  if section.settings.show_language_selector
+    if localization.available_languages.size > 1
+      assign show_language = true
+    endif
+  endif
+
+  assign show_currency = false
+  if section.settings.show_currency_selector
+    if localization.available_countries.size > 1
+      assign show_currency = true
+    endif
+  endif
+
+  assign announcement_count = section.blocks.size
+  assign enable_marquee = false
+  if section.settings.enable_marquee and announcement_count > 0
+    assign enable_marquee = true
+  endif
+
+  assign fill_copies = 1
+  if announcement_count < 4
+    assign fill_copies = 2
+  endif
+  if announcement_count < 2
+    assign fill_copies = 4
+  endif
+
+  assign marquee_speed = section.settings.marquee_speed | default: 28
+-%}
+
+{%- unless section.settings.enable_bar == false -%}
+  <announcement-bar
+    class="announcement-bar full-width"
+    id="AnnouncementBar-{{ section.id }}"
+    data-section-id="{{ section.id }}"
+    data-marquee="{{ enable_marquee }}"
+    data-dismissible="{{ section.settings.show_close_button }}"
+    data-storage-key="tah-announcement-bar-{{ section.id }}"
+    style="
+      {%- if section.settings.use_theme_colors == false %}--announcement-bg: {{ section.settings.color_background }};{% endif -%}
+      {%- if section.settings.use_theme_colors == false %}--announcement-text: {{ section.settings.color_text }};{% endif -%}
+      {%- if section.settings.use_theme_colors == false %}--announcement-link: {{ section.settings.color_link }};{% endif -%}
+      --announcement-font-size: {{ section.settings.font_size }}px;
+      --announcement-letter-spacing: {{ section.settings.letter_spacing | times: 0.01 }}em;
+      --announcement-min-height: {{ section.settings.bar_height }}px;
+      --announcement-marquee-duration: {{ marquee_speed }}s;
+    "
+    {{ section.shopify_attributes }}
+  >
+    <div class="announcement-bar__inner">
+      {%- if show_social -%}
+        <nav class="announcement-bar__social" aria-label="{{ 'accessibility.social_media' | t }}">
+          <ul class="announcement-bar__social-list" role="list">
+            {%- if section.settings.social_facebook != blank -%}
+              <li>
+                <a
+                  class="announcement-bar__social-link"
+                  href="{{ section.settings.social_facebook }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="{{ 'accessibility.social_facebook' | t }}"
+                >
+                  {% render 'icon-social', network: 'facebook', class: 'announcement-bar__social-icon' %}
+                </a>
+              </li>
+            {%- endif -%}
+            {%- if section.settings.social_instagram != blank -%}
+              <li>
+                <a
+                  class="announcement-bar__social-link"
+                  href="{{ section.settings.social_instagram }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="{{ 'accessibility.social_instagram' | t }}"
+                >
+                  {% render 'icon-social', network: 'instagram', class: 'announcement-bar__social-icon' %}
+                </a>
+              </li>
+            {%- endif -%}
+            {%- if section.settings.social_x != blank -%}
+              <li>
+                <a
+                  class="announcement-bar__social-link"
+                  href="{{ section.settings.social_x }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="{{ 'accessibility.social_x' | t }}"
+                >
+                  {% render 'icon-social', network: 'x', class: 'announcement-bar__social-icon' %}
+                </a>
+              </li>
+            {%- endif -%}
+            {%- if section.settings.social_tiktok != blank -%}
+              <li>
+                <a
+                  class="announcement-bar__social-link"
+                  href="{{ section.settings.social_tiktok }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="{{ 'accessibility.social_tiktok' | t }}"
+                >
+                  {% render 'icon-social', network: 'tiktok', class: 'announcement-bar__social-icon' %}
+                </a>
+              </li>
+            {%- endif -%}
+            {%- if section.settings.social_pinterest != blank -%}
+              <li>
+                <a
+                  class="announcement-bar__social-link"
+                  href="{{ section.settings.social_pinterest }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="{{ 'accessibility.social_pinterest' | t }}"
+                >
+                  {% render 'icon-social', network: 'pinterest', class: 'announcement-bar__social-icon' %}
+                </a>
+              </li>
+            {%- endif -%}
+            {%- if section.settings.social_youtube != blank -%}
+              <li>
+                <a
+                  class="announcement-bar__social-link"
+                  href="{{ section.settings.social_youtube }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="{{ 'accessibility.social_youtube' | t }}"
+                >
+                  {% render 'icon-social', network: 'youtube', class: 'announcement-bar__social-icon' %}
+                </a>
+              </li>
+            {%- endif -%}
+            {%- if section.settings.social_linkedin != blank -%}
+              <li>
+                <a
+                  class="announcement-bar__social-link"
+                  href="{{ section.settings.social_linkedin }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="{{ 'accessibility.social_linkedin' | t }}"
+                >
+                  {% render 'icon-social', network: 'linkedin', class: 'announcement-bar__social-icon' %}
+                </a>
+              </li>
+            {%- endif -%}
+          </ul>
+        </nav>
+      {%- endif -%}
+
+      <div class="announcement-bar__center">
+        {%- if announcement_count > 0 -%}
+          <div
+            class="announcement-bar__marquee{% unless enable_marquee %} announcement-bar__marquee--static{% endunless %}"
+            data-marquee
+            role="region"
+            aria-label="{{ 'sections.announcement_bar.announcements' | t }}"
+          >
+            <div class="announcement-bar__track" data-marquee-track>
+              {%- for repeat in (1..2) -%}
+                <div class="announcement-bar__group" data-marquee-group {% if repeat > 1 %}aria-hidden="true"{% endif %}>
+                  {%- for fill in (1..fill_copies) -%}
+                    {%- for block in section.blocks -%}
+                      <div
+                        class="announcement-bar__item"
+                        {% if repeat == 1 and fill == 1 %}
+                          {{ block.shopify_attributes }}
+                        {% endif %}
+                      >
+                        {%- if block.settings.text != blank -%}
+                          {%- if block.settings.link != blank -%}
+                            <a
+                              class="announcement-bar__message announcement-bar__message--link"
+                              href="{{ block.settings.link }}"
+                              {% if repeat > 1 or fill > 1 %}tabindex="-1"{% endif %}
+                            >
+                              <span class="announcement-bar__text">{{ block.settings.text }}</span>
+                            </a>
+                          {%- else -%}
+                            <p class="announcement-bar__message">
+                              <span class="announcement-bar__text">{{ block.settings.text }}</span>
+                            </p>
+                          {%- endif -%}
+                        {%- endif -%}
+                      </div>
+                      <span class="announcement-bar__sep" aria-hidden="true"></span>
+                    {%- endfor -%}
+                  {%- endfor -%}
+                </div>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="announcement-bar__utilities">
+        {%- if show_language -%}
+          {% form 'localization', class: 'announcement-bar__form announcement-bar__form--language' %}
+            <label class="visually-hidden" for="AnnouncementLanguage-{{ section.id }}">
+              {{ 'sections.announcement_bar.language' | t }}
+            </label>
+            <div class="announcement-bar__select-wrap">
+              <select
+                id="AnnouncementLanguage-{{ section.id }}"
+                class="announcement-bar__select"
+                name="locale_code"
+                data-localization-select
+              >
+                {%- for language in localization.available_languages -%}
+                  <option
+                    value="{{ language.iso_code }}"
+                    {% if language.iso_code == localization.language.iso_code %}
+                      selected
+                    {% endif %}
+                  >
+                    {{ language.endonym_name | capitalize }}
+                  </option>
+                {%- endfor -%}
+              </select>
+              <svg class="announcement-bar__select-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="m2.5 4.5 3.5 3 3.5-3"/>
+              </svg>
+            </div>
+            <input type="hidden" name="country_code" value="{{ localization.country.iso_code }}">
+          {% endform %}
+        {%- endif -%}
+
+        {%- if show_currency -%}
+          {% form 'localization', class: 'announcement-bar__form announcement-bar__form--currency' %}
+            <label class="visually-hidden" for="AnnouncementCurrency-{{ section.id }}">
+              {{ 'sections.announcement_bar.currency' | t }}
+            </label>
+            <div class="announcement-bar__select-wrap">
+              <select
+                id="AnnouncementCurrency-{{ section.id }}"
+                class="announcement-bar__select"
+                name="country_code"
+                data-localization-select
+              >
+                {%- for country in localization.available_countries -%}
+                  <option
+                    value="{{ country.iso_code }}"
+                    {% if country.iso_code == localization.country.iso_code %}
+                      selected
+                    {% endif %}
+                  >
+                    {{ country.currency.iso_code }}
+                    {%- if section.settings.show_currency_name %}
+                      {{ country.name }}
+                    {%- endif -%}
+                  </option>
+                {%- endfor -%}
+              </select>
+              <svg class="announcement-bar__select-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="m2.5 4.5 3.5 3 3.5-3"/>
+              </svg>
+            </div>
+            <input type="hidden" name="locale_code" value="{{ localization.language.iso_code }}">
+          {% endform %}
+        {%- endif -%}
+
+        {%- if section.settings.show_close_button -%}
+          <button
+            type="button"
+            class="announcement-bar__close"
+            data-close
+            aria-label="{{ 'accessibility.close_announcement' | t }}"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M3.5 3.5 12.5 12.5M12.5 3.5 3.5 12.5"/>
+            </svg>
+          </button>
+        {%- endif -%}
+      </div>
+    </div>
+  </announcement-bar>
+{%- endunless -%}
+
+{% stylesheet %}
+  .announcement-bar {
+    --announcement-transition: 450ms cubic-bezier(0.22, 1, 0.36, 1);
+    display: block;
+    background-color: var(--announcement-bg, var(--color-announcement-background));
+    color: var(--announcement-text, var(--color-announcement-text));
+    min-height: var(--announcement-min-height, 40px);
+    font-size: var(--announcement-font-size, 12px);
+    letter-spacing: var(--announcement-letter-spacing, 0.08em);
+    line-height: 1.4;
+    position: relative;
+    z-index: 30;
+    transition:
+      opacity var(--announcement-transition),
+      transform var(--announcement-transition),
+      max-height var(--announcement-transition),
+      min-height var(--announcement-transition);
+    max-height: 120px;
+  }
+
+  .announcement-bar[hidden],
+  .announcement-bar.is-dismissed {
+    display: none;
+  }
+
+  .announcement-bar.is-closing {
+    opacity: 0;
+    transform: translateY(-100%);
+    max-height: 0;
+    min-height: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .announcement-bar__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    width: 100%;
+    min-height: var(--announcement-min-height, 40px);
+    padding: 0.45rem var(--page-margin, 1.25rem);
+  }
+
+  .announcement-bar__social {
+    display: none;
+  }
+
+  .announcement-bar__center {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .announcement-bar__utilities {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .announcement-bar__social-list {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .announcement-bar__social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    opacity: 0.72;
+    transition: opacity 200ms ease, transform 200ms ease;
+  }
+
+  .announcement-bar__social-link:hover,
+  .announcement-bar__social-link:focus-visible {
+    opacity: 1;
+    transform: translateY(-1px);
+  }
+
+  .announcement-bar__social-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .announcement-bar__marquee {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+
+  .announcement-bar__track {
+    display: flex;
+    width: max-content;
+    align-items: center;
+    will-change: transform;
+    animation: announcement-marquee-scroll var(--announcement-marquee-duration, 28s) linear infinite;
+  }
+
+  .announcement-bar__marquee:hover .announcement-bar__track,
+  .announcement-bar__marquee:focus-within .announcement-bar__track,
+  .announcement-bar.is-paused .announcement-bar__track {
+    animation-play-state: paused;
+  }
+
+  .announcement-bar__marquee--static .announcement-bar__track {
+    animation: none;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    row-gap: 0.25rem;
+  }
+
+  .announcement-bar__group {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .announcement-bar__item {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding-inline: 0.85rem;
+    white-space: nowrap;
+  }
+
+  .announcement-bar__sep {
+    display: inline-block;
+    width: 0.28rem;
+    height: 0.28rem;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.45;
+    flex-shrink: 0;
+  }
+
+  .announcement-bar__message {
+    margin: 0;
+    color: inherit;
+    text-decoration: none;
+    max-width: 100%;
+  }
+
+  .announcement-bar__message--link {
+    display: inline-block;
+    color: var(--announcement-link, var(--color-announcement-link));
+    text-underline-offset: 0.2em;
+    transition: opacity 200ms ease;
+  }
+
+  .announcement-bar__message--link:hover,
+  .announcement-bar__message--link:focus-visible {
+    opacity: 0.75;
+    text-decoration: underline;
+  }
+
+  .announcement-bar__text {
+    display: inline;
+    overflow: hidden;
+    text-transform: uppercase;
+  }
+
+  .announcement-bar__close {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    border-radius: 999px;
+    opacity: 0.7;
+    transition: opacity 200ms ease, background-color 200ms ease;
+  }
+
+  .announcement-bar__nav:hover,
+  .announcement-bar__nav:focus-visible,
+  .announcement-bar__close:hover,
+  .announcement-bar__close:focus-visible {
+    opacity: 1;
+    background-color: color-mix(in srgb, var(--color-background) 8%, transparent);
+  }
+
+  .announcement-bar__utilities {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.35rem;
+    flex-wrap: nowrap;
+  }
+
+  .announcement-bar__form--language,
+  .announcement-bar__form--currency {
+    display: none;
+  }
+
+  .announcement-bar__form {
+    margin: 0;
+  }
+
+  .announcement-bar__select-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .announcement-bar__select {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: inherit;
+    letter-spacing: inherit;
+    line-height: 1;
+    padding: 0.25rem 1.1rem 0.25rem 0.15rem;
+    margin: 0;
+    cursor: pointer;
+    max-width: 7.5rem;
+    border-radius: 0;
+  }
+
+  .announcement-bar__select:focus-visible {
+    outline: 1px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  .announcement-bar__select-icon {
+    position: absolute;
+    right: 0;
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  @media (min-width: 750px) {
+    .announcement-bar__inner {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 1rem;
+      padding-block: 0;
+    }
+
+    .announcement-bar__social {
+      display: block;
+      justify-self: start;
+      grid-column: auto;
+      grid-row: auto;
+    }
+
+    .announcement-bar__center {
+      justify-self: stretch;
+      grid-column: auto;
+      grid-row: auto;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .announcement-bar__item {
+      padding-inline: 1.15rem;
+    }
+
+    .announcement-bar__form--language,
+    .announcement-bar__form--currency {
+      display: block;
+    }
+
+    .announcement-bar__utilities {
+      justify-self: end;
+      grid-column: auto;
+      grid-row: auto;
+      gap: 0.75rem;
+    }
+
+    .announcement-bar__select {
+      max-width: 9rem;
+    }
+  }
+
+  @media (min-width: 990px) {
+    .announcement-bar__select {
+      max-width: 11rem;
+    }
+  }
+
+  @keyframes announcement-marquee-scroll {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(calc(-1 * var(--announcement-loop-distance, 50%)), 0, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .announcement-bar,
+    .announcement-bar__social-link,
+    .announcement-bar__message--link,
+    .announcement-bar__close {
+      transition: none;
+    }
+
+    .announcement-bar__track {
+      animation: none !important;
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .announcement-bar__group[aria-hidden='true'] {
+      display: none;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class AnnouncementBar extends HTMLElement {
+    connectedCallback() {
+      if (this._initialized) return;
+      this._initialized = true;
+
+      this.storageKey = this.dataset.storageKey;
+      this.dismissible = this.dataset.dismissible === 'true';
+      this.reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      this.closeButton = this.querySelector('[data-close]');
+      this.marquee = this.querySelector('[data-marquee]');
+      this.track = this.querySelector('[data-marquee-track]');
+      this.localizationSelects = Array.from(this.querySelectorAll('[data-localization-select]'));
+
+      if (this.dismissible && this.isDismissed()) {
+        this.hidden = true;
+        this.classList.add('is-dismissed');
+        return;
+      }
+
+      this.bindEvents();
+      this.syncLoopDistance();
+    }
+
+    disconnectedCallback() {
+      this.unbindEvents();
+      if (this._resizeObserver) {
+        this._resizeObserver.disconnect();
+        this._resizeObserver = null;
+      }
+    }
+
+    bindEvents() {
+      this.onClose = () => this.dismiss();
+      this.onMouseEnter = () => this.classList.add('is-paused');
+      this.onMouseLeave = () => this.classList.remove('is-paused');
+      this.onFocusIn = () => this.classList.add('is-paused');
+      this.onFocusOut = (event) => {
+        if (!this.contains(event.relatedTarget)) this.classList.remove('is-paused');
+      };
+      this.onVisibility = () => {
+        this.classList.toggle('is-paused', document.hidden);
+      };
+      this.onSelectChange = (event) => {
+        const form = event.target.closest('form');
+        if (form) form.submit();
+      };
+      this.onResize = () => this.syncLoopDistance();
+
+      this.closeButton?.addEventListener('click', this.onClose);
+      this.addEventListener('mouseenter', this.onMouseEnter);
+      this.addEventListener('mouseleave', this.onMouseLeave);
+      this.addEventListener('focusin', this.onFocusIn);
+      this.addEventListener('focusout', this.onFocusOut);
+      document.addEventListener('visibilitychange', this.onVisibility);
+      this.localizationSelects.forEach((select) => {
+        select.addEventListener('change', this.onSelectChange);
+      });
+      window.addEventListener('resize', this.onResize);
+
+      if (typeof ResizeObserver !== 'undefined' && this.marquee) {
+        this._resizeObserver = new ResizeObserver(() => this.syncLoopDistance());
+        this._resizeObserver.observe(this.marquee);
+      }
+    }
+
+    unbindEvents() {
+      this.closeButton?.removeEventListener('click', this.onClose);
+      this.removeEventListener('mouseenter', this.onMouseEnter);
+      this.removeEventListener('mouseleave', this.onMouseLeave);
+      this.removeEventListener('focusin', this.onFocusIn);
+      this.removeEventListener('focusout', this.onFocusOut);
+      document.removeEventListener('visibilitychange', this.onVisibility);
+      window.removeEventListener('resize', this.onResize);
+      this.localizationSelects.forEach((select) => {
+        select.removeEventListener('change', this.onSelectChange);
+      });
+    }
+
+    syncLoopDistance() {
+      if (!this.track || this.reduceMotion || this._syncing) return;
+
+      const source = this.track.querySelector('[data-marquee-group]');
+      if (!source) return;
+
+      const groupWidth = source.getBoundingClientRect().width;
+      if (groupWidth <= 0) return;
+
+      const viewportWidth = (this.marquee || this).getBoundingClientRect().width;
+
+      // The track shifts by exactly one group per cycle, so the remaining
+      // groups must still cover the visible area at the end of the loop.
+      const needed = Math.max(2, Math.ceil(viewportWidth / groupWidth) + 1);
+
+      this._syncing = true;
+
+      let template = this.track.querySelectorAll('[data-marquee-group]')[1] || source;
+      let groups = this.track.querySelectorAll('[data-marquee-group]').length;
+
+      while (groups < needed) {
+        const clone = template.cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        clone.setAttribute('data-marquee-clone', '');
+        clone.querySelectorAll('a').forEach((link) => link.setAttribute('tabindex', '-1'));
+        this.track.appendChild(clone);
+        groups += 1;
+      }
+
+      while (groups > needed) {
+        const last = this.track.lastElementChild;
+        if (!last || !last.hasAttribute('data-marquee-clone')) break;
+        last.remove();
+        groups -= 1;
+      }
+
+      this.style.setProperty('--announcement-loop-distance', `${groupWidth}px`);
+      this._syncing = false;
+    }
+
+    isDismissed() {
+      try {
+        return sessionStorage.getItem(this.storageKey) === '1';
+      } catch (error) {
+        return false;
+      }
+    }
+
+    dismiss() {
+      this.classList.add('is-closing');
+      const finish = () => {
+        this.hidden = true;
+        this.classList.add('is-dismissed');
+        this.classList.remove('is-closing');
+        try {
+          sessionStorage.setItem(this.storageKey, '1');
+        } catch (error) {
+          /* sessionStorage unavailable */
+        }
+      };
+
+      if (this.reduceMotion) {
+        finish();
+        return;
+      }
+
+      window.setTimeout(finish, 450);
+    }
+  }
+
+  if (!customElements.get('announcement-bar')) {
+    customElements.define('announcement-bar', AnnouncementBar);
+  }
+
+  document.addEventListener('shopify:section:load', (event) => {
+    const bar = event.target.querySelector?.('announcement-bar') || (event.target.matches?.('announcement-bar') ? event.target : null);
+    if (bar && typeof bar.syncLoopDistance === 'function') {
+      bar.syncLoopDistance();
+    }
+  });
+{% endjavascript %}
+{% schema %}
+{
+  "name": "t:general.announcement_bar",
+  "tag": "section",
+  "class": "announcement-bar-section",
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_theme_colors",
+      "label": "t:labels.use_theme_colors",
+      "info": "t:info.use_theme_colors",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_bar",
+      "label": "t:labels.enable_announcement_bar",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_close_button",
+      "label": "t:labels.show_close_button",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:general.slider"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_marquee",
+      "label": "t:labels.enable_marquee",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "marquee_speed",
+      "label": "t:labels.marquee_speed",
+      "min": 12,
+      "max": 60,
+      "step": 2,
+      "unit": "s",
+      "default": 28
+    },
+    {
+      "type": "header",
+      "content": "t:general.localization"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_language_selector",
+      "label": "t:labels.show_language_selector",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_currency_selector",
+      "label": "t:labels.show_currency_selector",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_currency_name",
+      "label": "t:labels.show_currency_name",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:general.social_media"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_social_icons",
+      "label": "t:labels.show_social_icons",
+      "default": true
+    },
+    {
+      "type": "url",
+      "id": "social_facebook",
+      "label": "t:labels.social_facebook"
+    },
+    {
+      "type": "url",
+      "id": "social_instagram",
+      "label": "t:labels.social_instagram"
+    },
+    {
+      "type": "url",
+      "id": "social_x",
+      "label": "t:labels.social_x"
+    },
+    {
+      "type": "url",
+      "id": "social_tiktok",
+      "label": "t:labels.social_tiktok"
+    },
+    {
+      "type": "url",
+      "id": "social_pinterest",
+      "label": "t:labels.social_pinterest"
+    },
+    {
+      "type": "url",
+      "id": "social_youtube",
+      "label": "t:labels.social_youtube"
+    },
+    {
+      "type": "url",
+      "id": "social_linkedin",
+      "label": "t:labels.social_linkedin"
+    },
+    {
+      "type": "header",
+      "content": "t:general.style"
+    },
+    {
+      "type": "color",
+      "id": "color_background",
+      "label": "t:labels.background",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "color_text",
+      "label": "t:labels.text",
+      "default": "#F5F5F7"
+    },
+    {
+      "type": "color",
+      "id": "color_link",
+      "label": "t:labels.link_color",
+      "default": "#F5F5F7"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "t:labels.font_size",
+      "min": 10,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "letter_spacing",
+      "label": "t:labels.letter_spacing",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "%",
+      "default": 8,
+      "info": "t:info.letter_spacing"
+    },
+    {
+      "type": "range",
+      "id": "bar_height",
+      "label": "t:labels.bar_height",
+      "min": 32,
+      "max": 56,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "t:general.announcement",
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "text",
+          "label": "t:labels.text",
+          "default": "Cash on Delivery"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:labels.link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.announcement_bar",
+      "blocks": [
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "Cash on Delivery"
+          }
+        },
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "Fast Delivery"
+          }
+        },
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "Secure"
+          }
+        },
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "Save 14 Day Return"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

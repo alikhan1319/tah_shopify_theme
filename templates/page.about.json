@@ -1,0 +1,78 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "about",
+      "blocks": {
+        "trust_1": {
+          "type": "trust",
+          "settings": {
+            "title": "Money guarantee",
+            "text": "Within 7 days for an exchange."
+          }
+        },
+        "trust_2": {
+          "type": "trust",
+          "settings": {
+            "title": "Online support",
+            "text": "24 hours a day, 7 days a week."
+          }
+        },
+        "trust_3": {
+          "type": "trust",
+          "settings": {
+            "title": "World-wide delivery",
+            "text": "Shipping available across Pakistan and beyond."
+          }
+        },
+        "trust_4": {
+          "type": "trust",
+          "settings": {
+            "title": "100% safe and secure",
+            "text": "100% original products."
+          }
+        }
+      },
+      "block_order": ["trust_1", "trust_2", "trust_3", "trust_4"],
+      "settings": {
+        "eyebrow": "Our story",
+        "heading": "About Star Fabrics",
+        "subheading": "<p>Premium unstitched fabric and designer clothing from Jhelum (Dina City).</p>",
+        "header_alignment": "left",
+        "image_position": "left",
+        "story_eyebrow": "Star Fabrics",
+        "story_heading": "Premium fabrics. Timeless style.",
+        "story_text": "<p>Star Fabrics is a trusted clothing brand committed to delivering quality, style, and comfort. We specialize in providing premium fabrics and fashionable designs that reflect modern trends while maintaining timeless elegance. Our focus on quality materials and fine craftsmanship ensures that every product meets the expectations of our valued customers.</p><p>With a passion for fashion and a dedication to excellence, Star Fabrics continues to grow as a reliable name in the clothing industry.</p>",
+        "cta_label": "Shop collections",
+        "cta_link": "",
+        "mission_heading": "Our mission",
+        "mission_text": "Our mission is to provide high-quality clothing that combines comfort, durability, and contemporary style. We aim to build long-lasting relationships with our customers by offering exceptional value and consistent quality.",
+        "vision_heading": "Our vision",
+        "vision_text": "Our vision is to become a leading name in the fashion industry, recognized for innovation, trust, and excellence. We aspire to set new standards in clothing by continuously evolving with trends while staying true to our core values.",
+        "ceo_heading": "CEO's message",
+        "ceo_text": "As the CEO of Star Fabrics, I am proud to lead a brand that stands for quality, integrity, and customer satisfaction. From fabric selection to final design, every step is guided by our commitment to excellence. Fashion is a reflection of confidence and individuality, and our goal is to deliver clothing that makes our customers feel comfortable, stylish, and confident. Thank you for trusting Star Fabrics and being part of our journey.",
+        "ceo_name": "CEO, Star Fabrics",
+        "banner_heading": "Ready to find your next piece?",
+        "banner_text": "Explore premium fabrics and designer clothing crafted for lasting beauty.",
+        "banner_label": "Contact us",
+        "banner_link": "",
+        "background_color": "#FFFFFF",
+        "surface_color": "#F7F7F5",
+        "text_color": "#111111",
+        "muted_color": "#6B6B6B",
+        "corner_radius": 18,
+        "padding_top": 64,
+        "padding_bottom": 88
+      }
+    }
+  },
+  "order": ["main"]
+}

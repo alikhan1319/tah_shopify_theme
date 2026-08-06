@@ -1,0 +1,62 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "footer",
+  "name": "t:general.footer",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "menu_categories": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Categories",
+            "menu": ""
+          }
+        },
+        "menu_shop": {
+          "type": "link_list",
+          "settings": {
+            "heading": "Shop",
+            "menu": ""
+          }
+        }
+      },
+      "block_order": ["menu_categories", "menu_shop"],
+      "settings": {
+        "logo_height": 64,
+        "about": "<p>Star Fabrics offers refined bridal and formal fabrics crafted for lasting beauty.</p>",
+        "show_watermark": true,
+        "watermark_text": "STAR FABRICS",
+        "show_newsletter": true,
+        "newsletter_heading": "Subscribe",
+        "newsletter_text": "<p>Get new arrivals, fabric stories, and exclusive offers in your inbox.</p>",
+        "show_social_icons": true,
+        "show_contact": true,
+        "contact_heading": "Contact us",
+        "contact_phone": "+92 300 0000000",
+        "contact_email": "hello@starfabrics.com",
+        "contact_address": "Lahore, Pakistan",
+        "show_payment_icons": true,
+        "payment_heading": "We accept",
+        "payment_text": "<p>Choose how you want to pay at checkout.</p>",
+        "payment_methods_list": "Cash on delivery\nBank transfer\nJazzCash / EasyPaisa\nDebit & credit cards",
+        "color_background": "#F4F5F7",
+        "color_text": "#111111",
+        "color_muted": "#5C5C5C",
+        "color_watermark": "#E6E8EC",
+        "color_border": "#D8DBE0",
+        "padding_top": 96,
+        "padding_bottom": 40
+      }
+    }
+  },
+  "order": ["footer"]
+}

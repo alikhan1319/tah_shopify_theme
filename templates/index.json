@@ -1,0 +1,402 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "blocks": {
+        "banner_1": {
+          "type": "banner",
+          "settings": {}
+        },
+        "banner_2": {
+          "type": "banner",
+          "settings": {}
+        },
+        "banner_3": {
+          "type": "banner",
+          "settings": {}
+        },
+        "banner_4": {
+          "type": "banner",
+          "settings": {}
+        },
+        "banner_5": {
+          "type": "banner",
+          "settings": {}
+        }
+      },
+      "block_order": ["banner_1", "banner_2", "banner_3", "banner_4", "banner_5"],
+      "settings": {
+        "enable_autoplay": true,
+        "autoplay_speed": 6
+      }
+    },
+    "trusted_by": {
+      "type": "trusted-by",
+      "blocks": {
+        "badge_1": {
+          "type": "trust_item",
+          "settings": { "text": "Complimentary shipping" }
+        },
+        "badge_2": {
+          "type": "trust_item",
+          "settings": { "text": "Secure checkout" }
+        },
+        "badge_3": {
+          "type": "trust_item",
+          "settings": { "text": "Expert craftsmanship" }
+        },
+        "badge_4": {
+          "type": "trust_item",
+          "settings": { "text": "30-day returns" }
+        }
+      },
+      "block_order": ["badge_1", "badge_2", "badge_3", "badge_4"],
+      "settings": {
+        "eyebrow": "Trusted",
+        "heading": "Trusted by discerning homes",
+        "subheading": "Quality, care, and craftsmanship you can count on.",
+        "header_alignment": "center",
+        "layout": "badges",
+        "columns": 4,
+        "background_color": "#FFFFFF",
+        "color_text": "#111111",
+        "wave_color": "#111111",
+        "wave_speed": 18,
+        "padding_top": 56,
+        "padding_bottom": 72
+      }
+    },
+    "shop_catalog": {
+      "type": "shop-catalog",
+      "blocks": {
+        "cat_1": {
+          "type": "category",
+          "settings": {
+            "title": "Latest"
+          }
+        },
+        "cat_2": {
+          "type": "category",
+          "settings": {
+            "title": "Summer"
+          }
+        },
+        "cat_3": {
+          "type": "category",
+          "settings": {
+            "title": "Gents"
+          }
+        },
+        "cat_4": {
+          "type": "category",
+          "settings": {
+            "title": "Sale"
+          }
+        },
+        "cat_5": {
+          "type": "category",
+          "settings": {
+            "title": "Bridal"
+          }
+        },
+        "cat_6": {
+          "type": "category",
+          "settings": {
+            "title": "Festive"
+          }
+        }
+      },
+      "block_order": ["cat_1", "cat_2", "cat_3", "cat_4", "cat_5", "cat_6"],
+      "settings": {
+        "eyebrow": "Collections",
+        "heading": "Shop the catalog",
+        "subheading": "<p>Explore curated looks for every celebration.</p>",
+        "header_alignment": "left",
+        "show_product_count": true,
+        "layout_style": "bento",
+        "background_color": "#FFFFFF",
+        "text_color": "#111111",
+        "muted_color": "#6B6B6B",
+        "corner_radius": 16,
+        "grid_gap": 14,
+        "padding_top": 72,
+        "padding_bottom": 72
+      }
+    },
+    "product_card_preview": {
+      "type": "product-card-preview",
+      "settings": {
+        "collection": "",
+        "products_to_show": 4,
+        "columns_desktop": "4",
+        "eyebrow": "Live preview",
+        "heading": "Product cards from your store",
+        "subheading": "<p>Real products from your catalog — hover to see image swap, wishlist, and Add to cart animation.</p>",
+        "note": "Prices show in your store currency (PKR). Set store currency to Pakistani Rupee in Shopify admin if needed.",
+        "background_color": "#FFFFFF",
+        "padding_top": 64,
+        "padding_bottom": 64
+      }
+    },
+    "new_arrivals": {
+      "type": "new-arrivals",
+      "settings": {
+        "eyebrow": "Just landed",
+        "heading": "New arrivals",
+        "subheading": "<p>Fresh textures and refined weaves, newly arrived.</p>",
+        "link_label": "View all",
+        "header_alignment": "center",
+        "show_cta": true,
+        "enable_auto_scroll": true,
+        "scroll_speed": 40,
+        "products_to_show": 8,
+        "show_vendor": true,
+        "show_description": true,
+        "show_rating": true,
+        "show_quick_view": true,
+        "show_add_to_cart": true,
+        "background_color": "#FAFAFA",
+        "grid_gap": 24,
+        "columns_mobile": "2",
+        "columns_tablet": "3",
+        "columns_desktop": 4,
+        "padding_top": 72,
+        "padding_bottom": 72
+      }
+    },
+    "featured_collection": {
+      "type": "featured-collection",
+      "settings": {
+        "products": [],
+        "eyebrow": "Curated edit",
+        "heading": "Featured products",
+        "subheading": "<p>Signature fabrics chosen for quiet luxury.</p>",
+        "header_alignment": "center",
+        "show_cta": true,
+        "link_label": "View all",
+        "cta_label": "Shop featured",
+        "show_vendor": true,
+        "show_description": true,
+        "show_rating": true,
+        "show_quick_view": true,
+        "show_add_to_cart": true,
+        "background_color": "#FFFFFF",
+        "grid_gap": 24,
+        "columns_mobile": "2",
+        "columns_tablet": "3",
+        "columns_desktop": 4,
+        "padding_top": 72,
+        "padding_bottom": 72
+      }
+    },
+    "bridal_lehenga": {
+      "type": "bridal-lehenga",
+      "settings": {
+        "eyebrow": "Wedding edit",
+        "heading": "Bridal lehenga collection",
+        "subheading": "<p>Handcrafted lehengas for your most celebrated moments.</p>",
+        "header_alignment": "center",
+        "show_cta": true,
+        "link_label": "View all",
+        "cta_label": "Shop lehengas",
+        "products_to_show": 8,
+        "show_vendor": true,
+        "show_description": true,
+        "show_rating": true,
+        "show_quick_view": true,
+        "show_add_to_cart": true,
+        "background_color": "#FAFAFA",
+        "grid_gap": 24,
+        "columns_mobile": "2",
+        "columns_tablet": "2",
+        "columns_desktop": 4,
+        "padding_top": 72,
+        "padding_bottom": 72
+      }
+    },
+    "customer_review_videos": {
+      "type": "customer-review-videos",
+      "blocks": {
+        "review_1": {
+          "type": "review_video",
+          "settings": {
+            "media_type": "video",
+            "customer_name": "Amelia R.",
+            "review_text": "The drape and hand-feel exceeded every expectation.",
+            "rating": 5
+          }
+        },
+        "review_2": {
+          "type": "review_video",
+          "settings": {
+            "media_type": "image",
+            "customer_name": "Jordan K.",
+            "review_text": "Star Fabrics transformed our living room completely.",
+            "rating": 5
+          }
+        },
+        "review_3": {
+          "type": "review_video",
+          "settings": {
+            "media_type": "video",
+            "customer_name": "Sofia M.",
+            "review_text": "Beautiful quality and thoughtful packaging.",
+            "rating": 5
+          }
+        }
+      },
+      "block_order": ["review_1", "review_2", "review_3"],
+      "settings": {
+        "eyebrow": "From our clients",
+        "heading": "Customer reviews",
+        "subheading": "<p>Real moments, real fabrics, real stories — in photos and video.</p>",
+        "header_alignment": "center",
+        "enable_auto_scroll": true,
+        "scroll_speed": 45,
+        "background_color": "#111111",
+        "card_gap": 20,
+        "padding_top": 72,
+        "padding_bottom": 72
+      }
+    },
+    "customer_testimonials": {
+      "type": "customer-testimonials",
+      "blocks": {
+        "quote_1": {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Ayesha M.",
+            "review_text": "The fabric quality and finish felt truly bridal — every detail was refined.",
+            "rating": 5
+          }
+        },
+        "quote_2": {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Hassan R.",
+            "review_text": "From order to delivery, everything felt premium and carefully handled.",
+            "rating": 5
+          }
+        },
+        "quote_3": {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Sara K.",
+            "review_text": "Soft hand-feel, rich colour, and packaging that matched the luxury of the piece.",
+            "rating": 5
+          }
+        },
+        "quote_4": {
+          "type": "testimonial",
+          "settings": {
+            "customer_name": "Nadia F.",
+            "review_text": "I received so many compliments — the drape was exactly what I hoped for.",
+            "rating": 5
+          }
+        }
+      },
+      "block_order": ["quote_1", "quote_2", "quote_3", "quote_4"],
+      "settings": {
+        "eyebrow": "Testimonials",
+        "heading": "What customers say about us",
+        "subheading": "<p>Honest words from clients who chose TAH for their most important moments.</p>",
+        "header_alignment": "center",
+        "enable_auto_scroll": true,
+        "scroll_speed": 40,
+        "background_color": "#F6F7F5",
+        "text_color": "#111111",
+        "card_background": "#FFFFFF",
+        "card_gap": 20,
+        "padding_top": 72,
+        "padding_bottom": 72
+      }
+    },
+    "why_choose": {
+      "type": "why-choose",
+      "blocks": {
+        "feature_1": {
+          "type": "feature",
+          "settings": {
+            "title": "Premium quality fabrics",
+            "text": "Thoughtfully sourced materials with exceptional hand-feel and lasting performance."
+          }
+        },
+        "feature_2": {
+          "type": "feature",
+          "settings": {
+            "title": "Ethical sourcing",
+            "text": "Responsible partners and transparent practices at every stage of production."
+          }
+        },
+        "feature_3": {
+          "type": "feature",
+          "settings": {
+            "title": "Expert craftsmanship",
+            "text": "Decades of textile expertise woven into every roll and remnant."
+          }
+        },
+        "feature_4": {
+          "type": "feature",
+          "settings": {
+            "title": "Dedicated support",
+            "text": "Personalized guidance from sampling to final installation."
+          }
+        }
+      },
+      "block_order": ["feature_1", "feature_2", "feature_3", "feature_4"],
+      "settings": {
+        "eyebrow": "Our promise",
+        "heading": "Why choose Star Fabrics",
+        "subheading": "<p>Premium textiles, trusted craftsmanship, and dedicated service for every celebration.</p>",
+        "header_alignment": "center",
+        "layout": "grid_only",
+        "color_background": "#FFFFFF",
+        "color_text": "#111111",
+        "padding_top": 72,
+        "padding_bottom": 72
+      }
+    },
+    "blog_posts": {
+      "type": "blog-posts",
+      "settings": {
+        "eyebrow": "Journal",
+        "heading": "From the atelier",
+        "subheading": "<p>Stories, styling notes, and craft from behind the scenes.</p>",
+        "header_alignment": "center",
+        "show_cta": true,
+        "link_label": "View all",
+        "posts_to_show": 3,
+        "show_date": true,
+        "show_author": true,
+        "show_excerpt": true,
+        "color_background": "#FFFFFF",
+        "color_text": "#111111",
+        "grid_gap": 24,
+        "padding_top": 72,
+        "padding_bottom": 96
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "trusted_by",
+    "shop_catalog",
+    "product_card_preview",
+    "new_arrivals",
+    "featured_collection",
+    "bridal_lehenga",
+    "customer_review_videos",
+    "customer_testimonials",
+    "why_choose",
+    "blog_posts"
+  ]
+}

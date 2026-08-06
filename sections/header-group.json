@@ -1,0 +1,98 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "header",
+  "name": "t:general.header",
+  "sections": {
+    "announcement_bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement_1": {
+          "type": "announcement",
+          "settings": {
+            "text": "Cash on Delivery"
+          }
+        },
+        "announcement_2": {
+          "type": "announcement",
+          "settings": {
+            "text": "Fast Delivery"
+          }
+        },
+        "announcement_3": {
+          "type": "announcement",
+          "settings": {
+            "text": "Secure"
+          }
+        },
+        "announcement_4": {
+          "type": "announcement",
+          "settings": {
+            "text": "Save 14 Day Return"
+          }
+        }
+      },
+      "block_order": [
+        "announcement_1",
+        "announcement_2",
+        "announcement_3",
+        "announcement_4"
+      ],
+      "settings": {
+        "enable_bar": true,
+        "show_close_button": false,
+        "enable_marquee": true,
+        "marquee_speed": 28,
+        "show_language_selector": true,
+        "show_currency_selector": true,
+        "show_currency_name": false,
+        "show_social_icons": true,
+        "color_background": "#111111",
+        "color_text": "#F5F5F7",
+        "color_link": "#F5F5F7",
+        "font_size": 12,
+        "letter_spacing": 8,
+        "bar_height": 40
+      }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "logo_height": 44,
+        "menu": "main-menu",
+        "enable_sticky": true,
+        "enable_transparent": false,
+        "enable_search": true,
+        "search_results_limit": 6,
+        "search_show_vendor": false,
+        "enable_cart_drawer": true,
+        "show_account": true,
+        "mega_promo_heading": "New season",
+        "mega_promo_text": "Discover the latest arrivals",
+        "color_background": "#F4F5F3",
+        "color_text": "#111111",
+        "color_accent": "#111111",
+        "color_border": "#E8E8E8",
+        "header_height": 72
+      }
+    },
+    "cart_drawer": {
+      "type": "cart-drawer",
+      "settings": {
+        "show_shipping_note": true
+      }
+    }
+  },
+  "order": [
+    "announcement_bar",
+    "header",
+    "cart_drawer"
+  ]
+}

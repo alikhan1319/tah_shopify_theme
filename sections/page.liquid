@@ -1,0 +1,330 @@
+{% comment %}
+  Default page section. About / about-us pages automatically get the modern
+  About layout so the page works even when the about template is not assigned.
+{% endcomment %}
+
+{%- liquid
+  assign is_about_page = false
+  if page.handle == 'about-us' or page.handle == 'about'
+    assign is_about_page = true
+  endif
+
+  assign is_legal_page = false
+  if page.handle == 'privacy-policy' or page.handle == 'privacy' or page.handle == 'terms-and-conditions' or page.handle == 'terms-of-service' or page.handle == 'terms' or page.handle == 'terms-conditions' or page.handle == 'return-exchange-policy' or page.handle == 'returns-exchanges' or page.handle == 'returns-and-exchanges' or page.handle == 'return-and-exchange' or page.handle == 'returns' or page.handle == 'return-policy' or page.handle == 'refund-policy' or page.handle == 'return-exchange' or page.handle == 'returns-exchange' or page.handle == 'shipping-policy' or page.handle == 'return' or page.handle == 'exchange' or page.handle == 'exchanges'
+    assign is_legal_page = true
+  endif
+-%}
+
+{%- if is_about_page -%}
+  {% render 'about-page', section: section, page_title: page.title %}
+{%- elsif is_legal_page -%}
+  {% render 'legal-auto', page_obj: page %}
+{%- else -%}
+  <div
+    class="page-main full-width"
+    style="
+      --pg-pad-top: {{ section.settings.padding_top | default: 64 }}px;
+      --pg-pad-bottom: {{ section.settings.padding_bottom | default: 80 }}px;
+    "
+  >
+    <div class="page-main__inner">
+      <header class="page-main__header">
+        <h1 class="page-main__heading">{{ page.title | escape }}</h1>
+        <span class="page-main__rule" aria-hidden="true"></span>
+      </header>
+      <div class="page-main__content rte">
+        {{ page.content }}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .page-main {
+    display: block;
+    background: var(--color-background);
+    color: var(--color-heading);
+  }
+
+  .page-main__inner {
+    width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    margin-inline: auto;
+    padding-block: var(--pg-pad-top, 64px) var(--pg-pad-bottom, 80px);
+  }
+
+  .page-main__header {
+    display: grid;
+    gap: 0.85rem;
+    margin-bottom: clamp(1.75rem, 4vw, 2.75rem);
+    max-width: 42rem;
+  }
+
+  .page-main__heading {
+    margin: 0;
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    font-weight: 500;
+    letter-spacing: -0.045em;
+    line-height: 1.05;
+  }
+
+  .page-main__rule {
+    display: block;
+    width: 2.5rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.85;
+  }
+
+  .page-main__content {
+    max-width: 42rem;
+    font-size: 1.02rem;
+    line-height: 1.7;
+    color: var(--color-text-muted);
+  }
+
+  .page-main__content > *:first-child {
+    margin-top: 0;
+  }
+
+  .page-main__content > *:last-child {
+    margin-bottom: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.page",
+  "tag": "section",
+  "class": "page-section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:info.about_page_auto"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_theme_colors",
+      "label": "t:labels.use_theme_colors",
+      "info": "t:info.use_theme_colors",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:general.content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:labels.eyebrow",
+      "default": "Our story"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "About Star Fabrics"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "t:labels.subheading",
+      "default": "<p>Premium unstitched fabric and designer clothing from Jhelum (Dina City).</p>"
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "t:labels.alignment",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" }
+      ]
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:labels.image"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "t:labels.image_position",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "t:options.alignment.left" },
+        { "value": "right", "label": "t:options.alignment.right" }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "story_eyebrow",
+      "label": "t:labels.story_eyebrow",
+      "default": "Star Fabrics"
+    },
+    {
+      "type": "text",
+      "id": "story_heading",
+      "label": "t:labels.story_heading",
+      "default": "Premium fabrics. Timeless style."
+    },
+    {
+      "type": "richtext",
+      "id": "story_text",
+      "label": "t:labels.story_text",
+      "default": "<p>Star Fabrics is a trusted clothing brand committed to delivering quality, style, and comfort. We specialize in providing premium fabrics and fashionable designs that reflect modern trends while maintaining timeless elegance.</p><p>With a passion for fashion and a dedication to excellence, Star Fabrics continues to grow as a reliable name in the clothing industry.</p>"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "t:labels.cta_label",
+      "default": "Shop collections"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "t:labels.cta_link"
+    },
+    {
+      "type": "text",
+      "id": "mission_heading",
+      "label": "t:labels.mission_heading",
+      "default": "Our mission"
+    },
+    {
+      "type": "textarea",
+      "id": "mission_text",
+      "label": "t:labels.mission_text",
+      "default": "Our mission is to provide high-quality clothing that combines comfort, durability, and contemporary style. We aim to build long-lasting relationships with our customers by offering exceptional value and consistent quality."
+    },
+    {
+      "type": "text",
+      "id": "vision_heading",
+      "label": "t:labels.vision_heading",
+      "default": "Our vision"
+    },
+    {
+      "type": "textarea",
+      "id": "vision_text",
+      "label": "t:labels.vision_text",
+      "default": "Our vision is to become a leading name in the fashion industry, recognized for innovation, trust, and excellence. We aspire to set new standards in clothing by continuously evolving with trends while staying true to our core values."
+    },
+    {
+      "type": "image_picker",
+      "id": "ceo_image",
+      "label": "t:labels.ceo_image",
+      "info": "t:info.ceo_image"
+    },
+    {
+      "type": "text",
+      "id": "ceo_image_alt",
+      "label": "t:labels.ceo_image_alt",
+      "info": "t:info.ceo_image_alt"
+    },
+    {
+      "type": "text",
+      "id": "ceo_heading",
+      "label": "t:labels.ceo_heading",
+      "default": "CEO's message"
+    },
+    {
+      "type": "textarea",
+      "id": "ceo_text",
+      "label": "t:labels.ceo_text",
+      "default": "As the CEO of Star Fabrics, I am proud to lead a brand that stands for quality, integrity, and customer satisfaction. From fabric selection to final design, every step is guided by our commitment to excellence. Fashion is a reflection of confidence and individuality, and our goal is to deliver clothing that makes our customers feel comfortable, stylish, and confident. Thank you for trusting Star Fabrics and being part of our journey."
+    },
+    {
+      "type": "text",
+      "id": "ceo_name",
+      "label": "t:labels.ceo_name",
+      "default": "CEO, Star Fabrics"
+    },
+    {
+      "type": "text",
+      "id": "ceo_role",
+      "label": "t:labels.ceo_role",
+      "default": "CEO",
+      "info": "t:info.ceo_role"
+    },
+    {
+      "type": "text",
+      "id": "banner_heading",
+      "label": "t:labels.banner_heading",
+      "default": "Ready to find your next piece?"
+    },
+    {
+      "type": "text",
+      "id": "banner_text",
+      "label": "t:labels.banner_text",
+      "default": "Explore premium fabrics and designer clothing crafted for lasting beauty."
+    },
+    {
+      "type": "text",
+      "id": "banner_label",
+      "label": "t:labels.banner_label",
+      "default": "Contact us"
+    },
+    {
+      "type": "url",
+      "id": "banner_link",
+      "label": "t:labels.banner_link"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "surface_color",
+      "label": "t:labels.surface",
+      "default": "#F7F7F5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "t:labels.muted_text",
+      "default": "#6B6B6B"
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "t:labels.corner_radius",
+      "min": 0,
+      "max": 28,
+      "step": 2,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "t:labels.padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "t:labels.padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 88
+    }
+  ]
+}
+{% endschema %}

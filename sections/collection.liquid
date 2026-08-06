@@ -1,0 +1,632 @@
+{%- liquid
+  assign products_per_page = section.settings.products_per_page | default: 12
+  assign sort_by = collection.sort_by | default: collection.default_sort_by
+-%}
+
+<div
+  class="collection-main full-width"
+  id="CollectionMain-{{ section.id }}"
+  style="
+    --cm-padding-top: {{ section.settings.padding_top }}px;
+    --cm-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --cm-cols-mobile: {{ section.settings.columns_mobile }};
+    --cm-cols-tablet: {{ section.settings.columns_tablet }};
+    --cm-cols-desktop: {{ section.settings.columns_desktop }};
+    --cm-gap: {{ section.settings.grid_gap }}px;
+    {%- if section.settings.use_theme_colors == false %}--cm-bg: {{ section.settings.background_color }};{% endif -%}
+  "
+  {{ section.shopify_attributes }}
+>
+  <div class="collection-main__shell">
+    <div class="collection-main__inner">
+      {%- paginate collection.products by products_per_page -%}
+        <div class="collection-main__toolbar">
+          <div class="collection-main__toolbar-start">
+            <p class="collection-main__count">
+              {%- if paginate.items == 0 -%}
+                {{ 'sections.collection.empty' | t }}
+              {%- else -%}
+                {{ 'sections.collection.product_count' | t: count: paginate.items }}
+              {%- endif -%}
+            </p>
+          </div>
+
+          {%- if section.settings.enable_sorting and collection.sort_options.size > 0 -%}
+            <div class="collection-main__toolbar-end">
+              <label class="collection-main__sort-label" for="CollectionSort-{{ section.id }}">
+                {{ 'sections.collection.sort_by' | t }}
+              </label>
+              <div class="collection-main__sort-wrap">
+                <select
+                  id="CollectionSort-{{ section.id }}"
+                  class="collection-main__sort-select"
+                  name="sort_by"
+                  data-collection-sort
+                >
+                  {%- for option in collection.sort_options -%}
+                    <option
+                      value="{{ option.value | escape }}"
+                      {% if option.value == sort_by %}selected{% endif %}
+                    >
+                      {{ option.name | escape }}
+                    </option>
+                  {%- endfor -%}
+                </select>
+                <svg class="collection-main__sort-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <path d="m2.5 4.5 3.5 3 3.5-3" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+              </div>
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- if collection.products.size == 0 -%}
+          <div class="collection-main__empty">
+            <p>{{ 'sections.collection.no_products' | t }}</p>
+            <a class="collection-main__empty-link" href="{{ routes.all_products_collection_url }}">
+              {{ 'sections.collection.continue_shopping' | t }}
+            </a>
+          </div>
+        {%- else -%}
+          <ul class="collection-main__grid" role="list" data-reveal-stagger>
+            {%- for product in collection.products -%}
+              <li class="collection-main__item" data-reveal>
+                {%- liquid
+                  assign card_loading = 'lazy'
+                  if forloop.index <= section.settings.columns_desktop
+                    assign card_loading = 'eager'
+                  endif
+                -%}
+                {% render 'product-card',
+                  product: product,
+                  show_vendor: section.settings.show_vendor,
+                  show_description: section.settings.show_description,
+                  show_rating: section.settings.show_rating,
+                  show_quick_view: section.settings.show_quick_view,
+                  show_add_to_cart: section.settings.show_add_to_cart,
+                  loading: card_loading
+                %}
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+
+        {%- if paginate.pages > 1 -%}
+          <nav class="collection-main__pagination" aria-label="{{ 'general.pagination.label' | t }}">
+            <div class="collection-main__pagination-card">
+              <p class="collection-main__pagination-status">
+                {{ 'general.pagination.page_of' | t: page: paginate.current_page, pages: paginate.pages }}
+              </p>
+
+              <ul class="collection-main__pagination-list" role="list">
+                <li>
+                  {%- if paginate.previous -%}
+                    <a
+                      class="collection-main__page-link collection-main__page-link--prev"
+                      href="{{ paginate.previous.url }}"
+                      aria-label="{{ 'general.pagination.previous' | t }}"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="M10 3 5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span>{{ 'general.pagination.previous' | t }}</span>
+                    </a>
+                  {%- else -%}
+                    <span class="collection-main__page-link collection-main__page-link--prev is-disabled" aria-disabled="true">
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="M10 3 5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span>{{ 'general.pagination.previous' | t }}</span>
+                    </span>
+                  {%- endif -%}
+                </li>
+
+                {%- for part in paginate.parts -%}
+                  <li>
+                    {%- if part.is_link -%}
+                      <a class="collection-main__page-num" href="{{ part.url }}">{{ part.title }}</a>
+                    {%- elsif part.title == paginate.current_page -%}
+                      <span class="collection-main__page-num is-current" aria-current="page">{{ part.title }}</span>
+                    {%- else -%}
+                      <span class="collection-main__page-num is-gap">{{ part.title }}</span>
+                    {%- endif -%}
+                  </li>
+                {%- endfor -%}
+
+                <li>
+                  {%- if paginate.next -%}
+                    <a
+                      class="collection-main__page-link collection-main__page-link--next"
+                      href="{{ paginate.next.url }}"
+                      aria-label="{{ 'general.pagination.next' | t }}"
+                    >
+                      <span>{{ 'general.pagination.next' | t }}</span>
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="m6 3 5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </a>
+                  {%- else -%}
+                    <span class="collection-main__page-link collection-main__page-link--next is-disabled" aria-disabled="true">
+                      <span>{{ 'general.pagination.next' | t }}</span>
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="m6 3 5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </span>
+                  {%- endif -%}
+                </li>
+              </ul>
+            </div>
+          </nav>
+        {%- endif -%}
+      {%- endpaginate -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .collection-main {
+    --cm-ink: var(--color-heading);
+    --cm-mute: var(--color-text-muted);
+    --cm-line: color-mix(in srgb, var(--color-heading) 10%, transparent);
+    --cm-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    background: var(--cm-bg, var(--color-background));
+    color: var(--cm-ink);
+  }
+
+  .collection-main__shell {
+    padding-block: var(--cm-padding-top) var(--cm-padding-bottom);
+  }
+
+  .collection-main__inner {
+    width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    margin-inline: auto;
+  }
+
+  .collection-main__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.85rem 1.25rem;
+    margin-bottom: clamp(1.5rem, 3.5vw, 2.25rem);
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--cm-line);
+  }
+
+  .collection-main__toolbar-start {
+    min-width: 0;
+  }
+
+  .collection-main__count {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cm-mute);
+  }
+
+  .collection-main__toolbar-end {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-width: 0;
+    margin-left: auto;
+  }
+
+  .collection-main__sort-label {
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cm-mute);
+    white-space: nowrap;
+  }
+
+  .collection-main__sort-wrap {
+    position: relative;
+    display: block;
+    min-width: 0;
+  }
+
+  .collection-main__sort-select {
+    appearance: none;
+    width: min(100%, 14rem);
+    min-height: 2.5rem;
+    padding: 0.5rem 2.2rem 0.5rem 0.95rem;
+    border: 1px solid var(--cm-line);
+    border-radius: 999px;
+    background: var(--color-background);
+    color: var(--cm-ink);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: border-color 160ms var(--cm-ease), box-shadow 160ms var(--cm-ease);
+  }
+
+  .collection-main__sort-select:hover {
+    border-color: color-mix(in srgb, var(--color-heading) 28%, transparent);
+  }
+
+  .collection-main__sort-select:focus-visible {
+    outline: none;
+    border-color: var(--cm-ink);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-heading) 8%, transparent);
+  }
+
+  .collection-main__sort-icon {
+    position: absolute;
+    top: 50%;
+    right: 0.9rem;
+    transform: translateY(-50%);
+    pointer-events: none;
+    opacity: 0.55;
+  }
+
+  @media (max-width: 749px) {
+    .collection-main__toolbar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .collection-main__toolbar-end {
+      margin-left: 0;
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .collection-main__sort-wrap {
+      flex: 1 1 auto;
+    }
+
+    .collection-main__sort-select {
+      width: 100%;
+    }
+  }
+
+  .collection-main__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--cm-cols-mobile), minmax(0, 1fr));
+    gap: var(--cm-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .collection-main__item {
+    min-width: 0;
+    display: flex;
+  }
+
+  .collection-main__item > * {
+    width: 100%;
+  }
+
+  .collection-main__empty {
+    display: grid;
+    gap: 1.1rem;
+    justify-items: center;
+    text-align: center;
+    padding: clamp(3rem, 8vw, 4.5rem) 1.25rem;
+    border-radius: 1.25rem;
+    background: var(--color-surface);
+  }
+
+  .collection-main__empty p {
+    margin: 0;
+    color: var(--cm-mute);
+    font-size: 1rem;
+  }
+
+  .collection-main__empty-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0 1.35rem;
+    border-radius: 999px;
+    background: var(--color-button);
+    color: var(--color-button-text);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: transform 160ms var(--cm-ease), opacity 160ms var(--cm-ease);
+  }
+
+  .collection-main__empty-link:hover,
+  .collection-main__empty-link:focus-visible {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .collection-main__pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: clamp(2.25rem, 5vw, 3.25rem);
+  }
+
+  .collection-main__pagination-card {
+    display: grid;
+    width: fit-content;
+    max-width: 100%;
+    gap: 0.85rem;
+    justify-items: center;
+  }
+
+  .collection-main__pagination-status {
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cm-mute);
+  }
+
+  .collection-main__pagination-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: auto;
+    max-width: 100%;
+  }
+
+  .collection-main__page-link,
+  .collection-main__page-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    min-height: 2.55rem;
+    min-width: 2.55rem;
+    padding: 0 0.85rem;
+    border: 1px solid var(--cm-line);
+    border-radius: 999px;
+    background: var(--color-background);
+    color: var(--cm-ink);
+    text-decoration: none;
+    font-size: 0.8125rem;
+    font-weight: 650;
+    line-height: 1;
+    transition:
+      background-color 160ms var(--cm-ease),
+      border-color 160ms var(--cm-ease),
+      color 160ms var(--cm-ease),
+      transform 160ms var(--cm-ease);
+  }
+
+  .collection-main__page-link:hover,
+  .collection-main__page-num:hover {
+    border-color: color-mix(in srgb, var(--color-heading) 35%, transparent);
+    transform: translateY(-1px);
+  }
+
+  .collection-main__page-num.is-current {
+    background: var(--color-button);
+    border-color: var(--cm-ink);
+    color: var(--color-button-text);
+  }
+
+  .collection-main__page-link.is-disabled,
+  .collection-main__page-num.is-gap {
+    opacity: 0.35;
+    pointer-events: none;
+    transform: none;
+  }
+
+  .collection-main__page-link--prev,
+  .collection-main__page-link--next {
+    padding-inline: 1rem;
+  }
+
+  .collection-main__page-link svg {
+    flex: 0 0 auto;
+  }
+
+  @media (max-width: 749px) {
+    .collection-main__page-link--prev span,
+    .collection-main__page-link--next span {
+      display: none;
+    }
+
+    .collection-main__page-link--prev,
+    .collection-main__page-link--next {
+      min-width: 2.55rem;
+      padding: 0;
+    }
+  }
+
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  @media (min-width: 750px) {
+    .collection-main__grid {
+      grid-template-columns: repeat(var(--cm-cols-tablet), minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 990px) {
+    .collection-main__grid {
+      grid-template-columns: repeat(var(--cm-cols-desktop), minmax(0, 1fr));
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (() => {
+    const bindSort = (root = document) => {
+      root.querySelectorAll('[data-collection-sort]').forEach((select) => {
+        if (select.dataset.bound === 'true') return;
+        select.dataset.bound = 'true';
+        select.addEventListener('change', () => {
+          const url = new URL(window.location.href);
+          url.searchParams.set('sort_by', select.value);
+          url.searchParams.delete('page');
+          window.location.assign(url.toString());
+        });
+      });
+    };
+
+    bindSort();
+    document.addEventListener('shopify:section:load', (event) => bindSort(event.target));
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.collection.name",
+  "tag": "section",
+  "class": "collection-main-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_theme_colors",
+      "label": "t:labels.use_theme_colors",
+      "info": "t:info.use_theme_colors",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:general.layout"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "t:labels.products_per_page",
+      "min": 8,
+      "max": 36,
+      "step": 4,
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "t:labels.columns_mobile",
+      "default": "2",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "columns_tablet",
+      "label": "t:labels.columns_tablet",
+      "default": "3",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "t:labels.columns_desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "t:labels.grid_gap",
+      "min": 12,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "t:general.product"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sorting",
+      "label": "t:labels.enable_sorting",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "t:labels.show_vendor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "t:labels.show_description",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "t:labels.show_rating",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quick_view",
+      "label": "t:labels.show_quick_view",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_add_to_cart",
+      "label": "t:labels.show_add_to_cart",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:general.spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "t:labels.padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "t:labels.padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    }
+  ]
+}
+{% endschema %}

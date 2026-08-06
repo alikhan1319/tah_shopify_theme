@@ -1,0 +1,41 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "collections",
+      "settings": {
+        "eyebrow": "Shop",
+        "heading": "Collections",
+        "subheading": "<p>Explore curated edits crafted for every occasion.</p>",
+        "header_alignment": "center",
+        "show_collection_count": true,
+        "collections_per_page": 12,
+        "show_description": false,
+        "show_product_count": true,
+        "show_shop_label": true,
+        "layout_style": "featured",
+        "image_ratio": "4 / 5",
+        "columns_mobile": "1",
+        "columns_tablet": "2",
+        "columns_desktop": 3,
+        "grid_gap": 20,
+        "card_radius": 16,
+        "background_color": "#F7F7F5",
+        "card_background": "#111111",
+        "text_color": "#111111",
+        "muted_color": "#6B6B6B",
+        "padding_top": 64,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": ["main"]
+}

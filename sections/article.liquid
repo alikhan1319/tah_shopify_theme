@@ -1,0 +1,1130 @@
+{%- liquid
+  assign show_image = section.settings.show_featured_image
+  assign show_author = section.settings.show_author
+  assign show_date = section.settings.show_date
+  assign show_tags = section.settings.show_tags
+  assign show_back = section.settings.show_back_link
+  assign show_share = section.settings.show_share
+  assign show_sidebar = section.settings.show_sidebar
+  assign show_latest = section.settings.show_latest
+  assign show_all_tags = section.settings.show_all_tags
+  assign latest_count = section.settings.latest_count | default: 5
+
+  assign comments_enabled = false
+  if blog.comments_enabled? and section.settings.show_comments
+    assign comments_enabled = true
+  endif
+
+  assign show_featured = false
+  if show_image and article.image
+    assign show_featured = true
+  endif
+-%}
+
+<article
+  class="article-page full-width"
+  id="ArticlePage-{{ section.id }}"
+  style="
+    --ap-pad-top: {{ section.settings.padding_top }}px;
+    --ap-pad-bottom: {{ section.settings.padding_bottom }}px;
+    {%- if section.settings.use_theme_colors == false %}--ap-bg: {{ section.settings.background_color }};{% endif -%}
+    {%- if section.settings.use_theme_colors == false %}--ap-surface: {{ section.settings.surface_color }};{% endif -%}
+    {%- if section.settings.use_theme_colors == false %}--ap-text: {{ section.settings.text_color }};{% endif -%}
+    {%- if section.settings.use_theme_colors == false %}--ap-mute: {{ section.settings.muted_color }};{% endif -%}
+    --ap-radius: {{ section.settings.corner_radius }}px;
+  "
+  {{ section.shopify_attributes }}
+>
+  {%- comment -%} Hero: title only (no featured image) {%- endcomment -%}
+  <header class="article-page__hero">
+    <div class="article-page__hero-inner">
+      {%- if show_back -%}
+        <a class="article-page__back" href="{{ blog.url }}">
+          <span class="article-page__back-icon" aria-hidden="true">←</span>
+          {{ 'blog.back_to_blog' | t: title: blog.title }}
+        </a>
+      {%- endif -%}
+
+      {%- if show_tags and article.tags.size > 0 -%}
+        <ul class="article-page__tags" role="list">
+          {%- for tag in article.tags limit: 4 -%}
+            <li>
+              <a class="article-page__tag" href="{{ blog.url }}/tagged/{{ tag | handle }}">
+                {{ tag | escape }}
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+      <h1 class="article-page__heading">{{ article.title | escape }}</h1>
+
+      <span class="article-page__rule" aria-hidden="true"></span>
+
+      {%- if show_date or show_author -%}
+        <div class="article-page__meta">
+          {%- if show_date -%}
+            <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+              {{ article.published_at | date: '%B %d, %Y' }}
+            </time>
+          {%- endif -%}
+
+          {%- if show_date and show_author and article.author != blank -%}
+            <span class="article-page__dot" aria-hidden="true"></span>
+          {%- endif -%}
+
+          {%- if show_author and article.author != blank -%}
+            <span>{{ 'blog.by_author' | t: author: article.author }}</span>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </header>
+
+  {%- comment -%} Body: featured image + content left, sidebar right {%- endcomment -%}
+  <div class="article-page__shell">
+    <div class="article-page__layout{% unless show_sidebar %} article-page__layout--single{% endunless %}">
+      <div class="article-page__main">
+        {%- if show_featured -%}
+          <figure class="article-page__featured">
+            {%- assign image_alt = article.image.alt | default: article.title -%}
+            {{
+              article.image
+              | image_url: width: 1600
+              | image_tag:
+                loading: 'eager',
+                fetchpriority: 'high',
+                widths: '600, 900, 1200, 1600',
+                sizes: '(min-width: 990px) 46rem, 100vw',
+                class: 'article-page__featured-image',
+                alt: image_alt
+            }}
+          </figure>
+        {%- endif -%}
+
+        <div class="article-page__content rte">
+          {{ article.content }}
+        </div>
+
+        {%- if show_share -%}
+          <div class="article-page__share">
+            <p class="article-page__share-label">{{ 'blog.share' | t }}</p>
+            <ul class="article-page__share-list" role="list">
+              <li>
+                <a
+                  class="article-page__share-link"
+                  href="https://www.facebook.com/sharer/sharer.php?u={{ shop.url }}{{ article.url }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {{ 'blog.share_facebook' | t }}
+                </a>
+              </li>
+              <li>
+                <a
+                  class="article-page__share-link"
+                  href="https://twitter.com/intent/tweet?url={{ shop.url }}{{ article.url }}&text={{ article.title | url_param_escape }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {{ 'blog.share_x' | t }}
+                </a>
+              </li>
+              <li>
+                <a
+                  class="article-page__share-link"
+                  href="https://wa.me/?text={{ article.title | url_param_escape }}%20{{ shop.url }}{{ article.url }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {{ 'blog.share_whatsapp' | t }}
+                </a>
+              </li>
+            </ul>
+          </div>
+        {%- endif -%}
+
+        {%- if comments_enabled -%}
+          <section class="article-page__comments" id="comments" aria-labelledby="ArticleComments-{{ section.id }}">
+            <header class="article-page__comments-header">
+              <h2 class="article-page__comments-heading" id="ArticleComments-{{ section.id }}">
+                {{ 'blog.article_comments' | t }}
+                {%- if article.comments_count > 0 -%}
+                  <span class="article-page__comments-count">({{ article.comments_count }})</span>
+                {%- endif -%}
+              </h2>
+              <span class="article-page__rule" aria-hidden="true"></span>
+            </header>
+
+            {%- paginate article.comments by 10 -%}
+              {%- if article.comments.size > 0 -%}
+                <ul class="article-page__comment-list" role="list">
+                  {%- for comment in article.comments -%}
+                    <li class="article-page__comment">
+                      <div class="article-page__comment-meta">
+                        <p class="article-page__comment-author">{{ comment.author | escape }}</p>
+                        <time datetime="{{ comment.created_at | date: '%Y-%m-%d' }}">
+                          {{ comment.created_at | date: '%b %d, %Y' }}
+                        </time>
+                      </div>
+                      <div class="article-page__comment-body">{{ comment.content }}</div>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+
+                {%- if paginate.pages > 1 -%}
+                  <nav class="article-page__pagination" aria-label="{{ 'general.pagination.label' | t }}">
+                    {{ paginate | default_pagination: anchor: 'comments' }}
+                  </nav>
+                {%- endif -%}
+              {%- endif -%}
+            {%- endpaginate -%}
+
+            {% form 'new_comment', article, class: 'article-page__form' %}
+              <h3 class="article-page__form-heading">{{ 'blog.comment_form_title' | t }}</h3>
+
+              {%- if form.posted_successfully? -%}
+                <p class="article-page__form-success" role="status">
+                  {%- if blog.moderated? -%}
+                    {{ 'blog.comment_success_moderated' | t }}
+                  {%- else -%}
+                    {{ 'blog.comment_success' | t }}
+                  {%- endif -%}
+                </p>
+              {%- endif -%}
+
+              {%- if form.errors -%}
+                <div class="article-page__form-errors" role="alert">
+                  <p class="article-page__form-errors-title">{{ 'blog.comment_error_heading' | t }}</p>
+                  {{ form.errors | default_errors }}
+                </div>
+              {%- endif -%}
+
+              <div class="article-page__form-grid">
+                <div class="article-page__field">
+                  <label class="article-page__label" for="CommentAuthor-{{ section.id }}">
+                    {{ 'blog.comment_form_name' | t }}
+                  </label>
+                  <input
+                    class="article-page__input"
+                    type="text"
+                    name="comment[author]"
+                    id="CommentAuthor-{{ section.id }}"
+                    value="{{ form.author }}"
+                    autocomplete="name"
+                    required
+                  >
+                </div>
+
+                <div class="article-page__field">
+                  <label class="article-page__label" for="CommentEmail-{{ section.id }}">
+                    {{ 'blog.comment_form_email' | t }}
+                  </label>
+                  <input
+                    class="article-page__input"
+                    type="email"
+                    name="comment[email]"
+                    id="CommentEmail-{{ section.id }}"
+                    value="{{ form.email }}"
+                    autocomplete="email"
+                    required
+                  >
+                </div>
+              </div>
+
+              <div class="article-page__field">
+                <label class="article-page__label" for="CommentBody-{{ section.id }}">
+                  {{ 'blog.comment_form_body' | t }}
+                </label>
+                <textarea
+                  class="article-page__textarea"
+                  name="comment[body]"
+                  id="CommentBody-{{ section.id }}"
+                  rows="5"
+                  required
+                >{{ form.body }}</textarea>
+              </div>
+
+              <button class="article-page__submit" type="submit">
+                {{ 'blog.comment_form_submit' | t }}
+              </button>
+            {% endform %}
+          </section>
+        {%- endif -%}
+      </div>
+
+      {%- if show_sidebar -%}
+        <aside class="article-page__sidebar" aria-label="{{ 'blog.sidebar_label' | t }}">
+          {%- if section.settings.sidebar_note != blank -%}
+            <div class="article-page__widget">
+              <p class="article-page__widget-eyebrow">{{ blog.title | escape }}</p>
+              <div class="article-page__widget-note">{{ section.settings.sidebar_note }}</div>
+              <a class="article-page__widget-link" href="{{ blog.url }}">
+                {{ 'blog.view_all_posts' | t }}
+                <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          {%- endif -%}
+
+          {%- if show_latest -%}
+            <div class="article-page__widget">
+              <h2 class="article-page__widget-title">{{ 'blog.latest_posts' | t }}</h2>
+              <ul class="article-page__latest" role="list">
+                {%- assign latest_shown = 0 -%}
+                {%- for related in blog.articles -%}
+                  {%- if related.id == article.id -%}
+                    {%- continue -%}
+                  {%- endif -%}
+                  {%- if latest_shown >= latest_count -%}
+                    {%- break -%}
+                  {%- endif -%}
+                  <li>
+                    <a class="article-page__latest-card" href="{{ related.url }}">
+                      {%- if related.image -%}
+                        <span class="article-page__latest-media">
+                          {{
+                            related.image
+                            | image_url: width: 240
+                            | image_tag:
+                              loading: 'lazy',
+                              widths: '120, 180, 240',
+                              sizes: '72px',
+                              class: 'article-page__latest-image',
+                              alt: related.title
+                          }}
+                        </span>
+                      {%- else -%}
+                        <span class="article-page__latest-media article-page__latest-media--empty" aria-hidden="true"></span>
+                      {%- endif -%}
+
+                      <span class="article-page__latest-copy">
+                        <span class="article-page__latest-title">{{ related.title | escape }}</span>
+                        {%- if show_date -%}
+                          <time datetime="{{ related.published_at | date: '%Y-%m-%d' }}">
+                            {{ related.published_at | date: '%b %d, %Y' }}
+                          </time>
+                        {%- endif -%}
+                      </span>
+                    </a>
+                  </li>
+                  {%- assign latest_shown = latest_shown | plus: 1 -%}
+                {%- endfor -%}
+              </ul>
+            </div>
+          {%- endif -%}
+
+          {%- if show_all_tags and blog.all_tags.size > 0 -%}
+            <div class="article-page__widget">
+              <h2 class="article-page__widget-title">{{ 'blog.tags_label' | t }}</h2>
+              <ul class="article-page__tag-cloud" role="list">
+                {%- for tag in blog.all_tags -%}
+                  <li>
+                    <a class="article-page__tag-cloud-link" href="{{ blog.url }}/tagged/{{ tag | handle }}">
+                      {{ tag | escape }}
+                    </a>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            </div>
+          {%- endif -%}
+        </aside>
+      {%- endif -%}
+    </div>
+  </div>
+</article>
+
+{% stylesheet %}
+  .article-page {
+    --ap-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --ap-line: color-mix(in srgb, var(--color-heading) 10%, transparent);
+    display: block;
+    color: var(--ap-text, var(--color-text));
+    background: var(--ap-bg, var(--color-background));
+  }
+
+  /* —— Hero (text only) —— */
+  .article-page__hero {
+    display: block;
+    color: var(--ap-text, var(--color-heading));
+    background: var(--ap-surface, var(--color-surface));
+    border-bottom: 1px solid color-mix(in srgb, var(--color-border) 80%, transparent);
+  }
+
+  .article-page__hero-inner {
+    width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    margin-inline: auto;
+    padding-block: clamp(2.5rem, 5vw, 4rem) clamp(2rem, 4vw, 3rem);
+    display: grid;
+    gap: 0.9rem;
+    max-width: 46rem;
+  }
+
+  .article-page__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    justify-self: start;
+    color: var(--ap-mute, var(--color-text-muted));
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 650;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color 160ms var(--ap-ease);
+  }
+
+  .article-page__back:hover,
+  .article-page__back:focus-visible {
+    color: var(--ap-text, var(--color-heading));
+  }
+
+  .article-page__back-icon {
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .article-page__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .article-page__tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.7rem;
+    border: 1px solid var(--ap-line);
+    border-radius: 999px;
+    color: var(--ap-mute, var(--color-text-muted));
+    text-decoration: none;
+    font-size: 0.7rem;
+    font-weight: 650;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 160ms var(--ap-ease), border-color 160ms var(--ap-ease), background 160ms var(--ap-ease);
+  }
+
+  .article-page__tag:hover,
+  .article-page__tag:focus-visible {
+    color: var(--ap-text, var(--color-heading));
+    border-color: color-mix(in srgb, var(--color-heading) 25%, transparent);
+    background: color-mix(in srgb, var(--color-heading) 4%, transparent);
+  }
+
+  .article-page__heading {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-style: var(--font-heading--style);
+    font-weight: var(--font-heading--weight, 500);
+    font-size: clamp(2rem, 5.5vw, 3.5rem);
+    letter-spacing: var(--font-heading-letter-spacing, -0.04em);
+    line-height: 1.08;
+    max-width: 18ch;
+    text-wrap: balance;
+    color: var(--ap-text, var(--color-heading));
+  }
+
+  .article-page__rule {
+    display: block;
+    width: 2.75rem;
+    height: 1.5px;
+    background: var(--color-button, var(--color-heading));
+    border-radius: 999px;
+  }
+
+  .article-page__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 0.92rem;
+    color: var(--ap-mute, var(--color-text-muted));
+  }
+
+  .article-page__dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.55;
+  }
+
+  /* —— Body layout —— */
+  .article-page__shell {
+    padding-block: var(--ap-pad-top) var(--ap-pad-bottom);
+  }
+
+  .article-page__layout {
+    width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2rem, 5vw, 3.5rem);
+    align-items: start;
+  }
+
+  @media (min-width: 990px) {
+    .article-page__layout:not(.article-page__layout--single) {
+      grid-template-columns: minmax(0, 1fr) minmax(15rem, 19rem);
+      gap: clamp(2.5rem, 5vw, 4rem);
+    }
+  }
+
+  .article-page__main {
+    min-width: 0;
+    max-width: 46rem;
+  }
+
+  .article-page__layout--single .article-page__main {
+    margin-inline: auto;
+  }
+
+  .article-page__featured {
+    margin: 0 0 1.75rem;
+    border-radius: var(--ap-radius, 16px);
+    overflow: hidden;
+    background: var(--ap-surface, var(--color-surface));
+  }
+
+  .article-page__featured-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .article-page__content {
+    font-size: clamp(1.02rem, 1.4vw, 1.125rem);
+    line-height: 1.8;
+    color: color-mix(in srgb, var(--color-heading) 82%, transparent);
+  }
+
+  .article-page__content > *:first-child {
+    margin-top: 0;
+  }
+
+  .article-page__content > *:last-child {
+    margin-bottom: 0;
+  }
+
+  .article-page__content h2,
+  .article-page__content h3,
+  .article-page__content h4 {
+    color: var(--ap-text, var(--color-text));
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    margin: 2.25rem 0 0.85rem;
+  }
+
+  .article-page__content h2 {
+    font-size: clamp(1.4rem, 2.5vw, 1.75rem);
+  }
+
+  .article-page__content h3 {
+    font-size: clamp(1.2rem, 2vw, 1.4rem);
+  }
+
+  .article-page__content p {
+    margin: 0 0 1.25rem;
+  }
+
+  .article-page__content a {
+    color: var(--ap-text, var(--color-text));
+    text-underline-offset: 0.2em;
+  }
+
+  .article-page__content img,
+  .article-page__content video,
+  .article-page__content iframe {
+    max-width: 100%;
+    height: auto;
+    border-radius: calc(var(--ap-radius, 16px) * 0.65);
+  }
+
+  .article-page__content blockquote {
+    margin: 1.75rem 0;
+    padding: 0.25rem 0 0.25rem 1.25rem;
+    border-left: 2px solid currentColor;
+    font-size: 1.15em;
+    font-style: italic;
+    color: var(--ap-text, var(--color-text));
+  }
+
+  .article-page__content ul,
+  .article-page__content ol {
+    margin: 0 0 1.35rem;
+    padding-left: 1.25rem;
+  }
+
+  .article-page__content li {
+    margin-bottom: 0.45rem;
+  }
+
+  .article-page__share {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.85rem 1.25rem;
+    margin-top: clamp(2.25rem, 5vw, 3rem);
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--ap-line);
+  }
+
+  .article-page__share-label {
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ap-mute, var(--color-text-muted));
+  }
+
+  .article-page__share-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .article-page__share-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.55rem 0.9rem;
+    border: 1px solid var(--ap-line);
+    border-radius: 999px;
+    color: var(--ap-text, var(--color-text));
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 650;
+    transition: background 160ms var(--ap-ease), border-color 160ms var(--ap-ease);
+  }
+
+  .article-page__share-link:hover,
+  .article-page__share-link:focus-visible {
+    background: var(--ap-surface, var(--color-surface));
+    border-color: color-mix(in srgb, var(--color-heading) 28%, transparent);
+  }
+
+  /* —— Comments —— */
+  .article-page__comments {
+    margin-top: clamp(2.75rem, 6vw, 4rem);
+    padding-top: clamp(2rem, 4vw, 2.75rem);
+    border-top: 1px solid var(--ap-line);
+  }
+
+  .article-page__comments-header {
+    display: grid;
+    gap: 0.85rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .article-page__comments-heading {
+    margin: 0;
+    font-size: clamp(1.4rem, 3vw, 1.85rem);
+    font-weight: 550;
+    letter-spacing: -0.035em;
+  }
+
+  .article-page__comments-count {
+    color: var(--ap-mute, var(--color-text-muted));
+    font-weight: 500;
+  }
+
+  .article-page__comment-list {
+    display: grid;
+    gap: 1rem;
+    margin: 0 0 2rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .article-page__comment {
+    padding: 1.15rem 1.25rem;
+    border-radius: var(--ap-radius, 16px);
+    background: var(--ap-surface, var(--color-surface));
+    border: 1px solid color-mix(in srgb, var(--color-heading) 6%, transparent);
+  }
+
+  .article-page__comment-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.35rem 1rem;
+    margin-bottom: 0.55rem;
+  }
+
+  .article-page__comment-author {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+
+  .article-page__comment-meta time {
+    font-size: 0.78rem;
+    color: var(--ap-mute, var(--color-text-muted));
+  }
+
+  .article-page__comment-body {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: color-mix(in srgb, var(--color-heading) 80%, transparent);
+  }
+
+  .article-page__comment-body p {
+    margin: 0 0 0.65rem;
+  }
+
+  .article-page__comment-body p:last-child {
+    margin-bottom: 0;
+  }
+
+  .article-page__form {
+    display: grid;
+    gap: 1rem;
+    padding: 1.4rem;
+    border-radius: var(--ap-radius, 16px);
+    background: var(--ap-surface, var(--color-surface));
+    border: 1px solid color-mix(in srgb, var(--color-heading) 8%, transparent);
+  }
+
+  .article-page__form-heading {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+  }
+
+  .article-page__form-success {
+    margin: 0;
+    padding: 0.75rem 0.9rem;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--color-success) 10%, var(--color-background));
+    color: var(--color-success);
+    font-size: 0.9rem;
+  }
+
+  .article-page__form-errors {
+    padding: 0.75rem 0.9rem;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--color-error) 8%, var(--color-background));
+    color: var(--color-error);
+    font-size: 0.9rem;
+  }
+
+  .article-page__form-errors-title {
+    margin: 0 0 0.35rem;
+    font-weight: 700;
+  }
+
+  .article-page__form-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  @media (min-width: 750px) {
+    .article-page__form-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .article-page__field {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .article-page__label {
+    font-size: 0.78rem;
+    font-weight: 650;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ap-mute, var(--color-text-muted));
+  }
+
+  .article-page__input,
+  .article-page__textarea {
+    width: 100%;
+    padding: 0.8rem 0.95rem;
+    border: 1px solid color-mix(in srgb, var(--color-heading) 14%, transparent);
+    border-radius: 10px;
+    background: var(--color-background);
+    color: var(--ap-text, var(--color-text));
+    font: inherit;
+    font-size: 0.95rem;
+    transition: border-color 160ms var(--ap-ease);
+  }
+
+  .article-page__input:focus,
+  .article-page__textarea:focus {
+    outline: none;
+    border-color: color-mix(in srgb, var(--color-heading) 45%, transparent);
+  }
+
+  .article-page__textarea {
+    resize: vertical;
+    min-height: 8rem;
+  }
+
+  .article-page__submit {
+    justify-self: start;
+    padding: 0.85rem 1.35rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--color-button);
+    color: var(--color-button-text);
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 650;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: transform 160ms var(--ap-ease), opacity 160ms var(--ap-ease);
+  }
+
+  .article-page__submit:hover,
+  .article-page__submit:focus-visible {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .article-page__pagination {
+    margin: 1.25rem 0 1.75rem;
+  }
+
+  .article-page__pagination a,
+  .article-page__pagination span {
+    margin-inline: 0.2rem;
+    color: var(--ap-text, var(--color-text));
+  }
+
+  /* —— Sidebar —— */
+  .article-page__sidebar {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 990px) {
+    .article-page__sidebar {
+      position: sticky;
+      top: 1.5rem;
+    }
+  }
+
+  .article-page__widget {
+    padding: 1.25rem 1.3rem;
+    border-radius: var(--ap-radius, 16px);
+    background: var(--ap-surface, var(--color-surface));
+    border: 1px solid color-mix(in srgb, var(--color-heading) 6%, transparent);
+  }
+
+  .article-page__widget-eyebrow {
+    margin: 0 0 0.55rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ap-mute, var(--color-text-muted));
+  }
+
+  .article-page__widget-note {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: color-mix(in srgb, var(--color-heading) 78%, transparent);
+  }
+
+  .article-page__widget-note p {
+    margin: 0 0 0.65rem;
+  }
+
+  .article-page__widget-note p:last-child {
+    margin-bottom: 0;
+  }
+
+  .article-page__widget-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.9rem;
+    color: var(--ap-text, var(--color-text));
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 650;
+  }
+
+  .article-page__widget-title {
+    margin: 0 0 1rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ap-mute, var(--color-text-muted));
+  }
+
+  .article-page__latest {
+    display: grid;
+    gap: 0.85rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .article-page__latest-card {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    gap: 0.85rem;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 160ms var(--ap-ease);
+  }
+
+  .article-page__latest-card:hover,
+  .article-page__latest-card:focus-visible {
+    opacity: 0.78;
+  }
+
+  .article-page__latest-media {
+    display: block;
+    width: 4.5rem;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--color-heading) 6%, transparent);
+  }
+
+  .article-page__latest-media--empty {
+    background:
+      linear-gradient(135deg, color-mix(in srgb, var(--color-heading) 6%, transparent), color-mix(in srgb, var(--color-heading) 12%, transparent));
+  }
+
+  .article-page__latest-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .article-page__latest-copy {
+    display: grid;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+
+  .article-page__latest-title {
+    font-size: 0.92rem;
+    font-weight: 650;
+    letter-spacing: -0.015em;
+    line-height: 1.3;
+    color: var(--ap-text, var(--color-text));
+  }
+
+  .article-page__latest-copy time {
+    font-size: 0.75rem;
+    color: var(--ap-mute, var(--color-text-muted));
+  }
+
+  .article-page__tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .article-page__tag-cloud-link {
+    display: inline-flex;
+    padding: 0.4rem 0.7rem;
+    border: 1px solid var(--ap-line);
+    border-radius: 999px;
+    color: var(--ap-mute, var(--color-text-muted));
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 650;
+    transition: color 160ms var(--ap-ease), border-color 160ms var(--ap-ease);
+  }
+
+  .article-page__tag-cloud-link:hover,
+  .article-page__tag-cloud-link:focus-visible {
+    color: var(--ap-text, var(--color-text));
+    border-color: color-mix(in srgb, var(--color-heading) 35%, transparent);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.article",
+  "tag": "section",
+  "class": "article-page-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_theme_colors",
+      "label": "t:labels.use_theme_colors",
+      "info": "t:info.use_theme_colors",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:labels.hero"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "t:labels.show_author",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "t:labels.show_date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "t:labels.show_tags",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_back_link",
+      "label": "t:labels.show_back_link",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:general.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_featured_image",
+      "label": "t:labels.show_featured_image",
+      "info": "t:info.article_featured_image",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_share",
+      "label": "t:labels.show_share",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_comments",
+      "label": "t:labels.show_comments",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:general.sidebar"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sidebar",
+      "label": "t:labels.show_sidebar",
+      "default": true
+    },
+    {
+      "type": "richtext",
+      "id": "sidebar_note",
+      "label": "t:labels.sidebar_note",
+      "default": "<p>Stories, styling ideas, and fabric inspiration from Star Fabrics.</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_latest",
+      "label": "t:labels.show_latest",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "latest_count",
+      "label": "t:labels.latest_count",
+      "min": 3,
+      "max": 8,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "show_all_tags",
+      "label": "t:labels.show_all_tags",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:general.style"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "surface_color",
+      "label": "t:labels.surface",
+      "default": "#F7F7F5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "t:labels.muted_text",
+      "default": "#6B6B6B"
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "t:labels.corner_radius",
+      "min": 0,
+      "max": 28,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "t:labels.padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "t:labels.padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 88
+    }
+  ],
+  "enabled_on": {
+    "templates": ["article"]
+  }
+}
+{% endschema %}

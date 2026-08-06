@@ -1,0 +1,39 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "article",
+      "settings": {
+        "use_theme_colors": true,
+        "show_featured_image": true,
+        "show_author": true,
+        "show_date": true,
+        "show_tags": true,
+        "show_back_link": true,
+        "show_share": true,
+        "show_comments": true,
+        "show_sidebar": true,
+        "sidebar_note": "<p>Stories, styling ideas, and fabric inspiration from Star Fabrics.</p>",
+        "show_latest": true,
+        "latest_count": 5,
+        "show_all_tags": true,
+        "background_color": "#FFFFFF",
+        "surface_color": "#F7F7F5",
+        "text_color": "#111111",
+        "muted_color": "#6B6B6B",
+        "corner_radius": 16,
+        "padding_top": 56,
+        "padding_bottom": 88
+      }
+    }
+  },
+  "order": ["main"]
+}

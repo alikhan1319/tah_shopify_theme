@@ -1,0 +1,43 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "blog",
+      "settings": {
+        "eyebrow": "Journal",
+        "heading": "",
+        "subheading": "<p>Stories, styling notes, and behind-the-scenes from TAH.</p>",
+        "header_alignment": "left",
+        "show_article_count": true,
+        "show_tag_filter": true,
+        "posts_per_page": 9,
+        "show_date": true,
+        "show_author": true,
+        "show_excerpt": true,
+        "show_tags": true,
+        "layout_style": "featured",
+        "image_ratio": "16 / 10",
+        "columns_mobile": "1",
+        "columns_tablet": "2",
+        "columns_desktop": 3,
+        "grid_gap": 32,
+        "card_radius": 10,
+        "background_color": "#FFFFFF",
+        "card_background": "#FFFFFF",
+        "text_color": "#111111",
+        "muted_color": "#6B6B6B",
+        "padding_top": 64,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": ["main"]
+}

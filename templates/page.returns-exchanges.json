@@ -1,0 +1,87 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "legal",
+      "blocks": {
+        "s1": {
+          "type": "section",
+          "settings": {
+            "title": "Our promise",
+            "text": "<p>We want you to love your purchase. If something isn't right, we're here to help with a simple returns and exchange process.</p>"
+          }
+        },
+        "s2": {
+          "type": "section",
+          "settings": {
+            "title": "Return window",
+            "text": "<p>You may request an exchange within 7 days of receiving your order. Items must be unused, unwashed, and in their original condition with tags and packaging intact.</p>"
+          }
+        },
+        "s3": {
+          "type": "section",
+          "settings": {
+            "title": "How to request a return or exchange",
+            "text": "<p>Contact us by email or WhatsApp with your order number and the reason for the return. Our team will guide you through the next steps and share the return address.</p>"
+          }
+        },
+        "s4": {
+          "type": "section",
+          "settings": {
+            "title": "Exchanges",
+            "text": "<p>Exchanges are subject to stock availability. If your preferred size or design is unavailable, we'll offer an alternative or store credit.</p>"
+          }
+        },
+        "s5": {
+          "type": "section",
+          "settings": {
+            "title": "Non-returnable items",
+            "text": "<p>For hygiene and quality reasons, certain items such as stitched-to-order pieces, cosmetics, and clearance items may not be eligible for return unless faulty.</p>"
+          }
+        },
+        "s6": {
+          "type": "section",
+          "settings": {
+            "title": "Damaged or wrong items",
+            "text": "<p>If you receive a damaged or incorrect item, please contact us within 48 hours of delivery with photos. We'll arrange a replacement or resolution at no extra cost.</p>"
+          }
+        },
+        "s7": {
+          "type": "section",
+          "settings": {
+            "title": "Refunds",
+            "text": "<p>Where a refund applies, it will be processed to your original payment method or as store credit after we receive and inspect the returned item.</p>"
+          }
+        }
+      },
+      "block_order": ["s1", "s2", "s3", "s4", "s5", "s6", "s7"],
+      "settings": {
+        "eyebrow": "Support",
+        "heading": "Returns & exchanges",
+        "updated_at": "January 2026",
+        "intro": "<p>Everything you need to know about returning or exchanging an order with Star Fabrics.</p>",
+        "content": "",
+        "show_contact_note": true,
+        "note_heading": "Need to start a return?",
+        "note_text": "Message us with your order number:",
+        "note_email": "starfabricsshop@gmail.com",
+        "background_color": "#FFFFFF",
+        "surface_color": "#F7F7F5",
+        "text_color": "#111111",
+        "muted_color": "#6B6B6B",
+        "corner_radius": 16,
+        "padding_top": 64,
+        "padding_bottom": 88
+      }
+    }
+  },
+  "order": ["main"]
+}

@@ -1,0 +1,474 @@
+{%- liquid
+  assign featured_products = section.settings.products
+  assign products_count = featured_products.size | default: 0
+
+  assign link_url = section.settings.cta_link
+  assign cta_label = section.settings.link_label
+  if cta_label == blank
+    assign cta_label = section.settings.cta_label
+  endif
+
+  assign show_footer_cta = false
+  if section.settings.show_cta and link_url != blank and cta_label != blank
+    assign show_footer_cta = true
+  endif
+-%}
+
+<div
+  class="featured-products full-width"
+  id="FeaturedProducts-{{ section.id }}"
+  style="
+    --fp-padding-top: {{ section.settings.padding_top }}px;
+    --fp-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --fp-cols-mobile: {{ section.settings.columns_mobile }};
+    --fp-cols-tablet: {{ section.settings.columns_tablet }};
+    --fp-cols-desktop: {{ section.settings.columns_desktop }};
+    {%- if section.settings.use_theme_colors == false %}--fp-bg: {{ section.settings.background_color }};{% endif -%}
+    --fp-gap: {{ section.settings.grid_gap }}px;
+  "
+  {{ section.shopify_attributes }}
+>
+  <div class="featured-products__shell">
+    <div class="featured-products__inner">
+      <header class="featured-products__header featured-products__header--{{ section.settings.header_alignment }}">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="featured-products__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.heading != blank -%}
+          <h2 class="featured-products__heading">{{ section.settings.heading | escape }}</h2>
+        {%- endif -%}
+
+        <span class="featured-products__rule" aria-hidden="true"></span>
+
+        {%- if section.settings.subheading != blank -%}
+          <div class="featured-products__subheading">{{ section.settings.subheading }}</div>
+        {%- endif -%}
+      </header>
+
+      {%- if products_count == 0 -%}
+        {%- if request.design_mode -%}
+          <p class="featured-products__empty">{{ 'sections.featured_collection.empty_products' | t }}</p>
+        {%- endif -%}
+      {%- else -%}
+        <ul class="featured-products__grid" role="list" data-reveal-stagger>
+          {%- for product in featured_products -%}
+            <li class="featured-products__item" data-reveal>
+              {%- liquid
+                assign card_loading = 'lazy'
+                if forloop.index <= section.settings.columns_mobile
+                  assign card_loading = 'eager'
+                endif
+              -%}
+              {% render 'product-card',
+                product: product,
+                show_vendor: section.settings.show_vendor,
+                show_description: section.settings.show_description,
+                show_rating: section.settings.show_rating,
+                show_quick_view: section.settings.show_quick_view,
+                show_add_to_cart: section.settings.show_add_to_cart,
+                loading: card_loading
+              %}
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        {%- if show_footer_cta -%}
+          <div class="featured-products__footer">
+            <a class="featured-products__cta" href="{{ link_url }}">
+              {{ cta_label | escape }}
+              <span class="featured-products__cta-icon" aria-hidden="true">→</span>
+            </a>
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .featured-products {
+    --fp-ink: var(--color-heading);
+    --fp-mute: var(--color-text-muted);
+    --fp-line: var(--color-border);
+    --fp-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    padding: 0;
+    background: var(--fp-bg, var(--color-background));
+    color: var(--fp-ink);
+  }
+
+  .featured-products__shell {
+    padding-block: var(--fp-padding-top) var(--fp-padding-bottom);
+  }
+
+  .featured-products__inner {
+    width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    margin-inline: auto;
+  }
+
+  .featured-products__header {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: clamp(1.75rem, 4vw, 2.75rem);
+    max-width: 40rem;
+  }
+
+  .featured-products__header--center {
+    margin-inline: auto;
+    text-align: center;
+    justify-items: center;
+  }
+
+  .featured-products__header--left {
+    text-align: left;
+    justify-items: start;
+  }
+
+  .featured-products__eyebrow {
+    margin: 0;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fp-mute);
+  }
+
+  .featured-products__heading {
+    margin: 0;
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-weight: 550;
+    letter-spacing: -0.03em;
+    line-height: 1.12;
+    color: var(--fp-ink);
+  }
+
+  .featured-products__rule {
+    display: block;
+    width: 2.5rem;
+    height: 1px;
+    background: var(--fp-ink);
+    opacity: 0.85;
+  }
+
+  .featured-products__header--center .featured-products__rule {
+    margin-inline: auto;
+  }
+
+  .featured-products__subheading {
+    margin: 0;
+    max-width: 34rem;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--fp-mute);
+  }
+
+  .featured-products__subheading p {
+    margin: 0;
+  }
+
+  .featured-products__empty {
+    margin: 0;
+    padding: 2.75rem 1.5rem;
+    text-align: center;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--fp-mute);
+    background: var(--color-surface);
+    border: 1px dashed var(--fp-line);
+    border-radius: 12px;
+  }
+
+  .featured-products__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--fp-cols-mobile), minmax(0, 1fr));
+    gap: max(0.85rem, calc(var(--fp-gap) * 0.75));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .featured-products__item {
+    min-width: 0;
+    display: flex;
+  }
+
+  .featured-products__item > * {
+    width: 100%;
+  }
+
+  .featured-products__footer {
+    display: flex;
+    justify-content: center;
+    margin-top: clamp(1.75rem, 4vw, 2.5rem);
+  }
+
+  .featured-products__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 48px;
+    padding: 0 1.85rem;
+    border: 1px solid var(--fp-ink);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--fp-ink);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition:
+      background-color 180ms ease,
+      color 180ms ease,
+      transform 180ms var(--fp-ease),
+      gap 180ms var(--fp-ease);
+  }
+
+  .featured-products__cta:hover {
+    background: var(--color-button);
+    color: var(--color-button-text);
+    transform: translateY(-1px);
+    gap: 0.75rem;
+  }
+
+  .featured-products__cta-icon {
+    font-size: 1em;
+    line-height: 1;
+  }
+
+  @media (max-width: 479px) {
+    .featured-products__grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  }
+
+  @media (min-width: 750px) {
+    .featured-products__grid {
+      grid-template-columns: repeat(var(--fp-cols-tablet), minmax(0, 1fr));
+      gap: var(--fp-gap);
+    }
+  }
+
+  @media (min-width: 990px) {
+    .featured-products__grid {
+      grid-template-columns: repeat(var(--fp-cols-desktop), minmax(0, 1fr));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .featured-products__cta {
+      transition: none;
+    }
+
+    .featured-products__cta:hover {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.featured_collection.name",
+  "tag": "section",
+  "class": "featured-collection-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_theme_colors",
+      "label": "t:labels.use_theme_colors",
+      "info": "t:info.use_theme_colors",
+      "default": true
+    },
+    {
+      "type": "product_list",
+      "id": "products",
+      "label": "t:labels.products",
+      "limit": 12
+    },
+    {
+      "type": "header",
+      "content": "t:general.content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:labels.eyebrow",
+      "default": "Curated edit"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "Featured products"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "t:labels.subheading",
+      "default": "<p>Signature pieces selected for exceptional quality and craftsmanship.</p>"
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "t:labels.alignment",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "t:general.call_to_action"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cta",
+      "label": "t:labels.show_cta",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "t:labels.link_label",
+      "default": "View all"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "t:labels.cta_label",
+      "default": "Shop featured"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "t:labels.cta_link"
+    },
+    {
+      "type": "header",
+      "content": "t:general.product"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "t:labels.show_vendor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "t:labels.show_description",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "t:labels.show_rating",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quick_view",
+      "label": "t:labels.show_quick_view",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_add_to_cart",
+      "label": "t:labels.show_add_to_cart",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:general.layout"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "t:labels.grid_gap",
+      "min": 12,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "t:labels.columns_mobile",
+      "default": "2",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "columns_tablet",
+      "label": "t:labels.columns_tablet",
+      "default": "3",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "t:labels.columns_desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "t:labels.padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "t:labels.padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.featured_collection.presets.name",
+      "settings": {
+        "eyebrow": "Curated edit",
+        "heading": "Featured products",
+        "subheading": "<p>Signature pieces selected for exceptional quality and craftsmanship.</p>",
+        "link_label": "View all",
+        "show_cta": true,
+        "cta_label": "Shop featured",
+        "background_color": "#FFFFFF",
+        "columns_mobile": "2",
+        "columns_tablet": "3",
+        "columns_desktop": 4
+      }
+    }
+  ]
+}
+{% endschema %}

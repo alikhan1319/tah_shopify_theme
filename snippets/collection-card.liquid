@@ -1,0 +1,269 @@
+{% doc %}
+  Premium collection card for the collections list page.
+  Full-bleed image, soft gradient, title, product count, and shop cue.
+
+  @param {collection} collection - Collection object
+  @param {boolean} [show_description] - Show short description
+  @param {boolean} [show_product_count] - Show product count
+  @param {boolean} [show_shop_label] - Show shop cue
+  @param {boolean} [loading] - Eager-load first image when true
+
+  @example
+  {% render 'collection-card', collection: collection %}
+{% enddoc %}
+
+{%- if collection != blank -%}
+  {%- liquid
+    assign show_description = show_description | default: false, allow_false: true
+    assign show_product_count = show_product_count | default: true, allow_false: true
+    assign show_shop_label = show_shop_label | default: true, allow_false: true
+    assign loading_attr = 'lazy'
+    if loading
+      assign loading_attr = 'eager'
+    endif
+
+    assign card_title = collection.title
+    assign card_url = collection.url
+    assign card_image = collection.featured_image
+    assign card_count = collection.all_products_count | default: collection.products_count
+    assign card_excerpt = collection.description | strip_html | truncate: 90
+  -%}
+
+  <a
+    class="collection-card"
+    href="{{ card_url }}"
+    aria-label="{{ 'collections.shop_collection' | t: title: card_title }}"
+  >
+    <div class="collection-card__media">
+      {%- if card_image != blank -%}
+        {{
+          card_image
+          | image_url: width: 1600
+          | image_tag:
+            loading: loading_attr,
+            widths: '480, 720, 960, 1200, 1600',
+            sizes: '(min-width: 990px) 33vw, (min-width: 750px) 50vw, 100vw',
+            class: 'collection-card__image',
+            alt: card_title
+        }}
+      {%- else -%}
+        <div class="collection-card__placeholder" aria-hidden="true">
+          {{ 'collection-1' | placeholder_svg_tag: 'collection-card__placeholder-svg' }}
+        </div>
+      {%- endif -%}
+      <span class="collection-card__veil" aria-hidden="true"></span>
+    </div>
+
+    <div class="collection-card__content">
+      <div class="collection-card__copy">
+        <h2 class="collection-card__title">{{ card_title | escape }}</h2>
+
+        {%- if show_product_count -%}
+          <p class="collection-card__meta">
+            {{ 'collections.product_count' | t: count: card_count }}
+          </p>
+        {%- endif -%}
+
+        {%- if show_description and card_excerpt != blank -%}
+          <p class="collection-card__desc">{{ card_excerpt | escape }}</p>
+        {%- endif -%}
+      </div>
+
+      {%- if show_shop_label -%}
+        <span class="collection-card__cta">
+          {{ 'collections.shop_now' | t }}
+          <span class="collection-card__cta-icon" aria-hidden="true">→</span>
+        </span>
+      {%- endif -%}
+    </div>
+  </a>
+{%- endif -%}
+
+{% stylesheet %}
+  .collection-card {
+    --cc-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--clp-radius, 16px);
+    background: var(--clp-surface, var(--color-surface));
+    color: var(--color-button-text);
+    text-decoration: none;
+    isolation: isolate;
+    box-shadow:
+      0 1px 2px color-mix(in srgb, var(--color-heading) 4%, transparent),
+      0 18px 40px color-mix(in srgb, var(--color-heading) 8%, transparent);
+    transition:
+      transform 280ms var(--cc-ease),
+      box-shadow 280ms var(--cc-ease);
+  }
+
+  .collection-card:hover,
+  .collection-card:focus-visible {
+    transform: translateY(-4px);
+    box-shadow:
+      0 2px 4px color-mix(in srgb, var(--color-heading) 5%, transparent),
+      0 24px 48px color-mix(in srgb, var(--color-heading) 14%, transparent);
+  }
+
+  .collection-card:focus-visible {
+    outline: 2px solid var(--color-heading);
+    outline-offset: 3px;
+  }
+
+  .collection-card__media {
+    position: relative;
+    aspect-ratio: var(--clp-ratio, 4 / 5);
+    overflow: hidden;
+    background: var(--color-button);
+  }
+
+  .collection-card__image,
+  .collection-card__placeholder,
+  .collection-card__placeholder-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .collection-card__image {
+    transition: transform 700ms var(--cc-ease);
+  }
+
+  .collection-card:hover .collection-card__image,
+  .collection-card:focus-visible .collection-card__image {
+    transform: scale(1.06);
+  }
+
+  .collection-card__placeholder {
+    display: grid;
+    place-items: center;
+    background: linear-gradient(145deg, var(--color-button-hover), var(--color-button));
+  }
+
+  .collection-card__placeholder-svg {
+    opacity: 0.35;
+  }
+
+  .collection-card__veil {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, transparent 35%, color-mix(in srgb, var(--color-heading) 72%, transparent) 100%),
+      linear-gradient(0deg, transparent 70%, color-mix(in srgb, var(--color-heading) 18%, transparent) 100%);
+    pointer-events: none;
+  }
+
+  .collection-card__content {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 2;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.15rem 1.2rem 1.25rem;
+  }
+
+  .collection-card__copy {
+    min-width: 0;
+    display: grid;
+    gap: 0.3rem;
+  }
+
+  .collection-card__title {
+    margin: 0;
+    font-size: clamp(1.15rem, 2.4vw, 1.45rem);
+    font-weight: 650;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+  }
+
+  .collection-card__meta {
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 650;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.78;
+  }
+
+  .collection-card__desc {
+    margin: 0.25rem 0 0;
+    max-width: 28rem;
+    font-size: 0.875rem;
+    line-height: 1.45;
+    opacity: 0.82;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .collection-card__cta {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.55rem 0.85rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-background) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-background) 22%, transparent);
+    backdrop-filter: blur(8px);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition:
+      background-color 180ms ease,
+      transform 180ms var(--cc-ease);
+  }
+
+  .collection-card__cta-icon {
+    transition: transform 180ms var(--cc-ease);
+  }
+
+  .collection-card:hover .collection-card__cta,
+  .collection-card:focus-visible .collection-card__cta {
+    background: var(--color-background);
+    color: var(--color-heading);
+    border-color: var(--color-background);
+  }
+
+  .collection-card:hover .collection-card__cta-icon,
+  .collection-card:focus-visible .collection-card__cta-icon {
+    transform: translateX(2px);
+  }
+
+  @media (max-width: 749px) {
+    .collection-card__content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.85rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .collection-card,
+    .collection-card__image,
+    .collection-card__cta,
+    .collection-card__cta-icon {
+      transition: none;
+    }
+
+    .collection-card:hover,
+    .collection-card:focus-visible {
+      transform: none;
+    }
+
+    .collection-card:hover .collection-card__image,
+    .collection-card:focus-visible .collection-card__image {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
