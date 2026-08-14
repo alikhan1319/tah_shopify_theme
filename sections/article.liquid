@@ -103,7 +103,7 @@
         {%- endif -%}
 
         <div class="article-page__content rte">
-          {{ article.content }}
+{{ article.content }}
         </div>
 
         {%- if show_share -%}
@@ -174,7 +174,7 @@
 
                 {%- if paginate.pages > 1 -%}
                   <nav class="article-page__pagination" aria-label="{{ 'general.pagination.label' | t }}">
-                    {{ paginate | default_pagination: anchor: 'comments' }}
+      {{ paginate | default_pagination: anchor: 'comments' }}
                   </nav>
                 {%- endif -%}
               {%- endif -%}
@@ -214,7 +214,7 @@
                     autocomplete="name"
                     required
                   >
-                </div>
+  </div>
 
                 <div class="article-page__field">
                   <label class="article-page__label" for="CommentEmail-{{ section.id }}">
@@ -243,7 +243,7 @@
                   rows="5"
                   required
                 >{{ form.body }}</textarea>
-              </div>
+    </div>
 
               <button class="article-page__submit" type="submit">
                 {{ 'blog.comment_form_submit' | t }}
@@ -251,7 +251,7 @@
             {% endform %}
           </section>
         {%- endif -%}
-      </div>
+    </div>
 
       {%- if show_sidebar -%}
         <aside class="article-page__sidebar" aria-label="{{ 'blog.sidebar_label' | t }}">

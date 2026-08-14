@@ -8,5 +8,27 @@
  * ------------------------------------------------------------
  */
 {
-  "current": {}
+  "current": {
+    "color_background": "#FFFFFF",
+    "color_surface": "#FBF3F8",
+    "color_text": "#6B2A5C",
+    "color_text_muted": "#B07A9E",
+    "color_heading": "#5E184F",
+    "color_border": "#F1D5E6",
+    "color_accent": "#A0338E",
+    "color_hover": "#7C2470",
+    "color_sale": "#C41E7A",
+    "color_wave": "#A0338E",
+    "color_star": "#C9A227",
+    "color_button": "#A0338E",
+    "color_button_text": "#FFFFFF",
+    "color_button_hover": "#7C2470",
+    "color_header_background": "#FDF8FB",
+    "color_header_text": "#5E184F",
+    "color_announcement_background": "#A0338E",
+    "color_announcement_text": "#FFFFFF",
+    "color_announcement_link": "#FFFFFF",
+    "color_link": "#A0338E",
+    "color_link_hover": "#7C2470"
+  }
 }

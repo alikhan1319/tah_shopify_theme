@@ -76,6 +76,7 @@
         "trust_4"
       ],
       "settings": {
+        "use_theme_colors": true,
         "show_vendor": true,
         "show_rating": true,
         "show_verified": true,
@@ -89,7 +90,7 @@
         "bestseller": false,
         "show_stock": false,
         "stock_left": 8,
-        "show_trust_cards": true,
+        "show_trust_cards": false,
         "show_buy_button": true,
         "whatsapp_number": "923001234567",
         "whatsapp_message": "Hi, I want to order:",
@@ -98,10 +99,10 @@
         "returns_text": "14-day easy returns",
         "warranty_text": "Official quality guarantee",
         "show_payment_icons": true,
-        "color_background": "#F8F9FA",
-        "accent_color": "#22C55E",
-        "padding_top": 40,
-        "padding_bottom": 96
+        "color_background": "#FFFFFF",
+        "accent_color": "#A0338E",
+        "padding_top": 32,
+        "padding_bottom": 72
       }
     },
     "customer_reviews": {
@@ -165,10 +166,10 @@
         "background_color": "#FFFFFF",
         "text_color": "#111111",
         "card_background": "#F8F9FA",
-        "star_color": "#C4A35A",
+        "star_color": "#C9A227",
         "card_gap": 20,
-        "padding_top": 64,
-        "padding_bottom": 72
+        "padding_top": 56,
+        "padding_bottom": 64
       }
     },
     "related_products": {

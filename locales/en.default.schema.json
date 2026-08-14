@@ -32,6 +32,7 @@
     "catalog": "Catalog",
     "category": "Category",
     "trusted_by": "Trusted by",
+    "brands": "Brands",
     "layout": "Layout",
     "localization": "Localization",
     "main": "Main",
@@ -67,7 +68,7 @@
     "columns_tablet": "Columns on tablet",
     "show_description": "Show description",
     "show_rating": "Show rating",
-    "show_quick_view": "Show quick view",
+    "show_quick_view": "Show wishlist",
     "show_add_to_cart": "Show add to cart",
 
     "cta_label": "Button label",
@@ -386,6 +387,9 @@
     "footer_secondary_menu": "Shown at the bottom as legal links, for example Privacy policy, Returns, and Terms.",
     "copyright_text": "Use [year] for the current year and [shop_name] for your store name. Leave blank to use the default text.",
     "payment_methods_list": "Enter one payment method per line. These always show in the We accept section.",
+    "brand_title": "Used as the brand name and to open the Shopify brand (vendor) page when no collection or link is set.",
+    "brand_collection": "Opens this collection as the brand page. Leave empty to use the brand name vendor page.",
+    "brand_link": "Optional. Overrides the collection and vendor page.",
     "category_label": "Optional. Uses product type or vendor when left empty.",
     "short_description": "Optional. Uses a truncated product description when left empty.",
     "ceo_image": "Square photo recommended (at least 400×400). Shown beside the CEO message.",
@@ -437,6 +441,7 @@
       "spotlight": "Spotlight"
     },
     "layout_style": {
+      "cards": "Feature cards",
       "bento": "Bento mosaic",
       "grid": "Editorial grid",
       "featured": "Featured first"

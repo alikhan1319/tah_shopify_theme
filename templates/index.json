@@ -39,6 +39,24 @@
         "autoplay_speed": 6
       }
     },
+    "brands": {
+      "type": "brands",
+      "blocks": {
+        "logo_1": { "type": "logo", "settings": { "title": "Maison" } },
+        "logo_2": { "type": "logo", "settings": { "title": "Atelier" } },
+        "logo_3": { "type": "logo", "settings": { "title": "Lumiere" } },
+        "logo_4": { "type": "logo", "settings": { "title": "Velvet" } },
+        "logo_5": { "type": "logo", "settings": { "title": "Noir" } },
+        "logo_6": { "type": "logo", "settings": { "title": "Opaline" } }
+      },
+      "block_order": ["logo_1", "logo_2", "logo_3", "logo_4", "logo_5", "logo_6"],
+      "settings": {
+        "heading": "Trusted by top brands",
+        "scroll_speed": 32,
+        "padding_top": 28,
+        "padding_bottom": 8
+      }
+    },
     "trusted_by": {
       "type": "trusted-by",
       "blocks": {
@@ -68,11 +86,11 @@
         "layout": "badges",
         "columns": 4,
         "background_color": "#FFFFFF",
-        "color_text": "#111111",
-        "wave_color": "#111111",
+        "color_text": "#5E184F",
+        "wave_color": "#A0338E",
         "wave_speed": 18,
-        "padding_top": 56,
-        "padding_bottom": 72
+        "padding_top": 40,
+        "padding_bottom": 48
       }
     },
     "shop_catalog": {
@@ -81,25 +99,25 @@
         "cat_1": {
           "type": "category",
           "settings": {
-            "title": "Latest"
+            "title": "Women's wear"
           }
         },
         "cat_2": {
           "type": "category",
           "settings": {
-            "title": "Summer"
+            "title": "Footwear"
           }
         },
         "cat_3": {
           "type": "category",
           "settings": {
-            "title": "Gents"
+            "title": "Accessories"
           }
         },
         "cat_4": {
           "type": "category",
           "settings": {
-            "title": "Sale"
+            "title": "New arrivals"
           }
         },
         "cat_5": {
@@ -117,18 +135,18 @@
       },
       "block_order": ["cat_1", "cat_2", "cat_3", "cat_4", "cat_5", "cat_6"],
       "settings": {
-        "eyebrow": "Collections",
-        "heading": "Shop the catalog",
-        "subheading": "<p>Explore curated looks for every celebration.</p>",
-        "header_alignment": "left",
+        "eyebrow": "Shop by category",
+        "heading": "Find your next look",
+        "subheading": "<p>Explore curated collections with a softer, more luxurious feel.</p>",
+        "header_alignment": "center",
         "show_product_count": true,
-        "layout_style": "bento",
+        "layout_style": "cards",
         "background_color": "#FFFFFF",
-        "text_color": "#111111",
-        "muted_color": "#6B6B6B",
-        "corner_radius": 16,
-        "grid_gap": 14,
-        "padding_top": 72,
+        "text_color": "#5E184F",
+        "muted_color": "#B07A9E",
+        "corner_radius": 24,
+        "grid_gap": 18,
+        "padding_top": 48,
         "padding_bottom": 72
       }
     },
@@ -164,7 +182,7 @@
         "show_rating": true,
         "show_quick_view": true,
         "show_add_to_cart": true,
-        "background_color": "#FAFAFA",
+        "background_color": "#F6EFFB",
         "grid_gap": 24,
         "columns_mobile": "2",
         "columns_tablet": "3",
@@ -214,7 +232,7 @@
         "show_rating": true,
         "show_quick_view": true,
         "show_add_to_cart": true,
-        "background_color": "#FAFAFA",
+        "background_color": "#F6EFFB",
         "grid_gap": 24,
         "columns_mobile": "2",
         "columns_tablet": "2",
@@ -262,7 +280,7 @@
         "header_alignment": "center",
         "enable_auto_scroll": true,
         "scroll_speed": 45,
-        "background_color": "#111111",
+        "background_color": "#A0338E",
         "card_gap": 20,
         "padding_top": 72,
         "padding_bottom": 72
@@ -312,8 +330,8 @@
         "header_alignment": "center",
         "enable_auto_scroll": true,
         "scroll_speed": 40,
-        "background_color": "#F6F7F5",
-        "text_color": "#111111",
+        "background_color": "#F6EFFB",
+        "text_color": "#5E184F",
         "card_background": "#FFFFFF",
         "card_gap": 20,
         "padding_top": 72,
@@ -360,7 +378,7 @@
         "header_alignment": "center",
         "layout": "grid_only",
         "color_background": "#FFFFFF",
-        "color_text": "#111111",
+        "color_text": "#5E184F",
         "padding_top": 72,
         "padding_bottom": 72
       }
@@ -379,7 +397,7 @@
         "show_author": true,
         "show_excerpt": true,
         "color_background": "#FFFFFF",
-        "color_text": "#111111",
+        "color_text": "#5E184F",
         "grid_gap": 24,
         "padding_top": 72,
         "padding_bottom": 96
@@ -388,6 +406,7 @@
   },
   "order": [
     "hero",
+    "brands",
     "trusted_by",
     "shop_catalog",
     "product_card_preview",

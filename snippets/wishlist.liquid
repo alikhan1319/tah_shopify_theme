@@ -1,0 +1,667 @@
+{% doc %}
+  Wishlist store, luxury drawer, and toast. Saves products in the browser
+  so heart buttons add items without opening the product page.
+
+  @example
+  {% render 'wishlist' %}
+{% enddoc %}
+
+<tah-wishlist
+  class="tah-wishlist"
+  data-added="{{ 'products.wishlist_added' | t | escape }}"
+  data-removed="{{ 'products.wishlist_removed' | t | escape }}"
+  data-empty="{{ 'products.wishlist_empty' | t | escape }}"
+  data-empty-hint="{{ 'products.wishlist_empty_hint' | t | escape }}"
+  data-continue="{{ 'cart.continue_shopping' | t | escape }}"
+  data-view="{{ 'products.wishlist_view' | t | escape }}"
+  data-remove="{{ 'products.remove_from_wishlist' | t | escape }}"
+  data-add-label="{{ 'products.add_to_wishlist' | t | escape }}"
+  data-remove-label="{{ 'products.remove_from_wishlist' | t | escape }}"
+  data-saved="{{ 'products.wishlist_saved' | t: count: 0 | escape }}"
+>
+  <div class="tah-wishlist__overlay" data-wishlist-overlay hidden></div>
+
+  <aside
+    class="tah-wishlist__drawer"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="WishlistTitle"
+    tabindex="-1"
+    data-wishlist-drawer
+    hidden
+  >
+    <div class="tah-wishlist__header">
+      <div class="tah-wishlist__heading">
+        <p class="tah-wishlist__eyebrow">{{ 'products.wishlist_eyebrow' | t }}</p>
+        <div class="tah-wishlist__title-row">
+          <span class="tah-wishlist__mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+              <path d="M12 21s-6.7-4.35-9.33-8.22C.8 10.2 1.2 6.9 3.7 5.3 6 3.85 8.7 4.6 12 7.4c3.3-2.8 6-3.55 8.3-2.1 2.5 1.6 2.9 4.9 1.03 7.48C18.7 16.65 12 21 12 21Z" fill="currentColor"/>
+            </svg>
+          </span>
+          <h2 id="WishlistTitle" class="tah-wishlist__title">{{ 'products.wishlist' | t }}</h2>
+        </div>
+      </div>
+      <div class="tah-wishlist__header-end">
+        <span class="tah-wishlist__count" data-wishlist-heading-count hidden></span>
+        <button
+          type="button"
+          class="tah-wishlist__close"
+          data-wishlist-close
+          aria-label="{{ 'accessibility.close_wishlist' | t }}"
+        >
+          {{ 'icon-close.svg' | inline_asset_content }}
+        </button>
+      </div>
+    </div>
+
+    <div class="tah-wishlist__body" data-wishlist-body></div>
+
+    <div class="tah-wishlist__footer" data-wishlist-footer hidden>
+      <button type="button" class="tah-wishlist__continue tah-wishlist__continue--footer" data-wishlist-close>
+        {{ 'cart.continue_shopping' | t }}
+      </button>
+    </div>
+  </aside>
+
+  <div class="tah-wishlist__toast" data-wishlist-toast hidden role="status"></div>
+</tah-wishlist>
+
+{% stylesheet %}
+  .tah-wishlist {
+    --wl-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --wl-width: min(26.5rem, 100vw);
+  }
+
+  .tah-wishlist__overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 110;
+    background: color-mix(in srgb, var(--color-heading) 38%, transparent);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 360ms var(--wl-ease);
+  }
+
+  .tah-wishlist.is-open .tah-wishlist__overlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .tah-wishlist__drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 111;
+    display: flex;
+    flex-direction: column;
+    width: var(--wl-width);
+    height: 100%;
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--color-surface) 88%, #fff) 0%,
+        var(--color-background) 9.5rem
+      );
+    color: var(--color-heading);
+    box-shadow: -24px 0 60px color-mix(in srgb, var(--color-heading) 14%, transparent);
+    transform: translateX(100%);
+    transition: transform 420ms var(--wl-ease);
+  }
+
+  .tah-wishlist.is-open .tah-wishlist__drawer {
+    transform: translateX(0);
+  }
+
+  .tah-wishlist__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.35rem 1.4rem 1.15rem;
+  }
+
+  .tah-wishlist__heading {
+    display: grid;
+    gap: 0.45rem;
+    min-width: 0;
+  }
+
+  .tah-wishlist__eyebrow {
+    margin: 0;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .tah-wishlist__title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  .tah-wishlist__mark {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-accent) 12%, #fff);
+    color: var(--color-accent);
+    flex-shrink: 0;
+  }
+
+  .tah-wishlist__title {
+    margin: 0;
+    font-size: 1.45rem;
+    font-weight: 650;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  .tah-wishlist__header-end {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-shrink: 0;
+  }
+
+  .tah-wishlist__count {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.7rem;
+    padding: 0 0.65rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-accent) 12%, #fff);
+    color: var(--color-accent);
+    font-size: 0.68rem;
+    font-weight: 750;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .tah-wishlist__count[hidden] {
+    display: none;
+  }
+
+  .tah-wishlist__close {
+    appearance: none;
+    display: grid;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border: 0;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-background) 80%, transparent);
+    color: inherit;
+    cursor: pointer;
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--color-heading) 8%, transparent);
+    transition: background-color 180ms ease, transform 180ms var(--wl-ease);
+  }
+
+  .tah-wishlist__close:hover,
+  .tah-wishlist__close:focus-visible {
+    background: var(--color-accent);
+    color: var(--color-button-text);
+    transform: scale(1.04);
+  }
+
+  .tah-wishlist__close svg {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+
+  .tah-wishlist__body {
+    flex: 1 1 auto;
+    overflow: auto;
+    padding: 0.25rem 1.15rem 1.25rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tah-wishlist__empty {
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 0.85rem;
+    min-height: 68%;
+    padding: 2.5rem 1rem;
+    text-align: center;
+  }
+
+  .tah-wishlist__empty-mark {
+    display: grid;
+    place-items: center;
+    width: 4.75rem;
+    height: 4.75rem;
+    margin-bottom: 0.35rem;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--color-accent) 10%, #fff);
+    color: var(--color-accent);
+    box-shadow: 0 14px 30px color-mix(in srgb, var(--color-accent) 12%, transparent);
+  }
+
+  .tah-wishlist__empty-mark svg {
+    width: 1.85rem;
+    height: 1.85rem;
+  }
+
+  .tah-wishlist__empty-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  .tah-wishlist__empty-hint {
+    margin: 0;
+    max-width: 16rem;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--color-text-muted);
+  }
+
+  .tah-wishlist__continue {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    padding: 0 1.35rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--color-button);
+    color: var(--color-button-text);
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 750;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 180ms ease, transform 180ms var(--wl-ease);
+  }
+
+  .tah-wishlist__continue:hover,
+  .tah-wishlist__continue:focus-visible {
+    background: var(--color-button-hover);
+    transform: translateY(-1px);
+  }
+
+  .tah-wishlist__list {
+    display: grid;
+    gap: 0.85rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tah-wishlist__item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    gap: 0.95rem;
+    padding: 0.8rem;
+    border-radius: 20px;
+    background: var(--color-background);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 10%, var(--color-border));
+    box-shadow: 0 10px 24px color-mix(in srgb, var(--color-heading) 5%, transparent);
+  }
+
+  .tah-wishlist__media {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    width: 5.5rem;
+    height: 6.75rem;
+    border-radius: 14px;
+    background: var(--color-surface);
+  }
+
+  .tah-wishlist__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 420ms var(--wl-ease);
+  }
+
+  .tah-wishlist__item:hover .tah-wishlist__media img {
+    transform: scale(1.06);
+  }
+
+  .tah-wishlist__details {
+    display: grid;
+    align-content: center;
+    gap: 0.35rem;
+    min-width: 0;
+    padding-inline-end: 1.6rem;
+  }
+
+  .tah-wishlist__name {
+    display: -webkit-box;
+    overflow: hidden;
+    color: inherit;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .tah-wishlist__name:hover {
+    color: var(--color-accent);
+  }
+
+  .tah-wishlist__price {
+    color: var(--color-accent);
+    font-size: 0.98rem;
+    font-weight: 750;
+    letter-spacing: -0.02em;
+  }
+
+  .tah-wishlist__view {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.15rem;
+    color: var(--color-heading);
+    text-decoration: none;
+    font-size: 0.72rem;
+    font-weight: 750;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .tah-wishlist__view:hover {
+    color: var(--color-accent);
+  }
+
+  .tah-wishlist__remove {
+    appearance: none;
+    position: absolute;
+    top: 0.65rem;
+    right: 0.65rem;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-surface) 90%, #fff);
+    color: var(--color-accent);
+    cursor: pointer;
+    box-shadow: 0 6px 14px color-mix(in srgb, var(--color-heading) 8%, transparent);
+    transition: background-color 160ms ease, color 160ms ease, transform 160ms var(--wl-ease);
+  }
+
+  .tah-wishlist__remove:hover,
+  .tah-wishlist__remove:focus-visible {
+    background: var(--color-accent);
+    color: var(--color-button-text);
+    transform: scale(1.06);
+  }
+
+  .tah-wishlist__remove svg {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+
+  .tah-wishlist__footer {
+    flex-shrink: 0;
+    padding: 1rem 1.25rem 1.35rem;
+    background: var(--color-background);
+    border-top: 1px solid color-mix(in srgb, var(--color-accent) 10%, var(--color-border));
+  }
+
+  .tah-wishlist__footer[hidden] {
+    display: none;
+  }
+
+  .tah-wishlist__continue--footer {
+    width: 100%;
+  }
+
+  .tah-wishlist__toast {
+    position: fixed;
+    left: 50%;
+    bottom: 1.6rem;
+    z-index: 120;
+    transform: translateX(-50%);
+    padding: 0.8rem 1.2rem;
+    border-radius: 999px;
+    background: var(--color-heading);
+    color: var(--color-background);
+    font-size: 0.82rem;
+    font-weight: 650;
+    letter-spacing: 0.02em;
+    box-shadow: 0 16px 32px color-mix(in srgb, var(--color-heading) 22%, transparent);
+  }
+
+  body.is-wishlist-open {
+    overflow: hidden;
+  }
+
+  @media (max-width: 749px) {
+    .tah-wishlist__drawer {
+      width: 100%;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  const WISHLIST_KEY = 'tah-wishlist';
+
+  function readWishlist() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(WISHLIST_KEY) || '[]');
+      return Array.isArray(raw) ? raw : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function writeWishlist(items) {
+    localStorage.setItem(WISHLIST_KEY, JSON.stringify(items));
+    document.dispatchEvent(new CustomEvent('wishlist:updated', { detail: { items } }));
+  }
+
+  function itemFromTrigger(trigger) {
+    const host = trigger.closest('product-card, tah-product-page, [data-wishlist-item]') || trigger;
+    return {
+      id: String(trigger.dataset.productId || host.dataset.productId || ''),
+      handle: trigger.dataset.productHandle || host.dataset.productHandle || '',
+      url: trigger.dataset.productUrl || host.dataset.productUrl || '',
+      title: trigger.dataset.productTitle || host.dataset.productTitle || '',
+      image: trigger.dataset.productImage || host.dataset.productImage || '',
+      price: trigger.dataset.productPrice || host.dataset.productPrice || '',
+    };
+  }
+
+  class TahWishlist extends HTMLElement {
+    connectedCallback() {
+      if (this._ready) return;
+      this._ready = true;
+
+      window.TahWishlist = this;
+      this.overlay = this.querySelector('[data-wishlist-overlay]');
+      this.drawer = this.querySelector('[data-wishlist-drawer]');
+      this.bodyEl = this.querySelector('[data-wishlist-body]');
+      this.footerEl = this.querySelector('[data-wishlist-footer]');
+      this.toastEl = this.querySelector('[data-wishlist-toast]');
+      this.headingCount = this.querySelector('[data-wishlist-heading-count]');
+
+      this.onDocClick = (event) => {
+        const toggle = event.target.closest('[data-wishlist-toggle]');
+        if (toggle) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.toggle(itemFromTrigger(toggle));
+          return;
+        }
+
+        if (event.target.closest('[data-wishlist-open]')) {
+          event.preventDefault();
+          this.open();
+          return;
+        }
+
+        if (event.target.closest('[data-wishlist-close]') || event.target.closest('[data-wishlist-overlay]')) {
+          event.preventDefault();
+          this.close();
+        }
+      };
+
+      this.onKey = (event) => {
+        if (event.key === 'Escape') this.close();
+      };
+
+      document.addEventListener('click', this.onDocClick);
+      document.addEventListener('keydown', this.onKey);
+      document.addEventListener('wishlist:updated', () => this.sync());
+      this.sync();
+    }
+
+    get items() {
+      return readWishlist();
+    }
+
+    has(id) {
+      return this.items.some((item) => String(item.id) === String(id));
+    }
+
+    toggle(item) {
+      if (!item || !item.id) return false;
+      const items = this.items;
+      const index = items.findIndex((entry) => String(entry.id) === String(item.id));
+      let added = false;
+
+      if (index >= 0) {
+        items.splice(index, 1);
+      } else {
+        items.unshift(item);
+        added = true;
+      }
+
+      writeWishlist(items);
+      this.showToast(added ? this.dataset.added : this.dataset.removed);
+      return added;
+    }
+
+    open() {
+      this.overlay.hidden = false;
+      this.drawer.hidden = false;
+      requestAnimationFrame(() => this.classList.add('is-open'));
+      document.body.classList.add('is-wishlist-open');
+    }
+
+    close() {
+      this.classList.remove('is-open');
+      document.body.classList.remove('is-wishlist-open');
+      window.setTimeout(() => {
+        this.overlay.hidden = true;
+        this.drawer.hidden = true;
+      }, 380);
+    }
+
+    showToast(message) {
+      if (!this.toastEl || !message) return;
+      this.toastEl.textContent = message;
+      this.toastEl.hidden = false;
+      window.clearTimeout(this._toastTimer);
+      this._toastTimer = window.setTimeout(() => {
+        this.toastEl.hidden = true;
+      }, 2200);
+    }
+
+    sync() {
+      const items = this.items;
+      const count = items.length;
+
+      document.querySelectorAll('[data-wishlist-count]').forEach((el) => {
+        el.textContent = String(count);
+        el.classList.toggle('is-hidden', count === 0);
+        el.setAttribute('aria-hidden', count === 0 ? 'true' : 'false');
+      });
+
+      document.querySelectorAll('[data-wishlist-toggle]').forEach((btn) => {
+        const item = itemFromTrigger(btn);
+        const saved = this.has(item.id);
+        btn.classList.toggle('is-active', saved);
+        btn.setAttribute('aria-pressed', saved ? 'true' : 'false');
+        const label = saved ? this.dataset.removeLabel : this.dataset.addLabel;
+        if (label) btn.setAttribute('aria-label', label);
+      });
+
+      if (this.headingCount) {
+        this.headingCount.hidden = count === 0;
+        this.headingCount.textContent = (this.dataset.saved || String(count)).replace(/\d+/, String(count));
+      }
+
+      if (this.footerEl) {
+        this.footerEl.hidden = count === 0;
+      }
+
+      this.renderList(items);
+    }
+
+    renderList(items) {
+      if (!this.bodyEl) return;
+
+      const heart =
+        '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s-6.7-4.35-9.33-8.22C.8 10.2 1.2 6.9 3.7 5.3 6 3.85 8.7 4.6 12 7.4c3.3-2.8 6-3.55 8.3-2.1 2.5 1.6 2.9 4.9 1.03 7.48C18.7 16.65 12 21 12 21Z" fill="currentColor"/></svg>';
+
+      if (!items.length) {
+        this.bodyEl.innerHTML =
+          '<div class="tah-wishlist__empty">' +
+          '<span class="tah-wishlist__empty-mark">' + heart + '</span>' +
+          '<p class="tah-wishlist__empty-title">' + this.escape(this.dataset.empty) + '</p>' +
+          '<p class="tah-wishlist__empty-hint">' + this.escape(this.dataset.emptyHint) + '</p>' +
+          '<button type="button" class="tah-wishlist__continue" data-wishlist-close>' +
+          this.escape(this.dataset.continue) +
+          '</button></div>';
+        return;
+      }
+
+      this.bodyEl.innerHTML =
+        '<ul class="tah-wishlist__list" role="list">' +
+        items
+          .map((item) => {
+            const image = item.image
+              ? '<img src="' + this.escape(item.image) + '" alt="' + this.escape(item.title) + '">'
+              : '';
+            return (
+              '<li class="tah-wishlist__item">' +
+              '<a class="tah-wishlist__media" href="' + this.escape(item.url || '#') + '">' + image + '</a>' +
+              '<div class="tah-wishlist__details">' +
+              '<a class="tah-wishlist__name" href="' + this.escape(item.url || '#') + '">' + this.escape(item.title) + '</a>' +
+              (item.price ? '<span class="tah-wishlist__price">' + this.escape(item.price) + '</span>' : '') +
+              '<a class="tah-wishlist__view" href="' + this.escape(item.url || '#') + '">' +
+              this.escape(this.dataset.view) + ' →</a>' +
+              '</div>' +
+              '<button type="button" class="tah-wishlist__remove" aria-label="' +
+              this.escape(this.dataset.remove) +
+              '" data-wishlist-toggle data-product-id="' +
+              this.escape(item.id) +
+              '">' + heart + '</button>' +
+              '</li>'
+            );
+          })
+          .join('') +
+        '</ul>';
+    }
+
+    escape(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+  }
+
+  if (!customElements.get('tah-wishlist')) {
+    customElements.define('tah-wishlist', TahWishlist);
+  }
+{% endjavascript %}

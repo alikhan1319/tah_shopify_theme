@@ -1,7 +1,20 @@
 {%- liquid
+  assign is_brand_page = false
+  if collection.handle == 'vendors'
+    assign is_brand_page = true
+  endif
+  if collection.template_suffix == 'brand'
+    assign is_brand_page = true
+  endif
+
   assign hero_heading = section.settings.heading
   if hero_heading == blank
     assign hero_heading = collection.title
+  endif
+
+  assign hero_eyebrow = section.settings.eyebrow
+  if is_brand_page
+    assign hero_eyebrow = 'collections.brand' | t
   endif
 
   assign hero_text = section.settings.description
@@ -30,14 +43,18 @@
         <nav class="collection-hero__breadcrumb" aria-label="{{ 'accessibility.breadcrumb' | t }}">
           <a href="{{ routes.root_url }}">{{ 'general.home' | t }}</a>
           <span class="collection-hero__breadcrumb-sep" aria-hidden="true">/</span>
-          <a href="{{ routes.collections_url }}">{{ 'collections.title' | t }}</a>
+          {%- if is_brand_page -%}
+            <span>{{ 'collections.brands' | t }}</span>
+          {%- else -%}
+            <a href="{{ routes.collections_url }}">{{ 'collections.title' | t }}</a>
+          {%- endif -%}
           <span class="collection-hero__breadcrumb-sep" aria-hidden="true">/</span>
           <span aria-current="page">{{ collection.title | escape }}</span>
         </nav>
       {%- endif -%}
 
-      {%- if section.settings.eyebrow != blank -%}
-        <p class="collection-hero__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- if hero_eyebrow != blank -%}
+        <p class="collection-hero__eyebrow">{{ hero_eyebrow | escape }}</p>
       {%- endif -%}
 
       <h1 class="collection-hero__title">{{ hero_heading | escape }}</h1>

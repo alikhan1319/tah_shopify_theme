@@ -1,13 +1,13 @@
 ﻿{% doc %}
   Modern product card inspired by marketplace clarity, elevated for luxury apparel.
   One-line title, two-line description, large price, vendor, rating,
-  quick view (top-right), add to cart. White / black palette — no green.
+  wishlist heart (top-right), add to cart. White / black palette — no green.
 
   @param {product} product - Product object
   @param {boolean} [show_vendor] - Show brand (default true)
   @param {boolean} [show_description] - Show excerpt (default true)
   @param {boolean} [show_rating] - Show stars (default true)
-  @param {boolean} [show_quick_view] - Show quick view (default true)
+  @param {boolean} [show_quick_view] - Show wishlist heart (default true)
   @param {boolean} [show_add_to_cart] - Show ATC (default true)
   @param {string} [loading] - lazy | eager
   @param {string} [class] - Extra class
@@ -30,7 +30,7 @@
     assign card_url = product.url
     assign card_available = product.available
     assign card_id = product.id
-    assign card_description = product.description | strip_html | truncate: 110
+    assign card_description = product.description | strip_html | truncate: 78
     assign current_variant = product.selected_or_first_available_variant
     assign variant_id = current_variant.id
     assign card_price = current_variant.price
@@ -45,6 +45,10 @@
     assign media_secondary = blank
     if product.media.size > 1
       assign media_secondary = product.media[1]
+    endif
+    assign card_image_url = blank
+    if media_primary != blank
+      assign card_image_url = media_primary.preview_image | image_url: width: 400
     endif
 
     assign rating_metafield = product.metafields.reviews.rating
@@ -68,37 +72,50 @@
     endif
 
     if card_rating == blank
-      assign rating_seed = product.id | modulo: 8
-      case rating_seed
+      assign rating_seed = product.id | plus: product.title.size | times: 13 | plus: product.handle.size
+      assign rating_mod = rating_seed | modulo: 12
+      case rating_mod
         when 0
-          assign card_rating = 5.0
-          assign card_rating_count = '2.1k'
+          assign card_rating = 3.8
+          assign card_rating_count = 21
         when 1
-          assign card_rating = 4.8
-          assign card_rating_count = '1.6k'
-        when 2
-          assign card_rating = 4.5
-          assign card_rating_count = '980'
-        when 3
-          assign card_rating = 4.2
-          assign card_rating_count = '1.1k'
-        when 4
           assign card_rating = 4.0
-          assign card_rating_count = '640'
+          assign card_rating_count = 64
+        when 2
+          assign card_rating = 4.2
+          assign card_rating_count = 38
+        when 3
+          assign card_rating = 4.3
+          assign card_rating_count = 112
+        when 4
+          assign card_rating = 4.4
+          assign card_rating_count = 9
         when 5
-          assign card_rating = 4.7
-          assign card_rating_count = '3.4k'
+          assign card_rating = 4.5
+          assign card_rating_count = 87
         when 6
-          assign card_rating = 3.5
-          assign card_rating_count = '420'
-        else
+          assign card_rating = 4.6
+          assign card_rating_count = 143
+        when 7
+          assign card_rating = 4.7
+          assign card_rating_count = 29
+        when 8
+          assign card_rating = 4.8
+          assign card_rating_count = 205
+        when 9
           assign card_rating = 4.9
-          assign card_rating_count = '5.2k'
+          assign card_rating_count = 76
+        when 10
+          assign card_rating = 5.0
+          assign card_rating_count = 14
+        else
+          assign card_rating = 4.1
+          assign card_rating_count = 53
       endcase
     endif
 
-    if card_rating_count == blank
-      assign card_rating_count = '0'
+    if card_rating != blank and card_rating_count == blank
+      assign card_rating_count = 0
     endif
 
     assign discount_percent = 0
@@ -106,23 +123,32 @@
       assign discount_percent = card_compare | minus: card_price | times: 100.0 | divided_by: card_compare | round
     endif
 
-    assign rating_floor = card_rating | floor
-    assign rating_decimal = card_rating | modulo: 1
+    assign rating_floor = 0
     assign has_half = false
-    if rating_decimal >= 0.25
-      if rating_decimal < 0.75
-        assign has_half = true
-      else
-        assign rating_floor = rating_floor | plus: 1
+    assign half_index = 1
+    assign rating_display = blank
+    if card_rating != blank
+      assign rating_floor = card_rating | floor
+      assign rating_decimal = card_rating | modulo: 1
+      if rating_decimal >= 0.25
+        if rating_decimal < 0.75
+          assign has_half = true
+        else
+          assign rating_floor = rating_floor | plus: 1
+        endif
       endif
+      assign half_index = rating_floor | plus: 1
+      assign rating_display = card_rating | round: 1
     endif
-    assign half_index = rating_floor | plus: 1
-    assign rating_display = card_rating | round: 1
   -%}
 
   <product-card
     class="product-card{% if has_variants %} product-card--has-variants{% endif %} {{ class }}"
     data-product-id="{{ card_id }}"
+    data-product-handle="{{ product.handle }}"
+    data-product-title="{{ card_title | escape }}"
+    data-product-image="{{ card_image_url }}"
+    data-product-price="{{ card_price | money }}"
     data-variant-id="{{ variant_id }}"
     data-product-url="{{ card_url }}"
     data-has-variants="{{ has_variants }}"
@@ -173,18 +199,41 @@
         <span class="product-card__badge">{{ 'products.percent_off' | t: percent: discount_percent }}</span>
       {%- endif -%}
 
-      {%- unless card_available -%}
+        {%- unless card_available -%}
         <span class="product-card__badge product-card__badge--muted">{{ 'products.sold_out' | t }}</span>
       {%- endunless -%}
 
+      <span class="product-card__shine" aria-hidden="true"></span>
+
       {%- if show_quick_view -%}
-        <a
-          class="product-card__quick"
-          href="{{ card_url }}"
-          aria-label="{{ 'products.quick_view' | t }}: {{ card_title | escape }}"
-        >
-          {{ 'products.quick_view' | t }}
-        </a>
+        <button
+          type="button"
+          class="product-card__wish"
+          data-wishlist-toggle
+          aria-pressed="false"
+          aria-label="{{ 'products.add_to_wishlist' | t }}"
+        ></button>
+      {%- endif -%}
+
+      {%- if show_add_to_cart -%}
+        <div class="product-card__overlay">
+          <button
+            type="button"
+            class="product-card__shop"
+            data-add-to-cart
+            {% unless card_available %}disabled{% endunless %}
+          >
+            {%- if card_available -%}
+              {%- if has_variants -%}
+                {{ 'products.choose_options' | t }}
+              {%- else -%}
+                {{ 'products.add_to_cart' | t }}
+              {%- endif -%}
+            {%- else -%}
+              {{ 'products.sold_out' | t }}
+            {%- endif -%}
+          </button>
+        </div>
       {%- endif -%}
     </div>
 
@@ -211,8 +260,22 @@
             role="img"
             aria-label="{{ 'products.rating_aria' | t: rating: card_rating, count: card_rating_count }}"
           >
-            <span class="product-card__star-icon" aria-hidden="true">★</span>
-            <span class="product-card__rating-value">{{ rating_display }}/5.0</span>
+            <span class="product-card__stars" aria-hidden="true">
+              {%- for i in (1..5) -%}
+                {%- if i <= rating_floor -%}
+                  <span class="product-card__star is-filled">★</span>
+                {%- elsif has_half -%}
+                  {%- if i == half_index -%}
+                    <span class="product-card__star is-half">★</span>
+                  {%- else -%}
+                    <span class="product-card__star">★</span>
+                  {%- endif -%}
+                {%- else -%}
+                  <span class="product-card__star">★</span>
+                {%- endif -%}
+              {%- endfor -%}
+            </span>
+            <span class="product-card__rating-value">{{ rating_display }}</span>
             <span class="product-card__reviews">({{ card_rating_count }})</span>
           </div>
         {%- endif -%}
@@ -274,20 +337,21 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    padding: 0.65rem;
     background: var(--color-background);
     color: var(--ink);
-    border: 1px solid var(--line);
-    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--color-accent) 12%, var(--line));
+    border-radius: 24px;
     overflow: hidden;
-    box-shadow: 0 2px 10px color-mix(in srgb, var(--color-heading) 5%, transparent);
+    box-shadow: 0 12px 32px color-mix(in srgb, var(--color-accent) 8%, transparent);
     transition: box-shadow 240ms var(--ease), transform 240ms var(--ease), border-color 240ms ease;
   }
 
   .product-card:hover,
   .product-card:focus-within {
-    border-color: color-mix(in srgb, var(--color-heading) 18%, var(--line));
-    transform: translateY(-2px);
-    box-shadow: 0 12px 28px color-mix(in srgb, var(--color-heading) 10%, transparent);
+    border-color: color-mix(in srgb, var(--color-accent) 28%, var(--line));
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px color-mix(in srgb, var(--color-heading) 12%, transparent);
   }
 
   .product-card__media {
@@ -296,12 +360,44 @@
     aspect-ratio: 4 / 5;
     background: var(--surface);
     overflow: hidden;
+    border-radius: 18px;
   }
 
   .product-card__media-link {
     display: block;
     width: 100%;
     height: 100%;
+  }
+
+  .product-card__shine {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(
+      115deg,
+      transparent 35%,
+      color-mix(in srgb, #fff 38%, transparent) 48%,
+      transparent 62%
+    );
+    transform: translateX(-120%);
+  }
+
+  .product-card:hover .product-card__shine,
+  .product-card:focus-within .product-card__shine {
+    animation: product-card-shine 900ms var(--ease);
+  }
+
+  @keyframes product-card-shine {
+    to { transform: translateX(120%); }
+  }
+
+  .product-card__overlay {
+    display: none;
+  }
+
+  .product-card__shop {
+    display: none;
   }
 
   .product-card__img,
@@ -322,7 +418,7 @@
   .product-card__media--single:hover .product-card__img--primary,
   .product-card:hover .product-card__media--single .product-card__img--primary,
   .product-card:focus-within .product-card__media--single .product-card__img--primary {
-    transform: scale(1.04);
+    transform: scale(1.05);
   }
 
   .product-card__media--swap:hover .product-card__img--primary,
@@ -339,73 +435,83 @@
 
   .product-card__badge {
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 12px;
+    left: 12px;
     z-index: 2;
-    padding: 5px 8px;
-    border-radius: 6px;
-    background: var(--btn);
-    color: var(--btn-text);
+    padding: 7px 10px;
+    border-radius: 999px;
+    background: var(--color-sale);
+    color: #fff;
     font-size: 10px;
     font-weight: 700;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.04em;
     line-height: 1;
   }
 
   .product-card__badge--muted {
-    background: var(--mute);
+    background: var(--color-heading);
   }
 
-  .product-card__quick {
+  .product-card__wish {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 3;
+    top: 12px;
+    right: 12px;
+    z-index: 4;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 30px;
-    padding: 0 11px;
-    border-radius: 8px;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border-radius: 999px;
     background: var(--color-background);
-    border: 1px solid var(--btn);
-    color: var(--btn);
-    font-size: 11px;
-    font-weight: 650;
-    text-decoration: none;
-    line-height: 1;
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--color-heading) 10%, transparent);
-    opacity: 0;
-    transform: translateY(-4px);
-    pointer-events: none;
-    transition: opacity 200ms var(--ease), transform 200ms var(--ease), background-color 150ms ease, color 150ms ease;
-  }
-
-  .product-card:hover .product-card__quick,
-  .product-card:focus-within .product-card__quick {
-    opacity: 1;
-    transform: translateY(0);
+    border: 0;
+    color: var(--color-accent);
+    cursor: pointer;
+    box-shadow: 0 8px 18px color-mix(in srgb, var(--color-heading) 12%, transparent);
     pointer-events: auto;
+    transition: background-color 150ms ease, color 150ms ease, transform 200ms var(--ease);
   }
 
-  .product-card__quick:hover,
-  .product-card__quick:focus-visible {
+  .product-card__wish::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    background: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M12 21s-6.7-4.35-9.33-8.22C.8 10.2 1.2 6.9 3.7 5.3 6 3.85 8.7 4.6 12 7.4c3.3-2.8 6-3.55 8.3-2.1 2.5 1.6 2.9 4.9 1.03 7.48C18.7 16.65 12 21 12 21Z' stroke='black' stroke-width='1.8' fill='none'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M12 21s-6.7-4.35-9.33-8.22C.8 10.2 1.2 6.9 3.7 5.3 6 3.85 8.7 4.6 12 7.4c3.3-2.8 6-3.55 8.3-2.1 2.5 1.6 2.9 4.9 1.03 7.48C18.7 16.65 12 21 12 21Z' stroke='black' stroke-width='1.8' fill='none'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+
+  .product-card__wish.is-active {
+    background: var(--color-accent);
+    color: var(--color-button-text);
+  }
+
+  .product-card__wish.is-active::before {
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 21s-6.7-4.35-9.33-8.22C.8 10.2 1.2 6.9 3.7 5.3 6 3.85 8.7 4.6 12 7.4c3.3-2.8 6-3.55 8.3-2.1 2.5 1.6 2.9 4.9 1.03 7.48C18.7 16.65 12 21 12 21Z'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 21s-6.7-4.35-9.33-8.22C.8 10.2 1.2 6.9 3.7 5.3 6 3.85 8.7 4.6 12 7.4c3.3-2.8 6-3.55 8.3-2.1 2.5 1.6 2.9 4.9 1.03 7.48C18.7 16.65 12 21 12 21Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+
+  .product-card__wish:hover,
+  .product-card__wish:focus-visible {
     background: var(--btn);
     color: var(--btn-text);
+    transform: scale(1.06);
   }
 
   .product-card__info {
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;
-    gap: 6px;
-    padding: 12px;
+    gap: 8px;
+    padding: 16px 16px 18px;
     min-width: 0;
+    background: var(--color-background);
   }
 
   .product-card__title {
     margin: 0;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 700;
     line-height: 1.3;
     white-space: nowrap;
@@ -419,8 +525,7 @@
   }
 
   .product-card__title a:hover {
-    text-decoration: underline;
-    text-underline-offset: 2px;
+    color: var(--color-accent);
   }
 
   .product-card__price-row {
@@ -436,7 +541,7 @@
     font-weight: 750;
     letter-spacing: -0.03em;
     line-height: 1.1;
-    color: var(--ink);
+    color: var(--color-accent);
     white-space: nowrap;
   }
 
@@ -450,13 +555,11 @@
   .product-card__desc {
     margin: 0;
     font-size: 13px;
-    line-height: 1.45;
+    line-height: 1.4;
     color: var(--mute);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    white-space: nowrap;
     overflow: hidden;
-    min-height: 2.9em;
+    text-overflow: ellipsis;
   }
 
   .product-card__meta-row {
@@ -472,6 +575,23 @@
     align-items: center;
     gap: 4px;
     min-width: 0;
+  }
+
+  .product-card__stars {
+    display: inline-flex;
+    gap: 1px;
+    line-height: 1;
+  }
+
+  .product-card__star {
+    color: color-mix(in srgb, var(--color-accent) 22%, var(--color-border));
+    font-size: 13px;
+    line-height: 1;
+  }
+
+  .product-card__star.is-filled,
+  .product-card__star.is-half {
+    color: var(--star);
   }
 
   .product-card__star-icon {
@@ -533,7 +653,7 @@
 
   .product-card__actions {
     margin-top: auto;
-    padding-top: 4px;
+    padding-top: 6px;
   }
 
   .product-card__atc {
@@ -543,9 +663,9 @@
     justify-content: center;
     gap: 8px;
     width: 100%;
-    height: 52px;
+    height: 48px;
     border: 0;
-    border-radius: 10px;
+    border-radius: 999px;
     background: var(--btn);
     color: var(--btn-text);
     font: inherit;
@@ -562,7 +682,7 @@
   .product-card__atc:hover,
   .product-card__atc:focus-visible {
     background: var(--btn-hover);
-    box-shadow: 0 8px 18px color-mix(in srgb, var(--color-heading) 18%, transparent);
+    box-shadow: 0 10px 22px color-mix(in srgb, var(--color-accent) 28%, transparent);
     transform: translateY(-1px);
   }
 
@@ -580,14 +700,14 @@
 
   @media (min-width: 750px) {
     .product-card__price {
-      font-size: 24px;
+      font-size: 22px;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .product-card,
     .product-card__img,
-    .product-card__quick,
+    .product-card__wish,
     .product-card__atc {
       transition: none;
     }
@@ -611,7 +731,8 @@
       this._ready = true;
 
       this.hasVariants = this.dataset.hasVariants === 'true';
-      this.atcBtn = this.querySelector('[data-add-to-cart]');
+      this.atcBtns = this.querySelectorAll('[data-add-to-cart]');
+      this.atcBtn = this.atcBtns[0];
 
       this.onAdd = (event) => {
         event.preventDefault();
@@ -620,14 +741,14 @@
           this.openQuickAdd();
           return;
         }
-        this.addToCart();
+        this.addToCart(event.currentTarget);
       };
 
-      this.atcBtn?.addEventListener('click', this.onAdd);
+      this.atcBtns.forEach((btn) => btn.addEventListener('click', this.onAdd));
     }
 
     disconnectedCallback() {
-      this.atcBtn?.removeEventListener('click', this.onAdd);
+      this.atcBtns?.forEach((btn) => btn.removeEventListener('click', this.onAdd));
     }
 
     openQuickAdd() {
@@ -647,8 +768,9 @@
       );
     }
 
-    async addToCart() {
-      if (!this.atcBtn || this.atcBtn.disabled) return;
+    async addToCart(clickedBtn) {
+      const trigger = clickedBtn || this.atcBtn;
+      if (!trigger || trigger.disabled) return;
 
       const variantId = this.dataset.variantId;
       const endpoint = this.dataset.cartAddUrl;
@@ -657,8 +779,10 @@
       const cartDrawer = document.querySelector('cart-drawer');
       const sectionId = cartDrawer?.dataset.sectionId;
 
-      this.atcBtn.classList.add('is-loading');
-      this.atcBtn.setAttribute('aria-busy', 'true');
+      this.atcBtns.forEach((btn) => {
+        btn.classList.add('is-loading');
+        btn.setAttribute('aria-busy', 'true');
+      });
 
       try {
         const payload = {
@@ -697,8 +821,10 @@
       } catch (error) {
         console.error(error);
       } finally {
-        this.atcBtn.classList.remove('is-loading');
-        this.atcBtn.removeAttribute('aria-busy');
+        this.atcBtns.forEach((btn) => {
+          btn.classList.remove('is-loading');
+          btn.removeAttribute('aria-busy');
+        });
       }
     }
   }

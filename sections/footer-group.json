@@ -48,11 +48,11 @@
         "payment_heading": "We accept",
         "payment_text": "<p>Choose how you want to pay at checkout.</p>",
         "payment_methods_list": "Cash on delivery\nBank transfer\nJazzCash / EasyPaisa\nDebit & credit cards",
-        "color_background": "#F4F5F7",
-        "color_text": "#111111",
-        "color_muted": "#5C5C5C",
-        "color_watermark": "#E6E8EC",
-        "color_border": "#D8DBE0",
+        "color_background": "#FBF3F8",
+        "color_text": "#5E184F",
+        "color_muted": "#B07A9E",
+        "color_watermark": "#F1D5E6",
+        "color_border": "#F1D5E6",
         "padding_top": 96,
         "padding_bottom": 40
       }

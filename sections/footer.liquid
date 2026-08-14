@@ -14,17 +14,23 @@
   endfor
 
   assign watermark_text = section.settings.watermark_text | default: shop.name | upcase
+  assign show_subscribe = section.settings.show_newsletter
+  assign show_payments = section.settings.show_payment_icons
 
   if section.settings.use_theme_colors == false
     assign footer_bg = section.settings.color_background
     assign footer_text = section.settings.color_text
     assign footer_muted = section.settings.color_muted
     assign footer_border = section.settings.color_border
+    assign footer_invite = section.settings.color_text
+    assign footer_bar = section.settings.color_text
   else
     assign footer_bg = settings.color_surface
-    assign footer_text = settings.color_text
+    assign footer_text = settings.color_heading
     assign footer_muted = settings.color_text_muted
     assign footer_border = settings.color_border
+    assign footer_invite = settings.color_heading
+    assign footer_bar = settings.color_heading
   endif
 -%}
 
@@ -40,6 +46,9 @@
     --footer-logo-height: {{ section.settings.logo_height | default: 56 }}px;
     --footer-padding-top: {{ section.settings.padding_top }}px;
     --footer-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --footer-accent: {{ settings.color_accent }};
+    --footer-invite: {{ footer_invite }};
+    --footer-bar: {{ footer_bar }};
     --footer-btn: {{ settings.color_button }};
     --footer-btn-text: {{ settings.color_button_text }};
     --footer-btn-hover: {{ settings.color_button_hover }};
@@ -52,6 +61,66 @@
     {%- endif -%}
 
     <div class="site-footer__inner">
+      {%- if show_subscribe -%}
+        <section class="site-footer__invite">
+          <div class="site-footer__invite-copy">
+            <p class="site-footer__eyebrow">{{ 'sections.footer.newsletter_eyebrow' | t }}</p>
+            {%- if section.settings.newsletter_heading != blank -%}
+              <h2 class="site-footer__invite-heading">{{ section.settings.newsletter_heading | escape }}</h2>
+            {%- endif -%}
+            {%- if section.settings.newsletter_text != blank -%}
+              <div class="site-footer__invite-text">{{ section.settings.newsletter_text }}</div>
+            {%- endif -%}
+          </div>
+
+          {%- form 'customer', class: 'site-footer__newsletter-form' -%}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            <div class="site-footer__newsletter-field">
+              <label class="visually-hidden" for="FooterNewsletterEmail-{{ section.id }}">
+                {{ 'sections.footer.newsletter_email' | t }}
+              </label>
+              <input
+                id="FooterNewsletterEmail-{{ section.id }}"
+                class="site-footer__newsletter-input"
+                type="email"
+                name="contact[email]"
+                value="{{ form.email }}"
+                autocomplete="email"
+                placeholder="{{ 'sections.footer.newsletter_placeholder' | t }}"
+                required
+                {% if form.errors %}
+                  aria-invalid="true"
+                  aria-describedby="FooterNewsletterError-{{ section.id }}"
+                {% endif %}
+              >
+              <button class="site-footer__newsletter-button" type="submit">
+                {{ 'sections.footer.newsletter_submit' | t }}
+              </button>
+            </div>
+
+            {%- if form.posted_successfully? -%}
+              <p class="site-footer__newsletter-message site-footer__newsletter-message--success" role="status">
+                {{ 'sections.footer.newsletter_success' | t }}
+              </p>
+            {%- endif -%}
+
+            {%- if form.errors -%}
+              <p
+                id="FooterNewsletterError-{{ section.id }}"
+                class="site-footer__newsletter-message site-footer__newsletter-message--error"
+                role="alert"
+              >
+                {%- if form.errors.messages.email != blank -%}
+                  {{ form.errors.messages.email }}
+                {%- else -%}
+                  {{ 'sections.footer.newsletter_error' | t }}
+                {%- endif -%}
+              </p>
+            {%- endif -%}
+          {%- endform -%}
+        </section>
+      {%- endif -%}
+
       <div class="site-footer__main">
         <div class="site-footer__brand">
           {%- if section.settings.logo != blank -%}
@@ -77,6 +146,7 @@
 
           {%- if show_social -%}
             <nav class="site-footer__social" aria-label="{{ 'accessibility.social_media' | t }}">
+              <p class="site-footer__social-label">{{ 'sections.footer.follow_us' | t }}</p>
               <ul class="site-footer__social-list" role="list">
                 {%- if section.settings.social_facebook != blank -%}
                   <li>
@@ -202,25 +272,48 @@
                 </h2>
                 <ul class="site-footer__contact" role="list">
                   {%- if section.settings.contact_phone != blank -%}
-                    <li>
-                      <span class="site-footer__contact-label">{{ 'sections.footer.phone' | t }}</span>
-                      <a class="site-footer__contact-value" href="tel:{{ section.settings.contact_phone | replace: ' ', '' | escape }}">
-                        {{ section.settings.contact_phone | escape }}
-                      </a>
+                    <li class="site-footer__contact-item">
+                      <span class="site-footer__contact-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M7.2 3.8h3.1l1.2 3.2-1.8 1.1a12.4 12.4 0 0 0 5.2 5.2l1.1-1.8 3.2 1.2v3.1c0 .7-.5 1.4-1.2 1.5A16.7 16.7 0 0 1 5.7 5c.1-.7.8-1.2 1.5-1.2Z"/>
+                        </svg>
+                      </span>
+                      <span>
+                        <span class="site-footer__contact-label">{{ 'sections.footer.phone' | t }}</span>
+                        <a class="site-footer__contact-value" href="tel:{{ section.settings.contact_phone | replace: ' ', '' | escape }}">
+                          {{ section.settings.contact_phone | escape }}
+                        </a>
+                      </span>
                     </li>
                   {%- endif -%}
                   {%- if section.settings.contact_email != blank -%}
-                    <li>
-                      <span class="site-footer__contact-label">{{ 'sections.footer.email' | t }}</span>
-                      <a class="site-footer__contact-value" href="mailto:{{ section.settings.contact_email | escape }}">
-                        {{ section.settings.contact_email | escape }}
-                      </a>
+                    <li class="site-footer__contact-item">
+                      <span class="site-footer__contact-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                          <rect x="3.5" y="5.5" width="17" height="13" rx="2"/>
+                          <path d="m4.5 7 7.5 6 7.5-6"/>
+                        </svg>
+                      </span>
+                      <span>
+                        <span class="site-footer__contact-label">{{ 'sections.footer.email' | t }}</span>
+                        <a class="site-footer__contact-value" href="mailto:{{ section.settings.contact_email | escape }}">
+                          {{ section.settings.contact_email | escape }}
+                        </a>
+                      </span>
                     </li>
                   {%- endif -%}
                   {%- if section.settings.contact_address != blank -%}
-                    <li>
-                      <span class="site-footer__contact-label">{{ 'sections.footer.address' | t }}</span>
-                      <span class="site-footer__contact-value">{{ section.settings.contact_address | newline_to_br }}</span>
+                    <li class="site-footer__contact-item">
+                      <span class="site-footer__contact-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M12 21s7-5.4 7-11a7 7 0 1 0-14 0c0 5.6 7 11 7 11Z"/>
+                          <circle cx="12" cy="10" r="2.2"/>
+                        </svg>
+                      </span>
+                      <span>
+                        <span class="site-footer__contact-label">{{ 'sections.footer.address' | t }}</span>
+                        <span class="site-footer__contact-value">{{ section.settings.contact_address | newline_to_br }}</span>
+                      </span>
                     </li>
                   {%- endif -%}
                 </ul>
@@ -230,177 +323,115 @@
         {%- endif -%}
       </div>
 
-      {%- liquid
-        assign show_subscribe = section.settings.show_newsletter
-        assign show_payments = section.settings.show_payment_icons
-      -%}
+      {%- if show_payments -%}
+        <div class="site-footer__accept">
+          <div class="site-footer__accept-copy">
+            <p class="site-footer__eyebrow">
+              {%- if section.settings.payment_heading != blank -%}
+                {{ section.settings.payment_heading | escape }}
+              {%- else -%}
+                {{ 'sections.footer.we_accept' | t }}
+              {%- endif -%}
+            </p>
+            {%- if section.settings.payment_text != blank -%}
+              <div class="site-footer__accept-text">{{ section.settings.payment_text }}</div>
+            {%- endif -%}
+          </div>
 
-      {%- if show_subscribe or show_payments -%}
-        <div class="site-footer__panels{% if show_subscribe and show_payments %} site-footer__panels--split{% endif %}">
-          {%- if show_subscribe -%}
-            <div class="site-footer__subscribe">
-              <div class="site-footer__subscribe-copy">
-                {%- if section.settings.newsletter_heading != blank -%}
-                  <h2 class="site-footer__subscribe-heading">{{ section.settings.newsletter_heading | escape }}</h2>
-                {%- endif -%}
-                {%- if section.settings.newsletter_text != blank -%}
-                  <div class="site-footer__newsletter-text">{{ section.settings.newsletter_text }}</div>
-                {%- endif -%}
-              </div>
-
-              {%- form 'customer', class: 'site-footer__newsletter-form' -%}
-                <input type="hidden" name="contact[tags]" value="newsletter">
-                <div class="site-footer__newsletter-field">
-                  <label class="visually-hidden" for="FooterNewsletterEmail-{{ section.id }}">
-                    {{ 'sections.footer.newsletter_email' | t }}
-                  </label>
-                  <input
-                    id="FooterNewsletterEmail-{{ section.id }}"
-                    class="site-footer__newsletter-input"
-                    type="email"
-                    name="contact[email]"
-                    value="{{ form.email }}"
-                    autocomplete="email"
-                    placeholder="{{ 'sections.footer.newsletter_placeholder' | t }}"
-                    required
-                    {% if form.errors %}
-                      aria-invalid="true"
-                      aria-describedby="FooterNewsletterError-{{ section.id }}"
-                    {% endif %}
-                  >
-                  <button class="site-footer__newsletter-button" type="submit">
-                    {{ 'sections.footer.newsletter_submit' | t }}
-                  </button>
-                </div>
-
-                {%- if form.posted_successfully? -%}
-                  <p class="site-footer__newsletter-message site-footer__newsletter-message--success" role="status">
-                    {{ 'sections.footer.newsletter_success' | t }}
-                  </p>
-                {%- endif -%}
-
-                {%- if form.errors -%}
-                  <p
-                    id="FooterNewsletterError-{{ section.id }}"
-                    class="site-footer__newsletter-message site-footer__newsletter-message--error"
-                    role="alert"
-                  >
-                    {%- if form.errors.messages.email != blank -%}
-                      {{ form.errors.messages.email }}
-                    {%- else -%}
-                      {{ 'sections.footer.newsletter_error' | t }}
-                    {%- endif -%}
-                  </p>
-                {%- endif -%}
-              {%- endform -%}
+          {%- if shop.enabled_payment_types.size > 0 -%}
+            <div class="site-footer__payment" aria-label="{{ 'sections.footer.payment_methods' | t }}">
+              {%- for type in shop.enabled_payment_types -%}
+                {{ type | payment_type_svg_tag: class: 'site-footer__payment-icon' }}
+              {%- endfor -%}
             </div>
           {%- endif -%}
 
-          {%- if show_payments -%}
-            <div class="site-footer__accept">
-              <h2 class="site-footer__accept-heading">
-                {%- if section.settings.payment_heading != blank -%}
-                  {{ section.settings.payment_heading | escape }}
-                {%- else -%}
-                  {{ 'sections.footer.we_accept' | t }}
+          {%- if section.settings.payment_methods_list != blank -%}
+            <ul class="site-footer__payment-list" role="list">
+              {%- assign payment_raw = section.settings.payment_methods_list | newline_to_br | split: '<br />' -%}
+              {%- for method in payment_raw -%}
+                {%- liquid
+                  assign method_label = method | strip_html | strip
+                  assign method_key = method_label | downcase
+                  assign method_icon = 'card'
+                  if method_key contains 'cash' or method_key contains 'cod' or method_key contains 'delivery'
+                    assign method_icon = 'cash'
+                  elsif method_key contains 'bank' or method_key contains 'transfer' or method_key contains 'iban'
+                    assign method_icon = 'bank'
+                  elsif method_key contains 'jazz' or method_key contains 'easypaisa' or method_key contains 'wallet' or method_key contains 'paisa'
+                    assign method_icon = 'wallet'
+                  endif
+                -%}
+                {%- if method_label != blank -%}
+                  <li class="site-footer__payment-item">
+                    <span class="site-footer__payment-badge" aria-hidden="true">
+                      {%- case method_icon -%}
+                        {%- when 'cash' -%}
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2.5" y="6" width="19" height="12" rx="2.5"/>
+                            <circle cx="12" cy="12" r="2.6"/>
+                            <path d="M6 9.5v5M18 9.5v5"/>
+                          </svg>
+                        {%- when 'bank' -%}
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 9.5 12 4l9 5.5"/>
+                            <path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8"/>
+                            <path d="M3 20h18"/>
+                          </svg>
+                        {%- when 'wallet' -%}
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="6" width="18" height="13" rx="2.5"/>
+                            <path d="M3 10.5h18"/>
+                            <circle cx="16.5" cy="14.5" r="1.3"/>
+                          </svg>
+                        {%- else -%}
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2.5" y="5.5" width="19" height="13" rx="2.5"/>
+                            <path d="M2.5 10h19"/>
+                            <path d="M6 14.5h4"/>
+                          </svg>
+                      {%- endcase -%}
+                    </span>
+                    <span class="site-footer__payment-label">{{ method_label | escape }}</span>
+                  </li>
                 {%- endif -%}
-              </h2>
-              {%- if section.settings.payment_text != blank -%}
-                <div class="site-footer__accept-text">{{ section.settings.payment_text }}</div>
-              {%- endif -%}
-
-              {%- if shop.enabled_payment_types.size > 0 -%}
-                <div class="site-footer__payment" aria-label="{{ 'sections.footer.payment_methods' | t }}">
-                  {%- for type in shop.enabled_payment_types -%}
-                    {{ type | payment_type_svg_tag: class: 'site-footer__payment-icon' }}
-                  {%- endfor -%}
-                </div>
-              {%- endif -%}
-
-              {%- if section.settings.payment_methods_list != blank -%}
-                <ul class="site-footer__payment-list" role="list">
-                  {%- assign payment_raw = section.settings.payment_methods_list | newline_to_br | split: '<br />' -%}
-                  {%- for method in payment_raw -%}
-                    {%- liquid
-                      assign method_label = method | strip_html | strip
-                      assign method_key = method_label | downcase
-                      assign method_icon = 'card'
-                      if method_key contains 'cash' or method_key contains 'cod' or method_key contains 'delivery'
-                        assign method_icon = 'cash'
-                      elsif method_key contains 'bank' or method_key contains 'transfer' or method_key contains 'iban'
-                        assign method_icon = 'bank'
-                      elsif method_key contains 'jazz' or method_key contains 'easypaisa' or method_key contains 'wallet' or method_key contains 'paisa'
-                        assign method_icon = 'wallet'
-                      endif
-                    -%}
-                    {%- if method_label != blank -%}
-                      <li class="site-footer__payment-item">
-                        <span class="site-footer__payment-badge" aria-hidden="true">
-                          {%- case method_icon -%}
-                            {%- when 'cash' -%}
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="2.5" y="6" width="19" height="12" rx="2.5"/>
-                                <circle cx="12" cy="12" r="2.6"/>
-                                <path d="M6 9.5v5M18 9.5v5"/>
-                              </svg>
-                            {%- when 'bank' -%}
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 9.5 12 4l9 5.5"/>
-                                <path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8"/>
-                                <path d="M3 20h18"/>
-                              </svg>
-                            {%- when 'wallet' -%}
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="6" width="18" height="13" rx="2.5"/>
-                                <path d="M3 10.5h18"/>
-                                <circle cx="16.5" cy="14.5" r="1.3"/>
-                              </svg>
-                            {%- else -%}
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="2.5" y="5.5" width="19" height="13" rx="2.5"/>
-                                <path d="M2.5 10h19"/>
-                                <path d="M6 14.5h4"/>
-                              </svg>
-                          {%- endcase -%}
-                        </span>
-                        <span class="site-footer__payment-label">{{ method_label | escape }}</span>
-                      </li>
-                    {%- endif -%}
-                  {%- endfor -%}
-                </ul>
-              {%- endif -%}
-            </div>
+              {%- endfor -%}
+            </ul>
           {%- endif -%}
         </div>
       {%- endif -%}
+    </div>
+  </div>
 
-      <div class="site-footer__bottom">
-        <div class="site-footer__bottom-start">
-          {%- if section.settings.secondary_menu != blank and section.settings.secondary_menu.links.size > 0 -%}
-            <nav class="site-footer__secondary" aria-label="{{ 'sections.footer.secondary_navigation' | t }}">
-              <ul class="site-footer__secondary-list" role="list">
-                {%- for link in section.settings.secondary_menu.links -%}
-                  <li>
-                    <a class="site-footer__secondary-link" href="{{ link.url }}">{{ link.title | escape }}</a>
-                  </li>
-                {%- endfor -%}
-              </ul>
-            </nav>
-          {%- endif -%}
+  <div class="site-footer__bar">
+    <div class="site-footer__bar-inner">
+      <p class="site-footer__copyright">
+        {%- liquid
+          assign copyright_year = 'now' | date: '%Y'
+          assign copyright_text = section.settings.copyright_text | strip
+          if copyright_text != blank
+            echo copyright_text | replace: '[year]', copyright_year | replace: '[shop_name]', shop.name | escape
+          else
+            echo 'sections.footer.copyright_html' | t: year: copyright_year, shop_name: shop.name
+          endif
+        -%}
+      </p>
 
-          <p class="site-footer__copyright">
-            {%- liquid
-              assign copyright_year = 'now' | date: '%Y'
-              assign copyright_text = section.settings.copyright_text | strip
-              if copyright_text != blank
-                echo copyright_text | replace: '[year]', copyright_year | replace: '[shop_name]', shop.name | escape
-              else
-                echo 'sections.footer.copyright_html' | t: year: copyright_year, shop_name: shop.name
-              endif
-            -%}
-          </p>
-        </div>
-      </div>
+      {%- if section.settings.secondary_menu != blank and section.settings.secondary_menu.links.size > 0 -%}
+        <nav class="site-footer__secondary" aria-label="{{ 'sections.footer.secondary_navigation' | t }}">
+          <ul class="site-footer__secondary-list" role="list">
+            {%- for link in section.settings.secondary_menu.links -%}
+              <li>
+                <a class="site-footer__secondary-link" href="{{ link.url }}">{{ link.title | escape }}</a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+      {%- endif -%}
+
+      <button type="button" class="site-footer__top" data-footer-top>
+        {{ 'accessibility.back_to_top' | t }}
+      </button>
     </div>
   </div>
 </div>
@@ -408,14 +439,32 @@
 {% stylesheet %}
   .site-footer {
     --footer-ease: cubic-bezier(0.22, 1, 0.36, 1);
-    background: var(--footer-bg, var(--color-background));
-    color: var(--footer-text, var(--color-text));
-    border-top: 0;
+    position: relative;
     overflow: hidden;
+    background: var(--footer-bg, var(--color-surface));
+    color: var(--footer-text, var(--color-heading));
+  }
+
+  .site-footer::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -8rem;
+    z-index: 0;
+    width: 48rem;
+    height: 24rem;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at center,
+      color-mix(in srgb, var(--footer-accent, var(--color-accent)) 18%, transparent),
+      transparent 70%
+    );
+    transform: translateX(-50%);
   }
 
   .site-footer__stage {
     position: relative;
+    z-index: 1;
     padding-block: var(--footer-padding-top) var(--footer-padding-bottom);
     isolation: isolate;
   }
@@ -423,19 +472,20 @@
   .site-footer__watermark {
     position: absolute;
     left: 50%;
-    top: 10%;
+    top: 7.5rem;
     z-index: 0;
     margin: 0;
     max-width: 100%;
     padding: 0 1rem;
-    font-size: clamp(3.25rem, 12vw, 9rem);
-    font-weight: 800;
-    letter-spacing: -0.04em;
-    line-height: 0.9;
+    font-family: var(--font-heading--family);
+    font-size: clamp(3.4rem, 11vw, 8.5rem);
+    font-weight: 750;
+    letter-spacing: -0.055em;
+    line-height: 0.86;
     text-align: center;
     text-transform: uppercase;
     white-space: nowrap;
-    color: var(--footer-watermark, var(--color-border));
+    color: color-mix(in srgb, var(--footer-text, var(--color-heading)) 8%, transparent);
     pointer-events: none;
     user-select: none;
     transform: translateX(-50%);
@@ -450,26 +500,160 @@
     );
     margin-inline: auto;
     display: grid;
-    gap: clamp(2.5rem, 6vw, 4rem);
+    gap: clamp(2.25rem, 5vw, 3.75rem);
+  }
+
+  .site-footer__eyebrow {
+    margin: 0 0 0.55rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--footer-accent, var(--color-accent)) 82%, var(--footer-text));
+  }
+
+  .site-footer__invite {
+    display: grid;
+    gap: 1.35rem;
+    padding: 1.5rem 1.4rem;
+    border-radius: 1.75rem;
+    background:
+      linear-gradient(
+        135deg,
+        var(--footer-invite, var(--color-heading)) 0%,
+        color-mix(in srgb, var(--footer-accent, var(--color-accent)) 78%, var(--footer-invite, var(--color-heading))) 100%
+      );
+    color: var(--footer-btn-text, #fff);
+    box-shadow: 0 24px 48px color-mix(in srgb, var(--footer-invite, var(--color-heading)) 22%, transparent);
+  }
+
+  .site-footer__invite-copy {
+    display: grid;
+    gap: 0.4rem;
+    max-width: 34rem;
+  }
+
+  .site-footer__invite .site-footer__eyebrow {
+    color: color-mix(in srgb, var(--footer-btn-text, #fff) 72%, transparent);
+  }
+
+  .site-footer__invite-heading,
+  .site-footer__invite h2 {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-size: clamp(1.55rem, 3vw, 2.15rem);
+    font-weight: 650;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    color: #fff;
+  }
+
+  .site-footer__invite-text,
+  .site-footer__invite-text p {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: color-mix(in srgb, var(--footer-btn-text, #fff) 82%, transparent);
+  }
+
+  .site-footer__newsletter-form {
+    display: grid;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 28rem;
+  }
+
+  .site-footer__newsletter-field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    overflow: hidden;
+    border-radius: 999px;
+    background: color-mix(in srgb, #fff 14%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, #fff 32%, transparent);
+  }
+
+  .site-footer__newsletter-input {
+    min-width: 0;
+    padding: 0.9rem 1.05rem;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    font-size: 0.9375rem;
+  }
+
+  .site-footer__newsletter-input::placeholder {
+    color: color-mix(in srgb, #fff 68%, transparent);
+  }
+
+  .site-footer__newsletter-input:focus {
+    outline: none;
+  }
+
+  .site-footer__newsletter-input:-webkit-autofill,
+  .site-footer__newsletter-input:-webkit-autofill:hover,
+  .site-footer__newsletter-input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #fff;
+    caret-color: #fff;
+    box-shadow: 0 0 0 1000px color-mix(in srgb, var(--footer-invite, var(--color-heading)) 88%, #000) inset;
+    transition: background-color 99999s ease-out;
+  }
+
+  .site-footer__newsletter-button {
+    appearance: none;
+    margin: 0.3rem;
+    padding: 0.7rem 1.15rem;
+    border: 0;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--footer-invite, var(--color-heading));
+    font-size: 0.6875rem;
+    font-weight: 750;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+      background-color 200ms var(--footer-ease),
+      color 200ms var(--footer-ease),
+      transform 200ms var(--footer-ease);
+  }
+
+  .site-footer__newsletter-button:hover {
+    background: color-mix(in srgb, #fff 88%, var(--footer-accent, var(--color-accent)));
+    color: var(--footer-invite, var(--color-heading));
+    transform: translateY(-1px);
+  }
+
+  .site-footer__newsletter-message {
+    margin: 0;
+    font-size: 0.8125rem;
+  }
+
+  .site-footer__newsletter-message--success {
+    color: color-mix(in srgb, var(--footer-btn-text, #fff) 88%, transparent);
+  }
+
+  .site-footer__newsletter-message--error {
+    color: #ffd7d2;
   }
 
   .site-footer__main {
     display: grid;
-    gap: clamp(2rem, 4vw, 3rem);
+    gap: clamp(2rem, 4vw, 3.25rem);
     align-items: start;
   }
 
   .site-footer__brand {
     display: grid;
-    gap: 1.15rem;
+    gap: 1.05rem;
     max-width: 24rem;
   }
 
   .site-footer__logo-link {
     display: inline-flex;
     align-items: center;
-    line-height: 0;
     width: fit-content;
+    line-height: 0;
   }
 
   .site-footer__logo {
@@ -484,29 +668,42 @@
   .site-footer__shop-name {
     color: inherit;
     text-decoration: none;
-    font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+    font-family: var(--font-heading--family);
+    font-size: clamp(1.4rem, 2.4vw, 1.85rem);
     font-weight: 750;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     line-height: 1;
   }
 
-  .site-footer__about {
+  .site-footer__about,
+  .site-footer__about p {
+    margin: 0;
     font-size: 0.9375rem;
     line-height: 1.7;
     color: var(--footer-muted, var(--color-text-muted));
   }
 
-  .site-footer__about p {
+  .site-footer__social {
+    display: grid;
+    gap: 0.65rem;
+  }
+
+  .site-footer__social-label {
     margin: 0;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--footer-muted, var(--color-text-muted));
   }
 
   .site-footer__social-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.55rem;
+    gap: 0.5rem;
     list-style: none;
-    margin: 0.25rem 0 0;
+    margin: 0;
     padding: 0;
   }
 
@@ -514,13 +711,14 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2.35rem;
-    height: 2.35rem;
+    width: 2.5rem;
+    height: 2.5rem;
     color: inherit;
     text-decoration: none;
-    border: 1px solid var(--footer-border, var(--color-border));
+    border: 1px solid color-mix(in srgb, var(--footer-border, var(--color-border)) 88%, var(--footer-accent));
     border-radius: 999px;
     background: var(--color-background);
+    box-shadow: 0 8px 18px color-mix(in srgb, var(--color-heading) 6%, transparent);
     transition:
       background-color 200ms var(--footer-ease),
       border-color 200ms var(--footer-ease),
@@ -528,227 +726,17 @@
       transform 200ms var(--footer-ease);
   }
 
-  .site-footer__social-link:hover {
-    background: var(--color-button);
-    color: var(--color-button-text);
-    border-color: var(--color-button);
-    transform: translateY(-1px);
+  .site-footer__social-link:hover,
+  .site-footer__social-link:focus-visible {
+    background: var(--footer-accent, var(--color-accent));
+    border-color: var(--footer-accent, var(--color-accent));
+    color: var(--footer-btn-text, #fff);
+    transform: translateY(-2px);
   }
 
   .site-footer__social-icon {
-    width: 0.9rem;
-    height: 0.9rem;
-  }
-
-  .site-footer__panels {
-    display: grid;
-    gap: 1rem;
-  }
-
-  .site-footer__panels--split {
-    grid-template-columns: 1fr;
-  }
-
-  .site-footer__subscribe,
-  .site-footer__accept {
-    display: grid;
-    gap: 0.85rem;
-    align-content: start;
-    min-width: 0;
-    padding: 1.1rem 1.15rem 1.2rem;
-    border: 1px solid var(--footer-border, var(--color-border));
-    border-radius: 1rem;
-    background: var(--color-background);
-    box-shadow: 0 8px 22px color-mix(in srgb, var(--color-heading) 4%, transparent);
-  }
-
-  .site-footer__subscribe {
-    order: 1;
-  }
-
-  .site-footer__accept {
-    order: 2;
-  }
-
-  .site-footer__subscribe-copy,
-  .site-footer__accept-copy {
-    display: grid;
-    gap: 0.25rem;
-  }
-
-  .site-footer__subscribe-heading,
-  .site-footer__accept-heading {
-    margin: 0;
-    font-size: 0.9375rem;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-  }
-
-  .site-footer__newsletter-text,
-  .site-footer__accept-text {
-    font-size: 0.8125rem;
-    line-height: 1.5;
-    color: var(--footer-muted, var(--color-text-muted));
-  }
-
-  .site-footer__newsletter-text p,
-  .site-footer__accept-text p {
-    margin: 0;
-  }
-
-  .site-footer__newsletter-form {
-    display: grid;
-    gap: 0.45rem;
-    width: 100%;
-    max-width: 22rem;
-  }
-
-  .site-footer__newsletter-field {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    border: 1px solid var(--footer-border, var(--color-border));
-    border-radius: 999px;
-    overflow: hidden;
-    background: var(--color-surface);
-  }
-
-  .site-footer__newsletter-input {
-    min-width: 0;
-    padding: 0.7rem 0.95rem;
-    font-size: 0.875rem;
-    border: 0;
-    background: transparent;
-    color: inherit;
-  }
-
-  .site-footer__newsletter-input::placeholder {
-    color: inherit;
-    opacity: 0.45;
-  }
-
-  .site-footer__newsletter-input:focus {
-    outline: none;
-  }
-
-  .site-footer__newsletter-button {
-    padding: 0.7rem 1rem;
-    border: 0;
-    background: var(--footer-btn, var(--color-button));
-    color: var(--footer-btn-text, var(--color-button-text));
-    font-size: 0.625rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background-color 200ms var(--footer-ease);
-  }
-
-  .site-footer__newsletter-button:hover {
-    background: var(--footer-btn-hover, var(--color-button-hover));
-  }
-
-  .site-footer__newsletter-message {
-    margin: 0;
-    font-size: 0.8125rem;
-  }
-
-  .site-footer__newsletter-message--error {
-    color: var(--color-error);
-  }
-
-  .site-footer__payment {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.55rem;
-    align-items: center;
-  }
-
-  .site-footer__payment-icon {
-    height: 1.5rem;
-    width: auto;
-    background: var(--color-surface);
-    border: 1px solid var(--footer-border, var(--color-border));
-    border-radius: 0.4rem;
-    padding: 0.15rem 0.3rem;
-  }
-
-  .site-footer__payment-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .site-footer__payment-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.35rem 0.65rem 0.35rem 0.4rem;
-    border: 1px solid var(--footer-border, var(--color-border));
-    border-radius: 999px;
-    background: var(--color-surface);
-    font-size: 0.75rem;
-    font-weight: 600;
-    line-height: 1.2;
-    color: var(--color-heading);
-    transition:
-      background-color 200ms var(--footer-ease),
-      border-color 200ms var(--footer-ease);
-  }
-
-  .site-footer__payment-item:hover {
-    background: var(--color-background);
-    border-color: var(--color-button);
-  }
-
-  .site-footer__payment-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.35rem;
-    height: 1.35rem;
-    border-radius: 50%;
-    background: var(--color-button);
-    color: var(--color-button-text);
-    flex: 0 0 auto;
-  }
-
-  .site-footer__payment-badge svg {
-    width: 0.8rem;
-    height: 0.8rem;
-  }
-
-  .site-footer__contact {
-    display: grid;
-    gap: 0.85rem;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .site-footer__contact-label {
-    display: block;
-    margin-bottom: 0.2rem;
-    font-size: 0.6875rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: color-mix(in srgb, var(--color-heading) 42%, transparent);
-  }
-
-  .site-footer__contact-value {
-    display: block;
-    color: var(--footer-muted, var(--color-text-muted));
-    text-decoration: none;
-    font-size: 0.9375rem;
-    line-height: 1.5;
-  }
-
-  a.site-footer__contact-value:hover {
-    color: var(--footer-text, var(--color-text));
+    width: 0.95rem;
+    height: 0.95rem;
   }
 
   .site-footer__links {
@@ -762,12 +750,14 @@
   }
 
   .site-footer__column-heading {
-    margin: 0 0 1.05rem;
-    font-size: 0.9375rem;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    text-transform: none;
-    color: var(--footer-text, var(--color-text));
+    margin: 0 0 1rem;
+    padding-bottom: 0.65rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--footer-accent, var(--color-accent)) 22%, transparent);
+    font-size: 0.75rem;
+    font-weight: 750;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--footer-text, var(--color-heading));
   }
 
   .site-footer__menu {
@@ -779,6 +769,9 @@
   }
 
   .site-footer__menu-link {
+    position: relative;
+    display: inline-flex;
+    width: fit-content;
     color: var(--footer-muted, var(--color-text-muted));
     text-decoration: none;
     font-size: 0.9375rem;
@@ -786,8 +779,27 @@
     transition: color 180ms ease;
   }
 
-  .site-footer__menu-link:hover {
-    color: var(--footer-text, var(--color-text));
+  .site-footer__menu-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -0.12rem;
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 180ms var(--footer-ease);
+  }
+
+  .site-footer__menu-link:hover,
+  .site-footer__menu-link:focus-visible {
+    color: var(--footer-text, var(--color-heading));
+  }
+
+  .site-footer__menu-link:hover::after,
+  .site-footer__menu-link:focus-visible::after {
+    transform: scaleX(1);
   }
 
   .site-footer__empty-menu {
@@ -796,16 +808,160 @@
     color: color-mix(in srgb, var(--color-heading) 40%, transparent);
   }
 
-  .site-footer__bottom {
+  .site-footer__contact {
     display: grid;
-    gap: 1.25rem;
-    align-items: center;
-    padding-top: 0.5rem;
+    gap: 0.95rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
   }
 
-  .site-footer__bottom-start {
+  .site-footer__contact-item {
     display: grid;
-    gap: 0.75rem;
+    grid-template-columns: 2.1rem minmax(0, 1fr);
+    gap: 0.7rem;
+    align-items: start;
+  }
+
+  .site-footer__contact-icon {
+    display: grid;
+    place-items: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--footer-accent, var(--color-accent)) 12%, var(--color-background));
+    color: var(--footer-accent, var(--color-accent));
+  }
+
+  .site-footer__contact-icon svg {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+
+  .site-footer__contact-label {
+    display: block;
+    margin-bottom: 0.15rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--footer-text, var(--color-heading)) 48%, transparent);
+  }
+
+  .site-footer__contact-value {
+    display: block;
+    color: var(--footer-text, var(--color-heading));
+    text-decoration: none;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  a.site-footer__contact-value:hover {
+    color: var(--footer-accent, var(--color-accent));
+  }
+
+  .site-footer__accept {
+    display: grid;
+    gap: 0.85rem;
+    padding-top: 0.25rem;
+    border-top: 1px solid color-mix(in srgb, var(--footer-border, var(--color-border)) 80%, transparent);
+  }
+
+  .site-footer__accept-copy {
+    display: grid;
+    gap: 0.2rem;
+  }
+
+  .site-footer__accept-text,
+  .site-footer__accept-text p {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--footer-muted, var(--color-text-muted));
+  }
+
+  .site-footer__payment {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .site-footer__payment-icon {
+    height: 1.6rem;
+    width: auto;
+    padding: 0.2rem 0.35rem;
+    border: 1px solid var(--footer-border, var(--color-border));
+    border-radius: 0.45rem;
+    background: var(--color-background);
+  }
+
+  .site-footer__payment-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .site-footer__payment-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.38rem 0.7rem 0.38rem 0.38rem;
+    border: 1px solid var(--footer-border, var(--color-border));
+    border-radius: 999px;
+    background: var(--color-background);
+    font-size: 0.75rem;
+    font-weight: 650;
+    line-height: 1.2;
+    color: var(--footer-text, var(--color-heading));
+    box-shadow: 0 6px 14px color-mix(in srgb, var(--color-heading) 4%, transparent);
+  }
+
+  .site-footer__payment-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 50%;
+    background: var(--footer-accent, var(--color-accent));
+    color: var(--footer-btn-text, #fff);
+    flex: 0 0 auto;
+  }
+
+  .site-footer__payment-badge svg {
+    width: 0.8rem;
+    height: 0.8rem;
+  }
+
+  .site-footer__bar {
+    position: relative;
+    z-index: 1;
+    background: var(--footer-bar, var(--color-heading));
+    color: color-mix(in srgb, #fff 88%, transparent);
+  }
+
+  .site-footer__bar-inner {
+    width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    margin-inline: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1.25rem;
+    padding: 1rem 0 calc(1rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .site-footer__copyright {
+    margin: 0;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
   }
 
   .site-footer__secondary-list {
@@ -826,24 +982,40 @@
   .site-footer__secondary-list li:not(:last-child)::after {
     content: '·';
     margin-inline: 0.65rem;
-    color: color-mix(in srgb, var(--color-heading) 28%, transparent);
+    color: color-mix(in srgb, #fff 35%, transparent);
   }
 
   .site-footer__secondary-link {
-    color: color-mix(in srgb, var(--color-heading) 55%, transparent);
+    color: color-mix(in srgb, #fff 78%, transparent);
     text-decoration: none;
     font-size: 0.8125rem;
     transition: color 180ms ease;
   }
 
-  .site-footer__secondary-link:hover {
-    color: var(--color-heading);
+  .site-footer__secondary-link:hover,
+  .site-footer__secondary-link:focus-visible {
+    color: #fff;
   }
 
-  .site-footer__copyright {
-    margin: 0;
-    font-size: 0.75rem;
-    color: color-mix(in srgb, var(--color-heading) 40%, transparent);
+  .site-footer__top {
+    appearance: none;
+    margin-left: auto;
+    padding: 0.45rem 0.85rem;
+    border: 1px solid color-mix(in srgb, #fff 18%, transparent);
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .site-footer__top:hover,
+  .site-footer__top:focus-visible {
+    background: color-mix(in srgb, #fff 10%, transparent);
+    color: #fff;
   }
 
   .visually-hidden {
@@ -860,33 +1032,31 @@
 
   @media screen and (max-width: 749px) {
     .site-footer__stage {
-      padding-block: 3.25rem 1.75rem;
+      padding-block: 2.5rem 1.75rem;
     }
 
     .site-footer__watermark {
-      top: 0.85rem;
+      top: 5.5rem;
       width: 100%;
-      padding-inline: 0.75rem;
-      font-size: clamp(2.4rem, 14vw, 4.5rem);
+      font-size: clamp(2.2rem, 13vw, 4.2rem);
       white-space: normal;
       overflow-wrap: anywhere;
-      opacity: 0.85;
     }
 
     .site-footer__inner {
-      width: calc(100% - 2rem);
+      width: calc(100% - 1.75rem);
       gap: 1.75rem;
     }
 
-    .site-footer__main {
-      gap: 1.5rem;
+    .site-footer__invite {
+      padding: 1.25rem 1.1rem 1.2rem;
+      border-radius: 1.35rem;
     }
 
     .site-footer__brand {
       justify-items: center;
       max-width: 28rem;
       margin-inline: auto;
-      gap: 0.75rem;
       text-align: center;
     }
 
@@ -896,35 +1066,21 @@
       object-position: center;
     }
 
-    .site-footer__about {
-      max-width: 26rem;
-      font-size: 0.875rem;
-      line-height: 1.55;
-    }
-
+    .site-footer__social,
     .site-footer__social-list {
+      justify-items: center;
       justify-content: center;
-      margin-top: 0.15rem;
     }
 
-    /* Clean equal grid: Categories | Shop, then Contact full-width */
     .site-footer__links {
-      display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0;
-      margin: 0;
-      padding: 0;
-      border: 0;
-      border-radius: 0;
-      background: transparent;
       border-top: 1px solid var(--footer-border, var(--color-border));
       border-bottom: 1px solid var(--footer-border, var(--color-border));
     }
 
     .site-footer__column {
-      min-width: 0;
       padding: 1.15rem 0.85rem;
-      text-align: left;
     }
 
     .site-footer__column:first-child {
@@ -941,113 +1097,26 @@
       padding: 1.15rem 0;
       border-top: 1px solid var(--footer-border, var(--color-border));
       border-right: 0;
-      text-align: left;
-    }
-
-    .site-footer__column-heading {
-      margin: 0 0 0.7rem;
-      font-size: 0.8125rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .site-footer__menu {
-      gap: 0.5rem;
-    }
-
-    .site-footer__menu-link {
-      font-size: 0.875rem;
-    }
-
-    .site-footer__contact {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 0.7rem;
-    }
-
-    .site-footer__contact-label {
-      margin-bottom: 0.1rem;
-    }
-
-    .site-footer__contact-value {
-      overflow-wrap: anywhere;
-      font-size: 0.875rem;
-    }
-
-    .site-footer__panels {
-      gap: 0.75rem;
-    }
-
-    .site-footer__subscribe,
-    .site-footer__accept {
-      gap: 0.7rem;
-      padding: 1rem 0.95rem;
-      border-radius: 0.9rem;
-      box-shadow: none;
-    }
-
-    .site-footer__subscribe-copy,
-    .site-footer__accept-copy,
-    .site-footer__accept {
-      text-align: left;
     }
 
     .site-footer__newsletter-form {
       max-width: 100%;
-      margin-inline: 0;
     }
 
-    .site-footer__newsletter-field {
-      grid-template-columns: minmax(0, 1fr) auto;
-      border-radius: 0.75rem;
+    .site-footer__bar-inner {
+      width: calc(100% - 1.75rem);
+      flex-direction: column;
+      align-items: flex-start;
     }
 
-    .site-footer__payment,
-    .site-footer__payment-list {
-      justify-content: flex-start;
-    }
-
-    .site-footer__payment-list {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.45rem;
-      width: 100%;
-    }
-
-    .site-footer__payment-item {
-      justify-content: flex-start;
-      min-width: 0;
-      width: 100%;
-      border-radius: 0.7rem;
-      padding: 0.45rem 0.55rem 0.45rem 0.4rem;
-    }
-
-    .site-footer__payment-label {
-      overflow-wrap: anywhere;
-      text-align: left;
-      font-size: 0.6875rem;
-    }
-
-    .site-footer__bottom {
-      gap: 0.85rem;
-      padding-top: 0.25rem;
-      text-align: left;
-      justify-items: start;
-    }
-
-    .site-footer__bottom-start {
-      justify-items: start;
-      text-align: left;
-      width: 100%;
-    }
-
-    .site-footer__secondary-list {
-      justify-content: flex-start;
+    .site-footer__top {
+      margin-left: 0;
     }
   }
 
   @media screen and (max-width: 420px) {
-    .site-footer__inner {
+    .site-footer__inner,
+    .site-footer__bar-inner {
       width: calc(100% - 1.5rem);
     }
 
@@ -1065,50 +1134,47 @@
 
     .site-footer__newsletter-field {
       grid-template-columns: 1fr;
-      border-radius: 0.75rem;
-    }
-
-    .site-footer__newsletter-input {
-      text-align: left;
-      padding-inline: 0.9rem;
+      border-radius: 1rem;
     }
 
     .site-footer__newsletter-button {
-      width: 100%;
-      padding-block: 0.8rem;
+      margin: 0 0.3rem 0.3rem;
+      width: calc(100% - 0.6rem);
     }
 
     .site-footer__payment-list {
+      display: grid;
       grid-template-columns: 1fr;
+    }
+
+    .site-footer__payment-item {
+      width: 100%;
+      border-radius: 0.8rem;
     }
   }
 
   @media screen and (min-width: 750px) {
-    .site-footer__links {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .site-footer__panels--split {
-      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-      align-items: stretch;
-      gap: 1rem;
-    }
-
-    .site-footer__subscribe,
-    .site-footer__accept {
-      height: 100%;
+    .site-footer__invite {
+      grid-template-columns: minmax(0, 1.1fr) minmax(16rem, 0.9fr);
+      align-items: center;
+      gap: 2rem;
+      padding: 1.85rem 2rem;
     }
 
     .site-footer__newsletter-form {
-      max-width: 100%;
+      justify-self: end;
+      max-width: 26rem;
+    }
+
+    .site-footer__links {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 
   @media screen and (min-width: 990px) {
     .site-footer__main {
-      grid-template-columns: minmax(16rem, 1.05fr) minmax(0, 2.5fr);
-      gap: 3.5rem;
-      padding-top: clamp(3.5rem, 7vw, 6rem);
+      grid-template-columns: minmax(16rem, 1fr) minmax(0, 2.35fr);
+      gap: 4rem;
     }
 
     .site-footer__logo {
@@ -1118,14 +1184,20 @@
 
     .site-footer__links {
       grid-template-columns: repeat(var(--footer-link-cols, 4), minmax(0, 1fr));
-      gap: 1.5rem 1.75rem;
-    }
-
-    .site-footer__panels--split {
-      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      gap: 1.5rem 2rem;
     }
   }
 {% endstylesheet %}
+
+{% javascript %}
+  document.querySelectorAll('[data-footer-top]').forEach((button) => {
+    if (button.dataset.bound === 'true') return;
+    button.dataset.bound = 'true';
+    button.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+{% endjavascript %}
 
 {% schema %}
 {

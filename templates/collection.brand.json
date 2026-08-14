@@ -1,0 +1,41 @@
+{
+  "sections": {
+    "collection_hero": {
+      "type": "collection-hero",
+      "settings": {
+        "use_theme_colors": true,
+        "eyebrow": "Brand",
+        "show_collection_description": true,
+        "show_product_count": true,
+        "show_breadcrumb": true,
+        "content_alignment": "center",
+        "height": "medium",
+        "color_background": "#FBF3F8",
+        "color_text": "#5E184F",
+        "color_muted": "#6B6B6B",
+        "padding_top": 56,
+        "padding_bottom": 48
+      }
+    },
+    "main": {
+      "type": "collection",
+      "settings": {
+        "background_color": "#FFFFFF",
+        "products_per_page": 12,
+        "columns_mobile": "2",
+        "columns_tablet": "3",
+        "columns_desktop": 4,
+        "grid_gap": 20,
+        "enable_sorting": true,
+        "show_vendor": true,
+        "show_description": true,
+        "show_rating": true,
+        "show_quick_view": true,
+        "show_add_to_cart": true,
+        "padding_top": 40,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": ["collection_hero", "main"]
+}

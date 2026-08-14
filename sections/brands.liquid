@@ -1,0 +1,340 @@
+{%- liquid
+  if section.settings.use_theme_colors == false
+    assign br_bg = section.settings.background_color
+    assign br_text = section.settings.text_color
+  else
+    assign br_bg = settings.color_background
+    assign br_text = settings.color_heading
+  endif
+-%}
+
+<div
+  class="brand-strip full-width"
+  id="BrandStrip-{{ section.id }}"
+  data-brand-strip
+  data-speed="{{ section.settings.scroll_speed | default: 32 }}"
+  style="
+    --br-bg: {{ br_bg }};
+    --br-text: {{ br_text }};
+    --br-pad-top: {{ section.settings.padding_top }}px;
+    --br-pad-bottom: {{ section.settings.padding_bottom }}px;
+    --br-speed: {{ section.settings.scroll_speed | default: 32 }}s;
+  "
+  {{ section.shopify_attributes }}
+>
+  <div class="brand-strip__inner">
+    {%- if section.settings.heading != blank -%}
+      <p class="brand-strip__label">{{ section.settings.heading | escape }}</p>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <div class="brand-strip__viewport" data-brand-viewport>
+        <div class="brand-strip__track" data-brand-track>
+          {%- for copy in (1..4) -%}
+            <div
+              class="brand-strip__group"
+              data-brand-group
+              {% if copy != 1 %}aria-hidden="true"{% endif %}
+            >
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'logo' -%}
+                  {%- liquid
+                    assign brand_title = block.settings.title
+                    assign brand_url = block.settings.link
+                    if brand_url == blank and block.settings.collection != blank
+                      assign brand_url = block.settings.collection.url
+                    endif
+                    if brand_url == blank and brand_title != blank
+                      assign brand_url = brand_title | url_for_vendor
+                    endif
+                  -%}
+                  <a
+                    class="brand-strip__item"
+                    href="{{ brand_url | default: '#' }}"
+                    {% if copy == 1 %}{{ block.shopify_attributes }}{% endif %}
+                  >
+                    {%- if block.settings.image != blank -%}
+                      {{
+                        block.settings.image
+                        | image_url: width: 320
+                        | image_tag:
+                          loading: 'lazy',
+                          widths: '160,240,320',
+                          sizes: '140px',
+                          class: 'brand-strip__logo',
+                          alt: brand_title
+                      }}
+                    {%- elsif brand_title != blank -%}
+                      <span class="brand-strip__name">{{ brand_title | escape }}</span>
+                    {%- endif -%}
+                  </a>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .brand-strip {
+    background: var(--br-bg, var(--color-background));
+    color: var(--br-text, var(--color-heading));
+    padding-block: var(--br-pad-top, 28px) var(--br-pad-bottom, 8px);
+  }
+
+  .brand-strip__inner {
+    width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    margin-inline: auto;
+    display: grid;
+    gap: 1rem;
+  }
+
+  .brand-strip__label {
+    margin: 0;
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .brand-strip__viewport {
+    overflow: hidden;
+    padding: 0.35rem 0;
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  }
+
+  .brand-strip__track {
+    display: flex;
+    width: max-content;
+    align-items: center;
+    will-change: transform;
+  }
+
+  .brand-strip__group {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+  }
+
+  .brand-strip__item {
+    display: grid;
+    place-items: center;
+    min-width: 9.5rem;
+    height: 3.25rem;
+    padding-inline: 1.5rem;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    border-right: 1px solid color-mix(in srgb, var(--color-accent) 16%, transparent);
+    transition: opacity 180ms ease;
+  }
+
+  .brand-strip__item:hover,
+  .brand-strip__item:focus-visible {
+    opacity: 1;
+  }
+
+  .brand-strip__item:hover .brand-strip__name,
+  .brand-strip__item:focus-visible .brand-strip__name {
+    color: var(--color-accent);
+  }
+
+  .brand-strip__item:hover .brand-strip__logo,
+  .brand-strip__item:focus-visible .brand-strip__logo {
+    opacity: 1;
+    filter: none;
+  }
+
+  .brand-strip__name {
+    font-size: 0.92rem;
+    font-weight: 750;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-heading) 82%, var(--color-accent));
+    white-space: nowrap;
+    transition: color 180ms ease;
+  }
+
+  .brand-strip__logo {
+    display: block;
+    width: auto;
+    max-width: 7rem;
+    max-height: 1.7rem;
+    object-fit: contain;
+    opacity: 0.78;
+    filter: grayscale(0.15);
+    transition: opacity 180ms ease, filter 180ms ease;
+  }
+
+  .brand-strip.is-paused .brand-strip__track {
+    animation-play-state: paused;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  function initBrandStrips() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    document.querySelectorAll('[data-brand-strip]').forEach((root) => {
+      const viewport = root.querySelector('[data-brand-viewport]');
+      const track = root.querySelector('[data-brand-track]');
+      const group = root.querySelector('[data-brand-group]');
+      if (!viewport || !track || !group || root.dataset.marqueeReady === 'true') return;
+
+      root.dataset.marqueeReady = 'true';
+
+      while (track.scrollWidth < viewport.offsetWidth * 2 && track.children.length < 12) {
+        const clone = group.cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        track.appendChild(clone);
+      }
+
+      const shift = group.getBoundingClientRect().width;
+      if (!shift) return;
+
+      const seconds = Number(root.dataset.speed || 32);
+      const animation = track.animate(
+        [
+          { transform: 'translate3d(0, 0, 0)' },
+          { transform: 'translate3d(' + -shift + 'px, 0, 0)' },
+        ],
+        {
+          duration: Math.max(12000, seconds * 1000),
+          iterations: Infinity,
+          easing: 'linear',
+        }
+      );
+
+      const pause = () => animation.pause();
+      const play = () => animation.play();
+      viewport.addEventListener('mouseenter', pause);
+      viewport.addEventListener('mouseleave', play);
+      viewport.addEventListener('touchstart', pause, { passive: true });
+      viewport.addEventListener('touchend', play, { passive: true });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initBrandStrips);
+  document.addEventListener('shopify:section:load', initBrandStrips);
+  initBrandStrips();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:general.brands",
+  "tag": "section",
+  "class": "brand-strip-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "Trusted by top brands"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_theme_colors",
+      "label": "t:labels.use_theme_colors",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:labels.background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:labels.text",
+      "default": "#5E184F"
+    },
+    {
+      "type": "range",
+      "id": "scroll_speed",
+      "label": "t:labels.scroll_speed",
+      "min": 16,
+      "max": 60,
+      "step": 2,
+      "unit": "s",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "t:labels.padding_top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "t:labels.padding_bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 8
+    }
+  ],
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "Brand",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:labels.logo"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:labels.title",
+          "default": "Brand",
+          "info": "t:info.brand_title"
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "t:labels.collection",
+          "info": "t:info.brand_collection"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:labels.link",
+          "info": "t:info.brand_link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.brands",
+      "settings": {
+        "heading": "Trusted by top brands"
+      },
+      "blocks": [
+        { "type": "logo", "settings": { "title": "Maison" } },
+        { "type": "logo", "settings": { "title": "Atelier" } },
+        { "type": "logo", "settings": { "title": "Lumiere" } },
+        { "type": "logo", "settings": { "title": "Velvet" } },
+        { "type": "logo", "settings": { "title": "Noir" } },
+        { "type": "logo", "settings": { "title": "Opaline" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
