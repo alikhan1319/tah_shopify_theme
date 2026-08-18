@@ -12,28 +12,31 @@
     "hero": {
       "type": "hero",
       "blocks": {
-        "banner_1": {
-          "type": "banner",
-          "settings": {}
-        },
-        "banner_2": {
-          "type": "banner",
-          "settings": {}
-        },
-        "banner_3": {
-          "type": "banner",
-          "settings": {}
-        },
         "banner_4": {
           "type": "banner",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/ChatGPT_Image_Jul_28_2026_12_44_49_PM-4x-upscaled.jpg",
+            "mobile_image": "shopify://shop_images/ChatGPT_Image_Jul_28_2026_12_44_49_PM-4x-upscaled.jpg",
+            "collection": "",
+            "link": "",
+            "title": ""
+          }
         },
-        "banner_5": {
+        "banner_rYrnmE": {
           "type": "banner",
-          "settings": {}
+          "settings": {
+            "image": "shopify://shop_images/ChatGPT_Image_Jul_28_2026_01_07_39_PM.png",
+            "mobile_image": "shopify://shop_images/ChatGPT_Image_Jul_28_2026_01_07_39_PM.png",
+            "collection": "",
+            "link": "",
+            "title": ""
+          }
         }
       },
-      "block_order": ["banner_1", "banner_2", "banner_3", "banner_4", "banner_5"],
+      "block_order": [
+        "banner_4",
+        "banner_rYrnmE"
+      ],
       "settings": {
         "enable_autoplay": true,
         "autoplay_speed": 6
@@ -42,16 +45,68 @@
     "brands": {
       "type": "brands",
       "blocks": {
-        "logo_1": { "type": "logo", "settings": { "title": "Maison" } },
-        "logo_2": { "type": "logo", "settings": { "title": "Atelier" } },
-        "logo_3": { "type": "logo", "settings": { "title": "Lumiere" } },
-        "logo_4": { "type": "logo", "settings": { "title": "Velvet" } },
-        "logo_5": { "type": "logo", "settings": { "title": "Noir" } },
-        "logo_6": { "type": "logo", "settings": { "title": "Opaline" } }
+        "logo_1": {
+          "type": "logo",
+          "settings": {
+            "title": "Maison",
+            "collection": "",
+            "link": ""
+          }
+        },
+        "logo_2": {
+          "type": "logo",
+          "settings": {
+            "title": "Atelier",
+            "collection": "",
+            "link": ""
+          }
+        },
+        "logo_3": {
+          "type": "logo",
+          "settings": {
+            "title": "Lumiere",
+            "collection": "",
+            "link": ""
+          }
+        },
+        "logo_4": {
+          "type": "logo",
+          "settings": {
+            "title": "Velvet",
+            "collection": "",
+            "link": ""
+          }
+        },
+        "logo_5": {
+          "type": "logo",
+          "settings": {
+            "title": "Noir",
+            "collection": "",
+            "link": ""
+          }
+        },
+        "logo_6": {
+          "type": "logo",
+          "settings": {
+            "title": "Opaline",
+            "collection": "",
+            "link": ""
+          }
+        }
       },
-      "block_order": ["logo_1", "logo_2", "logo_3", "logo_4", "logo_5", "logo_6"],
+      "block_order": [
+        "logo_1",
+        "logo_2",
+        "logo_3",
+        "logo_4",
+        "logo_5",
+        "logo_6"
+      ],
       "settings": {
         "heading": "Trusted by top brands",
+        "use_theme_colors": true,
+        "background_color": "#ffffff",
+        "text_color": "#5e184f",
         "scroll_speed": 32,
         "padding_top": 28,
         "padding_bottom": 8
@@ -62,22 +117,35 @@
       "blocks": {
         "badge_1": {
           "type": "trust_item",
-          "settings": { "text": "Complimentary shipping" }
+          "settings": {
+            "text": "Complimentary shipping"
+          }
         },
         "badge_2": {
           "type": "trust_item",
-          "settings": { "text": "Secure checkout" }
+          "settings": {
+            "text": "Secure checkout"
+          }
         },
         "badge_3": {
           "type": "trust_item",
-          "settings": { "text": "Expert craftsmanship" }
+          "settings": {
+            "text": "Expert craftsmanship"
+          }
         },
         "badge_4": {
           "type": "trust_item",
-          "settings": { "text": "30-day returns" }
+          "settings": {
+            "text": "7-day returns"
+          }
         }
       },
-      "block_order": ["badge_1", "badge_2", "badge_3", "badge_4"],
+      "block_order": [
+        "badge_1",
+        "badge_2",
+        "badge_3",
+        "badge_4"
+      ],
       "settings": {
         "eyebrow": "Trusted",
         "heading": "Trusted by discerning homes",
@@ -85,9 +153,10 @@
         "header_alignment": "center",
         "layout": "badges",
         "columns": 4,
-        "background_color": "#FFFFFF",
-        "color_text": "#5E184F",
-        "wave_color": "#A0338E",
+        "use_theme_colors": true,
+        "background_color": "#ffffff",
+        "color_text": "#5e184f",
+        "wave_color": "#a0338e",
         "wave_speed": 18,
         "padding_top": 40,
         "padding_bottom": 48
@@ -99,81 +168,92 @@
         "cat_1": {
           "type": "category",
           "settings": {
-            "title": "Women's wear"
+            "collection": "",
+            "title": "Women's wear",
+            "link": ""
           }
         },
         "cat_2": {
           "type": "category",
           "settings": {
-            "title": "Footwear"
+            "collection": "",
+            "title": "Footwear",
+            "link": ""
           }
         },
         "cat_3": {
           "type": "category",
           "settings": {
-            "title": "Accessories"
+            "collection": "",
+            "title": "Accessories",
+            "link": ""
           }
         },
         "cat_4": {
           "type": "category",
           "settings": {
-            "title": "New arrivals"
+            "collection": "",
+            "image": "shopify://shop_images/ChatGPT_Image_Jul_26_2026_03_57_47_PM-2x-upscaled.jpg",
+            "title": "Bridal Lehnga",
+            "link": ""
           }
         },
         "cat_5": {
           "type": "category",
           "settings": {
-            "title": "Bridal"
+            "collection": "",
+            "title": "Bridal",
+            "link": ""
           }
         },
         "cat_6": {
           "type": "category",
           "settings": {
-            "title": "Festive"
+            "collection": "",
+            "title": "Festive",
+            "link": ""
           }
         }
       },
-      "block_order": ["cat_1", "cat_2", "cat_3", "cat_4", "cat_5", "cat_6"],
+      "block_order": [
+        "cat_1",
+        "cat_2",
+        "cat_3",
+        "cat_4",
+        "cat_5",
+        "cat_6"
+      ],
       "settings": {
+        "use_theme_colors": true,
         "eyebrow": "Shop by category",
         "heading": "Find your next look",
         "subheading": "<p>Explore curated collections with a softer, more luxurious feel.</p>",
         "header_alignment": "center",
+        "collection_list": [],
         "show_product_count": true,
         "layout_style": "cards",
-        "background_color": "#FFFFFF",
-        "text_color": "#5E184F",
-        "muted_color": "#B07A9E",
+        "background_color": "#ffffff",
+        "text_color": "#5e184f",
+        "muted_color": "#b07a9e",
         "corner_radius": 24,
         "grid_gap": 18,
         "padding_top": 48,
         "padding_bottom": 72
       }
     },
-    "product_card_preview": {
-      "type": "product-card-preview",
-      "settings": {
-        "collection": "",
-        "products_to_show": 4,
-        "columns_desktop": "4",
-        "eyebrow": "Live preview",
-        "heading": "Product cards from your store",
-        "subheading": "<p>Real products from your catalog — hover to see image swap, wishlist, and Add to cart animation.</p>",
-        "note": "Prices show in your store currency (PKR). Set store currency to Pakistani Rupee in Shopify admin if needed.",
-        "background_color": "#FFFFFF",
-        "padding_top": 64,
-        "padding_bottom": 64
-      }
-    },
     "new_arrivals": {
       "type": "new-arrivals",
       "settings": {
+        "use_theme_colors": true,
+        "collection": "new-arrivals",
         "eyebrow": "Just landed",
         "heading": "New arrivals",
         "subheading": "<p>Fresh textures and refined weaves, newly arrived.</p>",
-        "link_label": "View all",
         "header_alignment": "center",
         "show_cta": true,
+        "link_label": "View all",
+        "cta_label": "Shop new arrivals",
+        "cta_link": "",
         "enable_auto_scroll": true,
         "scroll_speed": 40,
         "products_to_show": 8,
@@ -182,7 +262,7 @@
         "show_rating": true,
         "show_quick_view": true,
         "show_add_to_cart": true,
-        "background_color": "#F6EFFB",
+        "background_color": "#f6effb",
         "grid_gap": 24,
         "columns_mobile": "2",
         "columns_tablet": "3",
@@ -194,7 +274,11 @@
     "featured_collection": {
       "type": "featured-collection",
       "settings": {
-        "products": [],
+        "use_theme_colors": true,
+        "products": [
+          "9-piece-embroidered-chiffon-unstitched-suit-embroidered-body-front-double-front-back-patches-chiffon-dupatta-with-border-dyed-silk-trouser-womens-premium-festive-wear",
+          "9-piece-hand-work-embroidered-chiffon-organza-unstitched-suit-organza-neckline-front-back-patch-dupatta-pallu-embroidered-silk-trouser-premium-womens-handcrafted-festive-wear"
+        ],
         "eyebrow": "Curated edit",
         "heading": "Featured products",
         "subheading": "<p>Signature fabrics chosen for quiet luxury.</p>",
@@ -202,12 +286,13 @@
         "show_cta": true,
         "link_label": "View all",
         "cta_label": "Shop featured",
+        "cta_link": "",
         "show_vendor": true,
         "show_description": true,
         "show_rating": true,
         "show_quick_view": true,
         "show_add_to_cart": true,
-        "background_color": "#FFFFFF",
+        "background_color": "#ffffff",
         "grid_gap": 24,
         "columns_mobile": "2",
         "columns_tablet": "3",
@@ -219,6 +304,8 @@
     "bridal_lehenga": {
       "type": "bridal-lehenga",
       "settings": {
+        "use_theme_colors": true,
+        "collection": "bridal-lehenga-collection-elegant-luxury-wedding-wear",
         "eyebrow": "Wedding edit",
         "heading": "Bridal lehenga collection",
         "subheading": "<p>Handcrafted lehengas for your most celebrated moments.</p>",
@@ -226,13 +313,14 @@
         "show_cta": true,
         "link_label": "View all",
         "cta_label": "Shop lehengas",
+        "cta_link": "",
         "products_to_show": 8,
         "show_vendor": true,
         "show_description": true,
         "show_rating": true,
         "show_quick_view": true,
         "show_add_to_cart": true,
-        "background_color": "#F6EFFB",
+        "background_color": "#f6effb",
         "grid_gap": 24,
         "columns_mobile": "2",
         "columns_tablet": "2",
@@ -250,7 +338,9 @@
             "media_type": "video",
             "customer_name": "Amelia R.",
             "review_text": "The drape and hand-feel exceeded every expectation.",
-            "rating": 5
+            "rating": 5,
+            "external_video_url": "",
+            "product": ""
           }
         },
         "review_2": {
@@ -259,7 +349,9 @@
             "media_type": "image",
             "customer_name": "Jordan K.",
             "review_text": "Star Fabrics transformed our living room completely.",
-            "rating": 5
+            "rating": 5,
+            "external_video_url": "",
+            "product": ""
           }
         },
         "review_3": {
@@ -268,19 +360,26 @@
             "media_type": "video",
             "customer_name": "Sofia M.",
             "review_text": "Beautiful quality and thoughtful packaging.",
-            "rating": 5
+            "rating": 5,
+            "external_video_url": "",
+            "product": ""
           }
         }
       },
-      "block_order": ["review_1", "review_2", "review_3"],
+      "block_order": [
+        "review_1",
+        "review_2",
+        "review_3"
+      ],
       "settings": {
+        "use_theme_colors": true,
         "eyebrow": "From our clients",
         "heading": "Customer reviews",
         "subheading": "<p>Real moments, real fabrics, real stories — in photos and video.</p>",
         "header_alignment": "center",
         "enable_auto_scroll": true,
         "scroll_speed": 45,
-        "background_color": "#A0338E",
+        "background_color": "#a0338e",
         "card_gap": 20,
         "padding_top": 72,
         "padding_bottom": 72
@@ -322,17 +421,23 @@
           }
         }
       },
-      "block_order": ["quote_1", "quote_2", "quote_3", "quote_4"],
+      "block_order": [
+        "quote_1",
+        "quote_2",
+        "quote_3",
+        "quote_4"
+      ],
       "settings": {
+        "use_theme_colors": true,
         "eyebrow": "Testimonials",
         "heading": "What customers say about us",
         "subheading": "<p>Honest words from clients who chose TAH for their most important moments.</p>",
         "header_alignment": "center",
         "enable_auto_scroll": true,
         "scroll_speed": 40,
-        "background_color": "#F6EFFB",
-        "text_color": "#5E184F",
-        "card_background": "#FFFFFF",
+        "background_color": "#f6effb",
+        "text_color": "#5e184f",
+        "card_background": "#ffffff",
         "card_gap": 20,
         "padding_top": 72,
         "padding_bottom": 72
@@ -370,15 +475,21 @@
           }
         }
       },
-      "block_order": ["feature_1", "feature_2", "feature_3", "feature_4"],
+      "block_order": [
+        "feature_1",
+        "feature_2",
+        "feature_3",
+        "feature_4"
+      ],
       "settings": {
+        "use_theme_colors": true,
         "eyebrow": "Our promise",
         "heading": "Why choose Star Fabrics",
         "subheading": "<p>Premium textiles, trusted craftsmanship, and dedicated service for every celebration.</p>",
         "header_alignment": "center",
         "layout": "grid_only",
-        "color_background": "#FFFFFF",
-        "color_text": "#5E184F",
+        "color_background": "#ffffff",
+        "color_text": "#5e184f",
         "padding_top": 72,
         "padding_bottom": 72
       }
@@ -386,18 +497,20 @@
     "blog_posts": {
       "type": "blog-posts",
       "settings": {
+        "use_theme_colors": true,
         "eyebrow": "Journal",
         "heading": "From the atelier",
         "subheading": "<p>Stories, styling notes, and craft from behind the scenes.</p>",
         "header_alignment": "center",
         "show_cta": true,
         "link_label": "View all",
+        "blog": "news",
         "posts_to_show": 3,
         "show_date": true,
         "show_author": true,
         "show_excerpt": true,
-        "color_background": "#FFFFFF",
-        "color_text": "#5E184F",
+        "color_background": "#ffffff",
+        "color_text": "#5e184f",
         "grid_gap": 24,
         "padding_top": 72,
         "padding_bottom": 96
@@ -409,7 +522,6 @@
     "brands",
     "trusted_by",
     "shop_catalog",
-    "product_card_preview",
     "new_arrivals",
     "featured_collection",
     "bridal_lehenga",

@@ -29,6 +29,10 @@
     "color_announcement_text": "#FFFFFF",
     "color_announcement_link": "#FFFFFF",
     "color_link": "#A0338E",
-    "color_link_hover": "#7C2470"
+    "color_link_hover": "#7C2470",
+    "page_loader_style": "brand",
+    "page_loader_exit": "fade",
+    "page_loader_image": "shopify://shop_images/star-fabrics-shop-best-clothing-shop-in-pakistan.png",
+    "content_for_index": []
   }
 }

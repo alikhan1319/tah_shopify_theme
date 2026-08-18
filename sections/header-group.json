@@ -17,25 +17,29 @@
         "announcement_1": {
           "type": "announcement",
           "settings": {
-            "text": "Cash on Delivery"
+            "text": "Cash on Delivery",
+            "link": ""
           }
         },
         "announcement_2": {
           "type": "announcement",
           "settings": {
-            "text": "Fast Delivery"
+            "text": "Fast Delivery",
+            "link": ""
           }
         },
         "announcement_3": {
           "type": "announcement",
           "settings": {
-            "text": "Secure"
+            "text": "Secure",
+            "link": ""
           }
         },
         "announcement_4": {
           "type": "announcement",
           "settings": {
-            "text": "Save 14 Day Return"
+            "text": "Save 14 Day Return",
+            "link": ""
           }
         }
       },
@@ -46,6 +50,7 @@
         "announcement_4"
       ],
       "settings": {
+        "use_theme_colors": true,
         "enable_bar": true,
         "show_close_button": false,
         "enable_marquee": true,
@@ -54,9 +59,16 @@
         "show_currency_selector": true,
         "show_currency_name": false,
         "show_social_icons": true,
+        "social_facebook": "",
+        "social_instagram": "",
+        "social_x": "",
+        "social_tiktok": "",
+        "social_pinterest": "",
+        "social_youtube": "",
+        "social_linkedin": "",
         "color_background": "#111111",
-        "color_text": "#F5F5F7",
-        "color_link": "#F5F5F7",
+        "color_text": "#f5f5f7",
+        "color_link": "#f5f5f7",
         "font_size": 12,
         "letter_spacing": 8,
         "bar_height": 40
@@ -65,6 +77,7 @@
     "header": {
       "type": "header",
       "settings": {
+        "logo": "shopify://shop_images/star-fabrics-shop-best-clothing-shop-in-pakistan.png",
         "logo_height": 44,
         "menu": "main-menu",
         "enable_sticky": true,
@@ -76,10 +89,12 @@
         "show_account": true,
         "mega_promo_heading": "New season",
         "mega_promo_text": "Discover the latest arrivals",
-        "color_background": "#F4F5F3",
+        "mega_promo_link": "",
+        "use_theme_colors": true,
+        "color_background": "#f4f5f3",
         "color_text": "#111111",
         "color_accent": "#111111",
-        "color_border": "#E8E8E8",
+        "color_border": "#e8e8e8",
         "header_height": 72
       }
     },
