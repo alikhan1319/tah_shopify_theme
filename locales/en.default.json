@@ -2,6 +2,7 @@
   "accessibility": {
     "account": "Account",
     "back_to_top": "Back to top",
+    "skip_to_content": "Skip to content",
     "carousel": "Carousel",
     "close": "Close",
     "next_slide": "Next slide",
@@ -196,6 +197,14 @@
       "cod": "Cash on delivery",
       "fast_delivery": "Fast shipping",
       "secure": "Secure checkout"
+    },
+    "wave": {
+      "replacement_title": "7 Days",
+      "replacement_text": "Replacement",
+      "shipping_title": "Fast",
+      "shipping_text": "Shipping",
+      "payment_title": "Secure",
+      "payment_text": "Payment"
     },
     "chat": "Chat",
     "wishlist": "Wishlist",

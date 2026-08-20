@@ -143,7 +143,7 @@
     padding: 0;
     background: var(--na-bg, var(--color-background));
     color: var(--na-ink);
-    overflow: hidden;
+    overflow: visible;
   }
 
   .new-arrivals__shell {
@@ -234,10 +234,14 @@
   .new-arrivals__scroll {
     display: block;
     width: 100%;
+    overflow: visible;
   }
 
   .new-arrivals__viewport {
-    overflow: hidden;
+    overflow-x: clip;
+    overflow-y: visible;
+    padding-block: 1.35rem 1.6rem;
+    margin-block: -0.35rem;
     mask-image: linear-gradient(
       90deg,
       transparent 0,
@@ -258,6 +262,8 @@
     display: flex;
     width: max-content;
     gap: var(--na-gap);
+    align-items: stretch;
+    padding-block: 0.15rem;
     will-change: transform;
     animation: new-arrivals-scroll var(--na-scroll-duration) linear infinite;
   }
@@ -286,11 +292,19 @@
   }
 
   .new-arrivals__item {
+    position: relative;
+    z-index: 1;
     flex: 0 0 auto;
     /* Wider cards on phones so content stays readable */
     width: min(82vw, 300px);
     min-width: 260px;
     display: flex;
+    overflow: visible;
+  }
+
+  .new-arrivals__item:hover,
+  .new-arrivals__item:focus-within {
+    z-index: 3;
   }
 
   .new-arrivals__item > * {

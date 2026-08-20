@@ -91,6 +91,26 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": {{ collection.title | json }},
+    "url": {{ request.origin | append: collection.url | json }},
+    "numberOfItems": {{ collection.products_count | json }},
+    "itemListElement": [
+      {%- for product in collection.products limit: 12 -%}
+        {
+          "@type": "ListItem",
+          "position": {{ forloop.index }},
+          "url": {{ request.origin | append: product.url | json }},
+          "name": {{ product.title | json }}
+        }{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
       {

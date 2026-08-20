@@ -163,17 +163,24 @@
       <a class="product-card__media-link" href="{{ card_url }}" tabindex="-1" aria-hidden="true">
         {%- if media_primary != blank -%}
           {%- assign primary_alt = media_primary.alt | default: card_title -%}
+          {%- liquid
+            assign card_fetch = 'auto'
+            if loading_attr == 'eager'
+              assign card_fetch = 'high'
+            endif
+          -%}
           {{
             media_primary.preview_image
-            | image_url: width: 1400
+            | image_url: width: 900
             | image_tag:
               loading: loading_attr,
-              widths: '480, 720, 960, 1200, 1400',
-              sizes: '(min-width: 990px) 28vw, (min-width: 750px) 40vw, 85vw',
+              widths: '280, 400, 560, 720, 900',
+              sizes: '(min-width: 990px) 22vw, (min-width: 750px) 33vw, 70vw',
               class: 'product-card__img product-card__img--primary',
               alt: primary_alt,
               data-skeleton-img: true,
-              decoding: 'async'
+              decoding: 'async',
+              fetchpriority: card_fetch
           }}
         {%- else -%}
           {{ 'product-apparel-1' | placeholder_svg_tag: 'product-card__placeholder' }}
@@ -183,14 +190,15 @@
           {%- assign secondary_alt = media_secondary.alt | default: card_title -%}
           {{
             media_secondary.preview_image
-            | image_url: width: 1400
+            | image_url: width: 900
             | image_tag:
               loading: 'lazy',
-              widths: '480, 720, 960, 1200, 1400',
-              sizes: '(min-width: 990px) 28vw, (min-width: 750px) 40vw, 85vw',
+              widths: '280, 400, 560, 720, 900',
+              sizes: '(min-width: 990px) 22vw, (min-width: 750px) 33vw, 70vw',
               class: 'product-card__img product-card__img--secondary',
               alt: secondary_alt,
-              decoding: 'async'
+              decoding: 'async',
+              fetchpriority: 'low'
           }}
         {%- endif -%}
       </a>
@@ -342,7 +350,8 @@
     color: var(--ink);
     border: 1px solid color-mix(in srgb, var(--color-accent) 12%, var(--line));
     border-radius: 24px;
-    overflow: hidden;
+    overflow: visible;
+    isolation: isolate;
     box-shadow: 0 12px 32px color-mix(in srgb, var(--color-accent) 8%, transparent);
     transition: box-shadow 240ms var(--ease), transform 240ms var(--ease), border-color 240ms ease;
   }
@@ -350,8 +359,8 @@
   .product-card:hover,
   .product-card:focus-within {
     border-color: color-mix(in srgb, var(--color-accent) 28%, var(--line));
-    transform: translateY(-4px);
-    box-shadow: 0 18px 40px color-mix(in srgb, var(--color-heading) 12%, transparent);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 44px color-mix(in srgb, var(--color-heading) 14%, transparent);
   }
 
   .product-card__media {

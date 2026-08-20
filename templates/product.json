@@ -15,29 +15,28 @@
         "feature_1": {
           "type": "feature",
           "settings": {
-            "icon": "check",
-            "text": "Premium quality"
+            "icon": "return",
+            "title": "7 Days",
+            "subtitle": "Replacement",
+            "text": "7 Days Replacement"
           }
         },
         "feature_2": {
           "type": "feature",
           "settings": {
-            "icon": "shield",
-            "text": "Secure checkout"
+            "icon": "truck",
+            "title": "Fast",
+            "subtitle": "Shipping",
+            "text": "Fast Shipping"
           }
         },
         "feature_3": {
           "type": "feature",
           "settings": {
-            "icon": "truck",
-            "text": "Fast shipping"
-          }
-        },
-        "feature_4": {
-          "type": "feature",
-          "settings": {
-            "icon": "return",
-            "text": "Easy returns"
+            "icon": "card",
+            "title": "Secure",
+            "subtitle": "Payment",
+            "text": "Secure Payment"
           }
         },
         "trust_1": {
@@ -69,7 +68,6 @@
         "feature_1",
         "feature_2",
         "feature_3",
-        "feature_4",
         "trust_1",
         "trust_2",
         "trust_3",

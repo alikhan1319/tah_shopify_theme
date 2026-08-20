@@ -1,0 +1,77 @@
+{% doc %}
+  Renders a Shopify CDN image optimized for performance.
+
+  Requests correctly sized CDN variants so admin uploads stay full quality
+  in the admin, while the storefront loads lighter files faster.
+
+  @param {image} image - Shopify image object
+  @param {string} [class] - CSS class for the img
+  @param {string} [alt] - Alt text (defaults to image.alt)
+  @param {number} [widths] - Highest width to request (default 900)
+  @param {string} [sizes] - sizes attribute
+  @param {string} [widths_list] - Comma-separated srcset widths
+  @param {string} [loading] - lazy | eager
+  @param {string} [fetchpriority] - high | low | auto
+  @param {boolean} [preload] - Preload hint for LCP images
+  @param {string} [crop] - Optional crop position
+  @param {number} [height] - Optional height with crop
+
+  @example
+  {% render 'cdn-image', image: product.featured_image, widths: 900, loading: 'lazy' %}
+{% enddoc %}
+
+{%- if image != blank -%}
+  {%- liquid
+    assign img_alt = alt | default: image.alt | default: ''
+    assign max_w = widths | default: 900 | plus: 0
+    if max_w < 120
+      assign max_w = 120
+    endif
+    if max_w > 2400
+      assign max_w = 2400
+    endif
+
+    assign loading_attr = loading | default: 'lazy'
+    assign sizes_attr = sizes | default: '(min-width: 990px) 30vw, (min-width: 750px) 45vw, 90vw'
+    assign fetch_attr = fetchpriority | default: 'auto'
+    assign widths_src = widths_list
+
+    if widths_src == blank
+      if max_w <= 400
+        assign widths_src = '160, 240, 320, 400'
+      elsif max_w <= 720
+        assign widths_src = '240, 360, 480, 600, 720'
+      elsif max_w <= 1200
+        assign widths_src = '320, 480, 640, 800, 960, 1200'
+      else
+        assign widths_src = '480, 720, 960, 1200, 1600, 2000'
+      endif
+    endif
+
+    assign use_preload = false
+    if preload == true or preload == 'true'
+      assign use_preload = true
+    endif
+  -%}
+
+  {%- if use_preload -%}
+    {{
+      image
+      | image_url: width: max_w, height: height, crop: crop
+      | preload_tag: as: 'image'
+    }}
+  {%- endif -%}
+
+  {{
+    image
+    | image_url: width: max_w, height: height, crop: crop
+    | image_tag:
+      class: class,
+      alt: img_alt,
+      loading: loading_attr,
+      widths: widths_src,
+      sizes: sizes_attr,
+      fetchpriority: fetch_attr,
+      decoding: 'async'
+  }}
+{%- endif -%}

@@ -129,16 +129,17 @@
                   <div class="pp__zoom" data-zoom>
                     {{
                       featured_media.preview_image
-                      | image_url: width: 2400
+                      | image_url: width: 1600
                       | image_tag:
                         class: 'pp__main-img',
                         loading: 'eager',
                         fetchpriority: 'high',
-                        widths: '800, 1200, 1600, 2000, 2400',
-                        sizes: '(min-width: 990px) 52vw, 100vw',
+                        widths: '480, 720, 960, 1200, 1600',
+                        sizes: '(min-width: 990px) 48vw, 100vw',
                         alt: main_alt,
                         data-main-image: true,
-                        data-skeleton-img: true
+                        data-skeleton-img: true,
+                        decoding: 'async'
                     }}
                   </div>
                 {%- endcase -%}
@@ -146,6 +147,25 @@
               {{ 'product-apparel-1' | placeholder_svg_tag: 'pp__placeholder' }}
             {%- endif -%}
           </div>
+
+          {%- if product.media.size > 1 -%}
+            <button
+              type="button"
+              class="pp__stage-nav pp__stage-nav--prev"
+              data-media-prev
+              aria-label="{{ 'accessibility.previous_slide' | t }}"
+            >
+              ‹
+            </button>
+            <button
+              type="button"
+              class="pp__stage-nav pp__stage-nav--next"
+              data-media-next
+              aria-label="{{ 'accessibility.next_slide' | t }}"
+            >
+              ›
+            </button>
+          {%- endif -%}
 
           {%- if on_sale -%}
             <span class="pp__badge-sale" data-sale-badge>{{ discount_percent }}% OFF</span>
@@ -179,15 +199,16 @@
                     <div class="pp__zoom" data-zoom>
                       {{
                         media.preview_image
-                        | image_url: width: 2400
+                        | image_url: width: 1600
                         | image_tag:
                           class: 'pp__main-img',
                           loading: 'eager',
-                          widths: '800, 1200, 1600, 2000, 2400',
-                          sizes: '(min-width: 990px) 52vw, 100vw',
+                          widths: '480, 720, 960, 1200, 1600',
+                          sizes: '(min-width: 990px) 48vw, 100vw',
                           alt: media_alt,
                           data-main-image: true,
-                          data-skeleton-img: true
+                          data-skeleton-img: true,
+                          decoding: 'async'
                       }}
                     </div>
                   {%- endcase -%}
@@ -198,7 +219,6 @@
 
         {%- if product.media.size > 1 -%}
           <div class="pp__thumbs-wrap">
-            <button type="button" class="pp__thumb-nav pp__thumb-nav--prev" data-thumb-prev aria-label="{{ 'accessibility.previous_slide' | t }}">‹</button>
             <ul class="pp__thumbs" role="list" data-thumbs>
               {%- for media in product.media -%}
                 {%- liquid
@@ -219,13 +239,14 @@
                   >
                     <img
                       class="pp__thumb-img"
-                      src="{{ media.preview_image | image_url: width: 320 }}"
-                      srcset="{{ media.preview_image | image_url: width: 160 }} 160w, {{ media.preview_image | image_url: width: 320 }} 320w"
+                      src="{{ media.preview_image | image_url: width: 180 }}"
+                      srcset="{{ media.preview_image | image_url: width: 120 }} 120w, {{ media.preview_image | image_url: width: 180 }} 180w, {{ media.preview_image | image_url: width: 240 }} 240w"
                       sizes="72px"
                       alt="{{ media.alt | default: product.title | escape }}"
-                      width="320"
-                      height="400"
+                      width="180"
+                      height="180"
                       loading="lazy"
+                      decoding="async"
                     >
                     {%- if is_video_media -%}
                       <span class="pp__thumb-play" aria-hidden="true">
@@ -238,7 +259,6 @@
                 </li>
               {%- endfor -%}
             </ul>
-            <button type="button" class="pp__thumb-nav pp__thumb-nav--next" data-thumb-next aria-label="{{ 'accessibility.next_slide' | t }}">›</button>
           </div>
         {%- endif -%}
       </div>
@@ -324,40 +344,138 @@
           <p class="pp__excerpt">{{ short_desc | escape }}</p>
         {%- endif -%}
 
-        <div class="pp__trust-marquee" aria-label="{{ 'products.trust_highlights' | t }}">
-          <div class="pp__trust-track">
-            {%- for copy in (1..2) -%}
-              <div class="pp__trust-group"{% if copy == 2 %} aria-hidden="true"{% endif %}>
-                {%- for repeat in (1..2) -%}
-                  {%- for block in feature_blocks -%}
-                    {%- if block.settings.text != blank -%}
-                      <span class="pp__trust-chip">
-                        <span class="pp__trust-chip-mark" aria-hidden="true">✓</span>
-                        <span>{{ block.settings.text | escape }}</span>
-                      </span>
+        {%- liquid
+          assign wave_items = feature_blocks
+          assign has_wave_items = false
+          if wave_items.size > 0
+            assign has_wave_items = true
+          endif
+        -%}
+
+        <ul class="pp__trust-wave" role="list" aria-label="{{ 'products.trust_highlights' | t }}">
+          {%- if has_wave_items -%}
+            {%- for block in wave_items -%}
+              {%- liquid
+                assign wave_title = block.settings.title
+                assign wave_text = block.settings.subtitle
+                if wave_title == blank and block.settings.text != blank
+                  assign wave_parts = block.settings.text | split: ' '
+                  assign wave_count = wave_parts.size
+                  if wave_count == 1
+                    assign wave_title = block.settings.text
+                  elsif wave_count == 2
+                    assign wave_title = wave_parts[0]
+                    assign wave_text = wave_parts[1]
+                  else
+                    assign wave_title = wave_parts[0] | append: ' ' | append: wave_parts[1]
+                    assign wave_text = block.settings.text | remove_first: wave_title | strip
+                  endif
+                endif
+                assign wave_icon = block.settings.icon | default: 'check'
+              -%}
+              {%- if wave_title != blank -%}
+                <li class="pp__trust-wave-item" {{ block.shopify_attributes }}>
+                  <span class="pp__trust-wave-icon" aria-hidden="true">
+                    {%- case wave_icon -%}
+                      {%- when 'return' -%}
+                        <svg viewBox="0 0 32 32" fill="none">
+                          <path d="M11 9.5h8.2a3.3 3.3 0 0 1 3.3 3.3v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                          <path d="M13.2 6.8 10.4 9.5l2.8 2.7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M21 22.5h-8.2a3.3 3.3 0 0 1-3.3-3.3v-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                          <path d="M18.8 25.2 21.6 22.5l-2.8-2.7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                          <rect x="8.2" y="12.4" width="7.2" height="7.2" rx="1.2" stroke="currentColor" stroke-width="1.7"/>
+                          <rect x="16.6" y="12.4" width="7.2" height="7.2" rx="1.2" stroke="currentColor" stroke-width="1.7"/>
+                        </svg>
+                      {%- when 'shield' -%}
+                        <svg viewBox="0 0 32 32" fill="none">
+                          <path d="M16 4.8 25 8.4v7.1c0 5.4-3.6 9.5-9 11.1-5.4-1.6-9-5.7-9-11.1V8.4L16 4.8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+                          <path d="m12.2 16.1 2.5 2.5 5.2-5.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      {%- when 'truck' -%}
+                        <svg viewBox="0 0 32 32" fill="none">
+                          <path d="M3.5 18.2h13.8V9.4H8.2L3.5 14.2v4Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+                          <path d="M17.3 13.2h5.4l3.8 3.7v4.3H17.3v-8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+                          <circle cx="9.4" cy="22.8" r="2.1" stroke="currentColor" stroke-width="1.7"/>
+                          <circle cx="22.4" cy="22.8" r="2.1" stroke="currentColor" stroke-width="1.7"/>
+                          <path d="M3.5 11.5H1.8M4.8 8.8H2.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                        </svg>
+                      {%- when 'card' -%}
+                        <svg viewBox="0 0 32 32" fill="none">
+                          <rect x="4.2" y="9.2" width="19.5" height="13.4" rx="2.2" stroke="currentColor" stroke-width="1.7"/>
+                          <path d="M4.2 13.4h19.5" stroke="currentColor" stroke-width="1.7"/>
+                          <path d="M8 19.2h5.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                          <path d="M22.4 8.6 27 10.4v3.4c0 2.7-1.7 4.6-4.6 5.4-2.9-.8-4.6-2.7-4.6-5.4v-3.4l4.6-1.8Z" fill="var(--pp-bg, var(--color-background))" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                          <path d="m20.7 13.8 1.4 1.4 2.7-2.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      {%- when 'bolt' -%}
+                        <svg viewBox="0 0 32 32" fill="none">
+                          <path d="M17.8 4.8 9.6 17.2h5.4l-1.2 10 8.5-13.2h-5.4l1-9.2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+                        </svg>
+                      {%- else -%}
+                        <svg viewBox="0 0 32 32" fill="none">
+                          <circle cx="16" cy="16" r="10.2" stroke="currentColor" stroke-width="1.7"/>
+                          <path d="m11.4 16.2 2.8 2.8 6.4-6.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    {%- endcase -%}
+                  </span>
+                  <span class="pp__trust-wave-copy">
+                    <span class="pp__trust-wave-title">{{ wave_title | escape }}</span>
+                    {%- if wave_text != blank -%}
+                      <span class="pp__trust-wave-text">{{ wave_text | escape }}</span>
                     {%- endif -%}
-                  {%- endfor -%}
-                  <span class="pp__trust-chip">
-                    <span class="pp__trust-chip-mark" aria-hidden="true">✓</span>
-                    <span>{{ section.settings.shipping_text | default: 'Fast nationwide delivery' | escape }}</span>
                   </span>
-                  <span class="pp__trust-chip">
-                    <span class="pp__trust-chip-mark" aria-hidden="true">✓</span>
-                    <span>{{ 'products.delivery.cod_title' | t }}</span>
-                  </span>
-                  <span class="pp__trust-chip">
-                    <span class="pp__trust-chip-mark" aria-hidden="true">✓</span>
-                    <span>{{ section.settings.returns_text | default: '14-day easy returns' | escape }}</span>
-                  </span>
-                  <span class="pp__trust-chip">
-                    <span class="pp__trust-chip-mark" aria-hidden="true">✓</span>
-                    <span>{{ 'products.delivery.warranty_title' | t }}</span>
-                  </span>
-                {%- endfor -%}
-              </div>
+                </li>
+              {%- endif -%}
             {%- endfor -%}
-          </div>
-        </div>
+          {%- else -%}
+            <li class="pp__trust-wave-item">
+              <span class="pp__trust-wave-icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" fill="none">
+                  <path d="M11 9.5h8.2a3.3 3.3 0 0 1 3.3 3.3v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                  <path d="M13.2 6.8 10.4 9.5l2.8 2.7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M21 22.5h-8.2a3.3 3.3 0 0 1-3.3-3.3v-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                  <path d="M18.8 25.2 21.6 22.5l-2.8-2.7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                  <rect x="8.2" y="12.4" width="7.2" height="7.2" rx="1.2" stroke="currentColor" stroke-width="1.7"/>
+                  <rect x="16.6" y="12.4" width="7.2" height="7.2" rx="1.2" stroke="currentColor" stroke-width="1.7"/>
+                </svg>
+              </span>
+              <span class="pp__trust-wave-copy">
+                <span class="pp__trust-wave-title">{{ 'products.wave.replacement_title' | t }}</span>
+                <span class="pp__trust-wave-text">{{ 'products.wave.replacement_text' | t }}</span>
+              </span>
+            </li>
+            <li class="pp__trust-wave-item">
+              <span class="pp__trust-wave-icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" fill="none">
+                  <path d="M3.5 18.2h13.8V9.4H8.2L3.5 14.2v4Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+                  <path d="M17.3 13.2h5.4l3.8 3.7v4.3H17.3v-8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+                  <circle cx="9.4" cy="22.8" r="2.1" stroke="currentColor" stroke-width="1.7"/>
+                  <circle cx="22.4" cy="22.8" r="2.1" stroke="currentColor" stroke-width="1.7"/>
+                  <path d="M3.5 11.5H1.8M4.8 8.8H2.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <span class="pp__trust-wave-copy">
+                <span class="pp__trust-wave-title">{{ 'products.wave.shipping_title' | t }}</span>
+                <span class="pp__trust-wave-text">{{ 'products.wave.shipping_text' | t }}</span>
+              </span>
+            </li>
+            <li class="pp__trust-wave-item">
+              <span class="pp__trust-wave-icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" fill="none">
+                  <rect x="4.2" y="9.2" width="19.5" height="13.4" rx="2.2" stroke="currentColor" stroke-width="1.7"/>
+                  <path d="M4.2 13.4h19.5" stroke="currentColor" stroke-width="1.7"/>
+                  <path d="M8 19.2h5.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                  <path d="M22.4 8.6 27 10.4v3.4c0 2.7-1.7 4.6-4.6 5.4-2.9-.8-4.6-2.7-4.6-5.4v-3.4l4.6-1.8Z" fill="var(--pp-bg, var(--color-background))" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                  <path d="m20.7 13.8 1.4 1.4 2.7-2.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <span class="pp__trust-wave-copy">
+                <span class="pp__trust-wave-title">{{ 'products.wave.payment_title' | t }}</span>
+                <span class="pp__trust-wave-text">{{ 'products.wave.payment_text' | t }}</span>
+              </span>
+            </li>
+          {%- endif -%}
+        </ul>
 
         {%- form 'product', product, class: 'pp__form', data-product-form: '' -%}
           <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-input>
@@ -612,7 +730,7 @@
           {%- unless gallery_first -%},{%- endunless -%}
           {
             "id": {{ media.id | json }},
-            "src": {{ media.preview_image | image_url: width: 2400 | json }},
+            "src": {{ media.preview_image | image_url: width: 1600 | json }},
             "alt": {{ media.alt | default: product.title | json }}
           }
           {%- assign gallery_first = false -%}
@@ -694,7 +812,7 @@
   /* Gallery */
   .pp__gallery {
     display: grid;
-    gap: 0.9rem;
+    gap: 1rem;
     min-width: 0;
   }
 
@@ -702,10 +820,10 @@
     position: relative;
     aspect-ratio: 4 / 5;
     overflow: hidden;
-    border-radius: var(--pp-radius);
-    background: var(--color-surface);
-    border: 1px solid color-mix(in srgb, var(--color-accent) 10%, var(--pp-line));
-    box-shadow: 0 18px 40px color-mix(in srgb, var(--color-accent) 8%, transparent);
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--color-surface) 70%, #f4f4f4);
+    border: 0;
+    box-shadow: none;
   }
 
   .pp__media-host {
@@ -714,6 +832,9 @@
     height: 100%;
     overflow: hidden;
     border-radius: inherit;
+    display: grid;
+    place-items: center;
+    padding: 0;
   }
 
   .pp__media-host[data-skeleton]::before {
@@ -725,14 +846,15 @@
     height: 100%;
     overflow: hidden;
     cursor: zoom-in;
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .pp__main-img,
   .pp__placeholder {
-    width: 100%;
-    height: 100%;
+    width: auto;
+    height: auto;
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
@@ -742,11 +864,15 @@
   }
 
   .pp__zoom:hover .pp__main-img {
-    transform: scale(1.06);
+    transform: scale(1.03);
   }
 
   .pp__stage.is-video .pp__zoom {
     cursor: default;
+  }
+
+  .pp__stage.is-video .pp__media-host {
+    padding: 0;
   }
 
   .pp__main-video {
@@ -770,6 +896,38 @@
   .pp__media-host > iframe {
     width: 100%;
     height: 100%;
+  }
+
+  .pp__stage-nav {
+    appearance: none;
+    position: absolute;
+    top: 50%;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: color-mix(in srgb, var(--color-heading) 78%, #000);
+    font-size: 2rem;
+    font-weight: 300;
+    line-height: 1;
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: color 160ms ease, transform 160ms var(--pp-ease);
+  }
+
+  .pp__stage-nav--prev { left: 0.35rem; }
+  .pp__stage-nav--next { right: 0.35rem; }
+
+  .pp__stage-nav:hover,
+  .pp__stage-nav:focus-visible {
+    color: var(--color-heading);
+    outline: none;
   }
 
   .pp__badge-sale,
@@ -803,17 +961,20 @@
   }
 
   .pp__thumbs-wrap {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 0.45rem;
-    align-items: center;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
   }
 
   .pp__thumbs {
     display: flex;
-    gap: 0.55rem;
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: 0.65rem;
+    width: 100%;
     margin: 0;
-    padding: 0.15rem 0;
+    padding: 0.1rem 0;
     list-style: none;
     overflow-x: auto;
     scroll-behavior: smooth;
@@ -827,30 +988,30 @@
     position: relative;
     flex: 0 0 auto;
     width: 4.5rem;
-    height: 5.5rem;
-    padding: 0;
-    border: 2px solid transparent;
-    border-radius: 14px;
+    height: 4.5rem;
+    padding: 0.35rem;
+    border: 1.5px solid transparent;
+    border-radius: 10px;
     overflow: hidden;
-    background: var(--color-surface);
+    background: color-mix(in srgb, var(--color-surface) 55%, #ececec);
     cursor: pointer;
-    transition: border-color 160ms ease, transform 160ms var(--pp-ease), box-shadow 160ms ease;
+    transition: border-color 160ms ease, background-color 160ms ease;
   }
 
   .pp__thumb:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 18px color-mix(in srgb, var(--color-heading) 8%, transparent);
+    border-color: color-mix(in srgb, var(--color-heading) 28%, transparent);
   }
 
   .pp__thumb.is-active {
-    border-color: var(--pp-accent, var(--color-accent));
+    border-color: color-mix(in srgb, var(--color-heading) 72%, #333);
+    background: color-mix(in srgb, var(--color-surface) 40%, #e8e8e8);
   }
 
   .pp__thumb-img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    object-position: center top;
+    object-fit: contain;
+    object-position: center center;
     display: block;
   }
 
@@ -862,19 +1023,6 @@
     color: var(--color-button-text);
     background: color-mix(in srgb, var(--color-heading) 28%, transparent);
     pointer-events: none;
-  }
-
-  .pp__thumb-nav {
-    appearance: none;
-    width: 2rem;
-    height: 2rem;
-    border: 1px solid var(--pp-line);
-    border-radius: 999px;
-    background: var(--color-background);
-    color: var(--pp-ink);
-    font-size: 1.1rem;
-    line-height: 1;
-    cursor: pointer;
   }
 
   /* Buy box */
@@ -1073,71 +1221,57 @@
     color: var(--pp-mute);
   }
 
-  .pp__trust-marquee {
-    overflow: hidden;
+  .pp__trust-wave {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem 0.85rem;
     width: 100%;
-    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    margin: 0.15rem 0 0;
+    padding: 0.85rem 0 0.2rem;
+    list-style: none;
+    border-top: 1px solid color-mix(in srgb, var(--color-heading) 8%, transparent);
   }
 
-  .pp__trust-track {
+  .pp__trust-wave-item {
     display: flex;
-    width: max-content;
     align-items: center;
-    will-change: transform;
-    animation: pp-trust-scroll 48s linear infinite;
+    gap: 0.7rem;
+    min-width: 0;
+    color: color-mix(in srgb, var(--color-heading) 62%, #6b6b6b);
   }
 
-  .pp__trust-group {
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    gap: 0.65rem;
-    padding-inline-end: 0.65rem;
-  }
-
-  .pp__trust-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
+  .pp__trust-wave-icon {
+    display: grid;
+    place-items: center;
+    width: 2.35rem;
+    height: 2.35rem;
     flex: 0 0 auto;
-    padding: 0.48rem 0.85rem;
-    white-space: nowrap;
-    background: color-mix(in srgb, var(--color-surface) 86%, #fff);
-    border: 1px solid color-mix(in srgb, var(--color-accent) 12%, var(--pp-line));
-    border-radius: 999px;
-    box-shadow: 0 8px 18px color-mix(in srgb, var(--color-heading) 5%, transparent);
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    color: var(--color-heading);
+    color: inherit;
   }
 
-  .pp__trust-chip-mark {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.15rem;
-    height: 1.15rem;
-    border-radius: 50%;
-    background: var(--color-button);
-    color: var(--color-button-text);
-    font-size: 0.62rem;
-    font-weight: 700;
-    line-height: 1;
-    flex-shrink: 0;
+  .pp__trust-wave-icon svg {
+    width: 100%;
+    height: 100%;
   }
 
-  .pp__trust-marquee:hover .pp__trust-track {
-    animation-play-state: paused;
+  .pp__trust-wave-copy {
+    display: grid;
+    gap: 0.05rem;
+    min-width: 0;
   }
 
-  @keyframes pp-trust-scroll {
-    from {
-      transform: translate3d(0, 0, 0);
-    }
-    to {
-      transform: translate3d(-50%, 0, 0);
-    }
+  .pp__trust-wave-title,
+  .pp__trust-wave-text {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    color: inherit;
+  }
+
+  .pp__trust-wave-text {
+    font-weight: 500;
   }
 
   .pp__features {
@@ -1821,6 +1955,33 @@
   @media (max-width: 749px) {
     .pp__shell { width: min(100% - 1.25rem, 1280px); }
 
+    .pp__stage {
+      aspect-ratio: 4 / 5;
+      border-radius: 14px;
+    }
+
+    .pp__media-host {
+      padding: 0;
+    }
+
+    .pp__stage-nav {
+      width: 2.1rem;
+      height: 2.1rem;
+      font-size: 1.7rem;
+    }
+
+    .pp__thumb {
+      width: 3.75rem;
+      height: 3.75rem;
+      border-radius: 8px;
+      padding: 0.28rem;
+    }
+
+    .pp__thumbs {
+      gap: 0.5rem;
+      justify-content: flex-start;
+    }
+
     .pp__features,
     .pp__delivery {
       grid-template-columns: 1fr;
@@ -1844,11 +2005,22 @@
     }
 
     .pp__sticky-title { margin: 0; flex: 1; min-width: 0; }
+
+    .pp__trust-wave {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.9rem 0.65rem;
+    }
   }
 
   @media (min-width: 750px) {
     .pp__sticky {
       display: none !important;
+    }
+
+    .pp__trust-wave {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem 1.25rem;
+      padding-top: 1rem;
     }
   }
 
@@ -1864,22 +2036,6 @@
     }
 
     .pp__zoom:hover .pp__main-img { transform: none; }
-
-    .pp__trust-track {
-      animation: none;
-      flex-wrap: wrap;
-      width: 100%;
-      gap: 0.5rem;
-    }
-
-    .pp__trust-group:not(:first-child),
-    .pp__trust-group[aria-hidden='true'] {
-      display: none;
-    }
-
-    .pp__trust-marquee {
-      mask-image: none;
-    }
   }
 {% endstylesheet %}
 
@@ -1974,10 +2130,10 @@
       this.onStickyBuy = () => this.addToCart(true);
       this.onQtyMinus = () => this.setQty(-1);
       this.onQtyPlus = () => this.setQty(1);
-      this.onThumbPrev = () => this.thumbs?.scrollBy({ left: -160, behavior: 'smooth' });
-      this.onThumbNext = () => this.thumbs?.scrollBy({ left: 160, behavior: 'smooth' });
+      this.onMediaPrev = () => this.stepMedia(-1);
+      this.onMediaNext = () => this.stepMedia(1);
       this.onStageClick = (event) => {
-        if (event.target.closest('[data-thumb], [data-thumb-prev], [data-thumb-next]')) return;
+        if (event.target.closest('[data-media-prev], [data-media-next], [data-thumb]')) return;
         if (this.stage?.classList.contains('is-video')) return;
         if (!event.target.closest('[data-zoom], [data-main-image]')) return;
         this.openLightbox();
@@ -2020,8 +2176,8 @@
       this.stickyBuy?.addEventListener('click', this.onStickyBuy);
       this.querySelector('[data-qty-minus]')?.addEventListener('click', this.onQtyMinus);
       this.querySelector('[data-qty-plus]')?.addEventListener('click', this.onQtyPlus);
-      this.querySelector('[data-thumb-prev]')?.addEventListener('click', this.onThumbPrev);
-      this.querySelector('[data-thumb-next]')?.addEventListener('click', this.onThumbNext);
+      this.querySelector('[data-media-prev]')?.addEventListener('click', this.onMediaPrev);
+      this.querySelector('[data-media-next]')?.addEventListener('click', this.onMediaNext);
       this.stage?.addEventListener('click', this.onStageClick);
       this.lightbox?.addEventListener('click', this.onLightboxClick);
       this.lightbox?.addEventListener('touchstart', this.onLightboxTouchStart, { passive: true });
@@ -2046,8 +2202,8 @@
       this.stickyBuy?.removeEventListener('click', this.onStickyBuy);
       this.querySelector('[data-qty-minus]')?.removeEventListener('click', this.onQtyMinus);
       this.querySelector('[data-qty-plus]')?.removeEventListener('click', this.onQtyPlus);
-      this.querySelector('[data-thumb-prev]')?.removeEventListener('click', this.onThumbPrev);
-      this.querySelector('[data-thumb-next]')?.removeEventListener('click', this.onThumbNext);
+      this.querySelector('[data-media-prev]')?.removeEventListener('click', this.onMediaPrev);
+      this.querySelector('[data-media-next]')?.removeEventListener('click', this.onMediaNext);
       this.stage?.removeEventListener('click', this.onStageClick);
       this.lightbox?.removeEventListener('click', this.onLightboxClick);
       this.lightbox?.removeEventListener('touchstart', this.onLightboxTouchStart);
@@ -2106,6 +2262,16 @@
       if (!thumb) return;
       this.setActiveThumb(thumb);
       this.showMedia(thumb.getAttribute('data-media-id'), thumb.getAttribute('data-media-type'));
+      thumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+
+    stepMedia(step) {
+      const thumbs = [...this.querySelectorAll('[data-thumb]')];
+      if (!thumbs.length) return;
+      const activeIndex = thumbs.findIndex((thumb) => thumb.classList.contains('is-active'));
+      const current = activeIndex < 0 ? 0 : activeIndex;
+      const nextIndex = (current + step + thumbs.length) % thumbs.length;
+      this.selectThumb(thumbs[nextIndex]);
     }
 
     showMedia(mediaId, mediaType) {
@@ -2157,13 +2323,7 @@
         const endX = e.changedTouches?.[0]?.clientX || 0;
         const delta = endX - startX;
         if (Math.abs(delta) < 40) return;
-        const thumbs = [...this.querySelectorAll('[data-thumb]')];
-        const activeIndex = thumbs.findIndex((t) => t.classList.contains('is-active'));
-        if (activeIndex < 0) return;
-        const next = delta < 0 ? thumbs[activeIndex + 1] : thumbs[activeIndex - 1];
-        if (!next) return;
-        this.selectThumb(next);
-        next.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        this.stepMedia(delta < 0 ? 1 : -1);
       };
       this.stage.addEventListener('touchstart', this._onTouchStart, { passive: true });
       this.stage.addEventListener('touchend', this._onTouchEnd, { passive: true });
@@ -2599,18 +2759,32 @@
           "label": "t:labels.icon",
           "default": "check",
           "options": [
-            { "value": "check", "label": "Check" },
-            { "value": "bolt", "label": "Bolt" },
+            { "value": "return", "label": "Return" },
             { "value": "shield", "label": "Shield" },
             { "value": "truck", "label": "Truck" },
-            { "value": "return", "label": "Return" }
+            { "value": "card", "label": "Card" },
+            { "value": "check", "label": "Check" },
+            { "value": "bolt", "label": "Bolt" }
           ]
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:labels.title",
+          "default": "7 Days"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "t:labels.subtitle",
+          "default": "Replacement"
         },
         {
           "type": "text",
           "id": "text",
           "label": "t:labels.text",
-          "default": "Premium quality"
+          "default": "Premium quality",
+          "info": "Used only if title is empty"
         }
       ]
     },

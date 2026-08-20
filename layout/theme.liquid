@@ -4,6 +4,9 @@
     {% # Inlined CSS Variables %}
     {% render 'css-variables' %}
 
+    <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.shopify.com">
+
     {% comment %}
       Font preloading:
       1. Preconnect to font CDN for faster connection
@@ -24,7 +27,7 @@
     {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
 
-    {% # Social, title, etc. %}
+    {% # Social, title, SEO, AI discovery %}
     {% render 'meta-tags' %}
 
     {{ content_for_header }}
@@ -49,6 +52,8 @@
   </head>
 
   <body>
+    <a class="skip-to-content-link" href="#MainContent">{{ 'accessibility.skip_to_content' | t }}</a>
+
     {% render 'page-loader' %}
     {% sections 'header-group' %}
 
@@ -65,11 +70,13 @@
       endif
     -%}
 
-    {%- if is_shop_policy -%}
-      {% section 'main-policy' %}
-    {%- else -%}
-      {{ content_for_layout }}
-    {%- endif -%}
+    <main id="MainContent" class="main-content" role="main" tabindex="-1">
+      {%- if is_shop_policy -%}
+        {% section 'main-policy' %}
+      {%- else -%}
+        {{ content_for_layout }}
+      {%- endif -%}
+    </main>
 
     {% sections 'footer-group' %}
     {% render 'quick-add-popup' %}
