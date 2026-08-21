@@ -90,15 +90,15 @@
         "stock_left": 8,
         "show_trust_cards": false,
         "show_buy_button": true,
-        "whatsapp_number": "923001234567",
+        "whatsapp_number": "923225112291",
         "whatsapp_message": "Hi, I want to order:",
         "shipping_text": "Fast nationwide delivery",
         "cod_text": "Pay when you receive",
-        "returns_text": "14-day easy returns",
+        "returns_text": "7-day easy returns",
         "warranty_text": "Official quality guarantee",
         "show_payment_icons": true,
-        "color_background": "#FFFFFF",
-        "accent_color": "#A0338E",
+        "color_background": "#ffffff",
+        "accent_color": "#a0338e",
         "padding_top": 32,
         "padding_bottom": 72
       }
@@ -152,8 +152,15 @@
           }
         }
       },
-      "block_order": ["review_1", "review_2", "review_3", "review_4", "review_5"],
+      "block_order": [
+        "review_1",
+        "review_2",
+        "review_3",
+        "review_4",
+        "review_5"
+      ],
       "settings": {
+        "use_theme_colors": true,
         "eyebrow": "Customer review",
         "heading": "What buyers say about this piece",
         "subheading": "<p>Real feedback from customers who ordered from TAH.</p>",
@@ -161,10 +168,10 @@
         "show_summary": true,
         "enable_auto_scroll": true,
         "scroll_speed": 40,
-        "background_color": "#FFFFFF",
+        "background_color": "#ffffff",
         "text_color": "#111111",
-        "card_background": "#F8F9FA",
-        "star_color": "#C9A227",
+        "card_background": "#f8f9fa",
+        "star_color": "#c9a227",
         "card_gap": 20,
         "padding_top": 56,
         "padding_bottom": 64
@@ -173,18 +180,20 @@
     "related_products": {
       "type": "related-products",
       "settings": {
+        "use_theme_colors": true,
         "eyebrow": "Complete the look",
         "heading": "Related products",
         "subheading": "<p>More pieces customers often view with this one.</p>",
         "header_alignment": "center",
         "recommendation_intent": "related",
+        "products": [],
         "products_to_show": 4,
         "show_vendor": true,
         "show_description": true,
         "show_rating": true,
         "show_quick_view": true,
         "show_add_to_cart": true,
-        "background_color": "#FFFFFF",
+        "background_color": "#ffffff",
         "grid_gap": 24,
         "columns_mobile": "2",
         "columns_tablet": "3",
@@ -194,5 +203,9 @@
       }
     }
   },
-  "order": ["main", "customer_reviews", "related_products"]
+  "order": [
+    "main",
+    "customer_reviews",
+    "related_products"
+  ]
 }

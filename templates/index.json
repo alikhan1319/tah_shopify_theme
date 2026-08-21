@@ -48,48 +48,40 @@
         "logo_1": {
           "type": "logo",
           "settings": {
-            "title": "Maison",
-            "collection": "",
+            "title": "Alkaram",
+            "collection": "alkaram",
             "link": ""
           }
         },
         "logo_2": {
           "type": "logo",
           "settings": {
-            "title": "Atelier",
-            "collection": "",
+            "title": "Ally's",
+            "collection": "allys",
             "link": ""
           }
         },
         "logo_3": {
           "type": "logo",
           "settings": {
-            "title": "Lumiere",
-            "collection": "",
+            "title": "Ghazi",
+            "collection": "ghazi-by-zouk-2026-cotton-collection-star-fabrics",
+            "link": ""
+          }
+        },
+        "logo_kYfV9y": {
+          "type": "logo",
+          "settings": {
+            "title": "Limelight",
+            "collection": "limelight",
             "link": ""
           }
         },
         "logo_4": {
           "type": "logo",
           "settings": {
-            "title": "Velvet",
-            "collection": "",
-            "link": ""
-          }
-        },
-        "logo_5": {
-          "type": "logo",
-          "settings": {
-            "title": "Noir",
-            "collection": "",
-            "link": ""
-          }
-        },
-        "logo_6": {
-          "type": "logo",
-          "settings": {
-            "title": "Opaline",
-            "collection": "",
+            "title": "Tawakkal",
+            "collection": "tawakkal",
             "link": ""
           }
         }
@@ -98,9 +90,8 @@
         "logo_1",
         "logo_2",
         "logo_3",
-        "logo_4",
-        "logo_5",
-        "logo_6"
+        "logo_kYfV9y",
+        "logo_4"
       ],
       "settings": {
         "heading": "Trusted by top brands",
@@ -165,30 +156,6 @@
     "shop_catalog": {
       "type": "shop-catalog",
       "blocks": {
-        "cat_1": {
-          "type": "category",
-          "settings": {
-            "collection": "",
-            "title": "Women's wear",
-            "link": ""
-          }
-        },
-        "cat_2": {
-          "type": "category",
-          "settings": {
-            "collection": "",
-            "title": "Footwear",
-            "link": ""
-          }
-        },
-        "cat_3": {
-          "type": "category",
-          "settings": {
-            "collection": "",
-            "title": "Accessories",
-            "link": ""
-          }
-        },
         "cat_4": {
           "type": "category",
           "settings": {
@@ -201,27 +168,83 @@
         "cat_5": {
           "type": "category",
           "settings": {
-            "collection": "",
-            "title": "Bridal",
+            "collection": "sherwani",
+            "image": "shopify://shop_images/ChatGPT_Image_Jul_26_2026_04_15_45_PM-2x-upscaled.jpg",
+            "title": "Sherwani",
+            "link": ""
+          }
+        },
+        "cat_1": {
+          "type": "category",
+          "settings": {
+            "collection": "bridal-maxi",
+            "image": "shopify://shop_images/ChatGPT_Image_Jul_26_2026_04_31_58_PM-2x-upscaled.jpg",
+            "title": "Bridal Maxi",
+            "link": ""
+          }
+        },
+        "cat_2": {
+          "type": "category",
+          "settings": {
+            "collection": "3-piece-pant-coat",
+            "image": "shopify://shop_images/ChatGPT_Image_Jul_26_2026_04_47_44_PM.png",
+            "title": "3 Piece Suit",
+            "link": ""
+          }
+        },
+        "cat_3": {
+          "type": "category",
+          "settings": {
+            "collection": "fancy-unstitched-collection",
+            "image": "shopify://shop_images/ChatGPT_Image_Jul_26_2026_04_59_17_PM-clean-clean-2x-upscaled_1.jpg",
+            "title": "Accessories",
             "link": ""
           }
         },
         "cat_6": {
           "type": "category",
           "settings": {
-            "collection": "",
-            "title": "Festive",
+            "collection": "kids-collection",
+            "image": "shopify://shop_images/ChatGPT_Image_Jul_27_2026_11_23_01_AM-4x-upscaled.jpg",
+            "title": "Kids Collection",
+            "link": ""
+          }
+        },
+        "category_iF4Wj7": {
+          "type": "category",
+          "settings": {
+            "collection": "womens-unstitched-collection",
+            "title": "Unstitched Collection",
+            "link": ""
+          }
+        },
+        "category_r6NbQH": {
+          "type": "category",
+          "settings": {
+            "collection": "women-ready-made",
+            "title": "Ready to Wear Collection",
+            "link": ""
+          }
+        },
+        "category_yERaxH": {
+          "type": "category",
+          "settings": {
+            "collection": "star-fabrics-men-s-ready-made-collection-premium-shalwar-kameez-waistcoat-suits",
+            "title": "Men's Ready to Wear",
             "link": ""
           }
         }
       },
       "block_order": [
+        "cat_4",
+        "cat_5",
         "cat_1",
         "cat_2",
         "cat_3",
-        "cat_4",
-        "cat_5",
-        "cat_6"
+        "cat_6",
+        "category_iF4Wj7",
+        "category_r6NbQH",
+        "category_yERaxH"
       ],
       "settings": {
         "use_theme_colors": true,
@@ -276,8 +299,14 @@
       "settings": {
         "use_theme_colors": true,
         "products": [
-          "9-piece-embroidered-chiffon-unstitched-suit-embroidered-body-front-double-front-back-patches-chiffon-dupatta-with-border-dyed-silk-trouser-womens-premium-festive-wear",
-          "9-piece-hand-work-embroidered-chiffon-organza-unstitched-suit-organza-neckline-front-back-patch-dupatta-pallu-embroidered-silk-trouser-premium-womens-handcrafted-festive-wear"
+          "elegant-bridal-lehenga-collection-star-fabrics-az4131",
+          "luxury-sherwani-with-kulla-pearl-mala-groom-set",
+          "bridal-maxi-dress-2026-elegant-wedding-wear-star-fabrics-az5958",
+          "elegant-3-piece-formal-suit-with-waistcoat-paisley-tie-white-shirt",
+          "luxury-embroidered-18-piece-bridal-outfit-zari-net-organza-silk-with-velvet-borders-full-suit-with-dupatta-trouser",
+          "lyra-pink-embroidered-lawn-3-piece-with-chiffon-dupatta",
+          "kids-festive-silk-3-piece-set-with-sequin-embroidery-tassel-detail",
+          "premium-black-shalwar-kameez-with-waistcoat-wash-wear-men-s-elegant-suit-star-fabrics"
         ],
         "eyebrow": "Curated edit",
         "heading": "Featured products",
@@ -371,6 +400,7 @@
         "review_2",
         "review_3"
       ],
+      "disabled": true,
       "settings": {
         "use_theme_colors": true,
         "eyebrow": "From our clients",
