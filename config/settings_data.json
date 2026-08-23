@@ -33,6 +33,7 @@
     "page_loader_style": "brand",
     "page_loader_exit": "fade",
     "page_loader_image": "shopify://shop_images/star-fabrics-shop-best-clothing-shop-in-pakistan.png",
+    "favicon": "shopify://shop_images/Untitled_design_13_-no-bg.png",
     "content_for_index": []
   }
 }
