@@ -14,14 +14,16 @@
       "settings": {
         "use_theme_colors": true,
         "eyebrow": "Collection",
+        "heading": "",
+        "description": "",
         "show_collection_description": true,
         "show_product_count": true,
         "show_breadcrumb": true,
         "content_alignment": "center",
         "height": "medium",
-        "color_background": "#F7F7F5",
+        "color_background": "#f7f7f5",
         "color_text": "#111111",
-        "color_muted": "#6B6B6B",
+        "color_muted": "#6b6b6b",
         "padding_top": 56,
         "padding_bottom": 48
       }
@@ -29,10 +31,11 @@
     "main": {
       "type": "collection",
       "settings": {
-        "background_color": "#FFFFFF",
+        "use_theme_colors": true,
+        "background_color": "#ffffff",
         "products_per_page": 12,
-        "columns_mobile": "2",
-        "columns_tablet": "3",
+        "columns_mobile": "1",
+        "columns_tablet": "2",
         "columns_desktop": 4,
         "grid_gap": 20,
         "enable_sorting": true,
@@ -46,5 +49,8 @@
       }
     }
   },
-  "order": ["collection_hero", "main"]
+  "order": [
+    "collection_hero",
+    "main"
+  ]
 }
