@@ -15,20 +15,20 @@
         "banner_4": {
           "type": "banner",
           "settings": {
-            "image": "shopify://shop_images/ChatGPT_Image_Jul_28_2026_12_44_49_PM-4x-upscaled.jpg",
-            "mobile_image": "shopify://shop_images/ChatGPT_Image_Jul_28_2026_12_44_49_PM-4x-upscaled.jpg",
-            "collection": "",
-            "link": "",
+            "image": "shopify://shop_images/ChatGPT_Image_Sep_2_2026_04_22_45_PM.png",
+            "mobile_image": "shopify://shop_images/ChatGPT_Image_Sep_2_2026_04_22_45_PM.png",
+            "collection": "lehnga",
+            "link": "shopify://collections/lehnga",
             "title": ""
           }
         },
         "banner_rYrnmE": {
           "type": "banner",
           "settings": {
-            "image": "shopify://shop_images/ChatGPT_Image_Jul_28_2026_01_07_39_PM.png",
-            "mobile_image": "shopify://shop_images/ChatGPT_Image_Jul_28_2026_01_07_39_PM.png",
-            "collection": "",
-            "link": "",
+            "image": "shopify://shop_images/ChatGPT_Image_Sep_2_2026_03_37_14_PM.png",
+            "mobile_image": "shopify://shop_images/ChatGPT_Image_Sep_2_2026_03_37_14_PM.png",
+            "collection": "mehndi-dresses-in-pakistan-star-fabrics",
+            "link": "shopify://collections/mehndi-dresses-in-pakistan-star-fabrics",
             "title": ""
           }
         }
@@ -368,6 +368,34 @@
         "padding_bottom": 72
       }
     },
+    "bridal_lehenga_gYNGRn": {
+      "type": "bridal-lehenga",
+      "settings": {
+        "use_theme_colors": true,
+        "collection": "mehndi-dresses-in-pakistan-star-fabrics",
+        "eyebrow": "Wedding edit",
+        "heading": "Mehndi Collection",
+        "subheading": "<p>Handcrafted lehengas for your most celebrated moments.</p>",
+        "header_alignment": "center",
+        "show_cta": true,
+        "link_label": "View all",
+        "cta_label": "Shop lehengas",
+        "cta_link": "",
+        "products_to_show": 8,
+        "show_vendor": true,
+        "show_description": true,
+        "show_rating": true,
+        "show_quick_view": true,
+        "show_add_to_cart": true,
+        "background_color": "#f6effb",
+        "grid_gap": 24,
+        "columns_mobile": "2",
+        "columns_tablet": "2",
+        "columns_desktop": 4,
+        "padding_top": 72,
+        "padding_bottom": 72
+      }
+    },
     "customer_review_videos": {
       "type": "customer-review-videos",
       "blocks": {
@@ -565,6 +593,7 @@
     "new_arrivals",
     "featured_collection",
     "bridal_lehenga",
+    "bridal_lehenga_gYNGRn",
     "customer_review_videos",
     "customer_testimonials",
     "why_choose",
