@@ -311,8 +311,8 @@
         "products": [
           "regal-maroon-silk-bridal-farshi-lehenga-with-heavy-handmade-kora-dabka-work",
           "luxury-sherwani-with-kulla-pearl-mala-groom-set",
-          "bridal-maxi-dress-2026-elegant-wedding-wear-star-fabrics-az5958",
           "elegant-3-piece-formal-suit-with-waistcoat-paisley-tie-white-shirt",
+          "dusty-rose-handmade-cora-dabka-maxi-dress-for-wedding-ready-to-wear",
           "luxury-embroidered-18-piece-bridal-outfit-zari-net-organza-silk-with-velvet-borders-full-suit-with-dupatta-trouser",
           "lyra-pink-embroidered-lawn-3-piece-with-chiffon-dupatta",
           "kids-festive-silk-3-piece-set-with-sequin-embroidery-tassel-detail",
@@ -369,6 +369,34 @@
       }
     },
     "bridal_lehenga_gYNGRn": {
+      "type": "bridal-lehenga",
+      "settings": {
+        "use_theme_colors": true,
+        "collection": "bridal-maxi",
+        "eyebrow": "Wedding edit",
+        "heading": "Maxi Collection",
+        "subheading": "<p>Handcrafted lehengas for your most celebrated moments.</p>",
+        "header_alignment": "center",
+        "show_cta": true,
+        "link_label": "View all",
+        "cta_label": "Shop lehengas",
+        "cta_link": "",
+        "products_to_show": 8,
+        "show_vendor": true,
+        "show_description": true,
+        "show_rating": true,
+        "show_quick_view": true,
+        "show_add_to_cart": true,
+        "background_color": "#f6effb",
+        "grid_gap": 24,
+        "columns_mobile": "1",
+        "columns_tablet": "2",
+        "columns_desktop": 4,
+        "padding_top": 72,
+        "padding_bottom": 72
+      }
+    },
+    "bridal_lehenga_FXhf83": {
       "type": "bridal-lehenga",
       "settings": {
         "use_theme_colors": true,
@@ -594,6 +622,7 @@
     "featured_collection",
     "bridal_lehenga",
     "bridal_lehenga_gYNGRn",
+    "bridal_lehenga_FXhf83",
     "customer_review_videos",
     "customer_testimonials",
     "why_choose",
