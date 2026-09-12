@@ -16,7 +16,7 @@
         "eyebrow": "Collection",
         "heading": "",
         "description": "",
-        "show_collection_description": true,
+        "show_collection_description": false,
         "show_product_count": true,
         "show_breadcrumb": true,
         "content_alignment": "center",
