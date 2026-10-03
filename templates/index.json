@@ -12,6 +12,16 @@
     "hero": {
       "type": "hero",
       "blocks": {
+        "banner_9MYM7R": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/Luxury_Unstitched_Partywear_Collection.png",
+            "mobile_image": "shopify://shop_images/Luxury_Unstitched_Partywear_Collection.png",
+            "collection": "womens-unstitched-collection",
+            "link": "",
+            "title": ""
+          }
+        },
         "banner_4": {
           "type": "banner",
           "settings": {
@@ -34,6 +44,7 @@
         }
       },
       "block_order": [
+        "banner_9MYM7R",
         "banner_4",
         "banner_rYrnmE"
       ],
