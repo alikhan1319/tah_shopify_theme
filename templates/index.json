@@ -285,21 +285,19 @@
         "padding_bottom": 72
       }
     },
-    "new_arrivals": {
-      "type": "new-arrivals",
+    "bridal_lehenga": {
+      "type": "bridal-lehenga",
       "settings": {
         "use_theme_colors": true,
         "collection": "new-arrivals",
-        "eyebrow": "Just landed",
-        "heading": "New arrivals",
-        "subheading": "<p>Fresh textures and refined weaves, newly arrived.</p>",
+        "eyebrow": "Wedding edit",
+        "heading": "Bridal lehenga collection",
+        "subheading": "<p>Handcrafted lehengas for your most celebrated moments.</p>",
         "header_alignment": "center",
         "show_cta": true,
         "link_label": "View all",
-        "cta_label": "Shop new arrivals",
+        "cta_label": "Shop lehengas",
         "cta_link": "",
-        "enable_auto_scroll": true,
-        "scroll_speed": 40,
         "products_to_show": 8,
         "show_vendor": true,
         "show_description": true,
@@ -308,8 +306,8 @@
         "show_add_to_cart": true,
         "background_color": "#f6effb",
         "grid_gap": 24,
-        "columns_mobile": "2",
-        "columns_tablet": "3",
+        "columns_mobile": "1",
+        "columns_tablet": "2",
         "columns_desktop": 4,
         "padding_top": 72,
         "padding_bottom": 72
@@ -351,7 +349,7 @@
         "padding_bottom": 72
       }
     },
-    "bridal_lehenga": {
+    "bridal_lehenga_U6CHji": {
       "type": "bridal-lehenga",
       "settings": {
         "use_theme_colors": true,
@@ -629,9 +627,9 @@
     "brands",
     "trusted_by",
     "shop_catalog",
-    "new_arrivals",
-    "featured_collection",
     "bridal_lehenga",
+    "featured_collection",
+    "bridal_lehenga_U6CHji",
     "bridal_lehenga_gYNGRn",
     "bridal_lehenga_FXhf83",
     "customer_review_videos",
