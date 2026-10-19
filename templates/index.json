@@ -290,9 +290,9 @@
       "settings": {
         "use_theme_colors": true,
         "collection": "new-arrivals",
-        "eyebrow": "Wedding edit",
-        "heading": "Bridal lehenga collection",
-        "subheading": "<p>Handcrafted lehengas for your most celebrated moments.</p>",
+        "eyebrow": "Just landed",
+        "heading": "New arrivals",
+        "subheading": "<p>Fresh textures and refined weaves, newly arrived.</p>",
         "header_alignment": "center",
         "show_cta": true,
         "link_label": "View all",
