@@ -342,6 +342,7 @@
         "tile_4",
         "tile_5"
       ],
+      "disabled": true,
       "settings": {
         "eyebrow": "",
         "heading": "",
