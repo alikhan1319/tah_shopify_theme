@@ -5,7 +5,14 @@
   endif
 
   assign show_count = section.settings.show_product_count
-  assign layout_style = section.settings.layout_style | default: 'cards'
+  assign layout_style = section.settings.layout_style | default: 'circles'
+
+  assign catalog_items = blank
+  if use_blocks
+    assign catalog_items = section.blocks
+  elsif section.settings.collection_list != blank
+    assign catalog_items = section.settings.collection_list
+  endif
 -%}
 
 <div
@@ -17,6 +24,7 @@
     {%- if section.settings.use_theme_colors == false %}--catalog-bg: {{ section.settings.background_color }};{% endif -%}
     --catalog-gap: {{ section.settings.grid_gap }}px;
     --catalog-radius: {{ section.settings.corner_radius }}px;
+    --catalog-circle-size: {{ section.settings.circle_size | default: 150 }}px;
     {%- if section.settings.use_theme_colors == false %}--catalog-text: {{ section.settings.text_color }};{% endif -%}
     {%- if section.settings.use_theme_colors == false %}--catalog-mute: {{ section.settings.muted_color }};{% endif -%}
   "
@@ -42,7 +50,72 @@
         </header>
       {%- endif -%}
 
-      {%- if use_blocks -%}
+      {%- if layout_style == 'circles' -%}
+        {%- if catalog_items != blank -%}
+          <ul class="catalog-circles" role="list">
+            {%- for item in catalog_items -%}
+              {%- liquid
+                if use_blocks
+                  assign picked_collection = item.settings.collection
+                  assign category_title = item.settings.title
+                  assign category_link = item.settings.link
+                  assign category_image = item.settings.image
+                else
+                  assign picked_collection = item
+                  assign category_title = blank
+                  assign category_link = blank
+                  assign category_image = blank
+                endif
+
+                assign count_label = blank
+                if picked_collection != blank
+                  if category_title == blank
+                    assign category_title = picked_collection.title
+                  endif
+                  if category_link == blank
+                    assign category_link = picked_collection.url
+                  endif
+                  if category_image == blank
+                    assign category_image = picked_collection.featured_image
+                  endif
+                  if show_count
+                    assign count_label = 'collections.product_count' | t: count: picked_collection.products_count
+                  endif
+                endif
+              -%}
+              <li class="catalog-circles__item" {% if use_blocks %}{{ item.shopify_attributes }}{% endif %}>
+                <a class="catalog-circles__link" href="{{ category_link | default: '#' }}">
+                  <span class="catalog-circles__media">
+                    {%- if category_image != blank -%}
+                      {{
+                        category_image
+                        | image_url: width: 400
+                        | image_tag:
+                          loading: 'lazy',
+                          widths: '160, 240, 320, 400',
+                          sizes: '(min-width: 750px) 200px, 110px',
+                          class: 'catalog-circles__image',
+                          alt: '',
+                          decoding: 'async'
+                      }}
+                    {%- else -%}
+                      <span class="catalog-circles__initial" aria-hidden="true">
+                        {{- category_title | strip | slice: 0 | upcase | escape -}}
+                      </span>
+                    {%- endif -%}
+                  </span>
+                  <span class="catalog-circles__title">{{ category_title | escape }}</span>
+                  {%- if count_label != blank -%}
+                    <span class="catalog-circles__count">{{ count_label | escape }}</span>
+                  {%- endif -%}
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- elsif request.design_mode -%}
+          <p class="catalog__empty">{{ 'sections.shop_catalog.empty' | t }}</p>
+        {%- endif -%}
+      {%- elsif use_blocks -%}
         {%- if layout_style == 'cards' -%}
           <div class="catalog__marquee" data-catalog-marquee>
             <div class="catalog__marquee-track">
@@ -926,6 +999,143 @@
       transform: none;
     }
   }
+
+  /* —— Round category circles —— */
+  .catalog-circles {
+    --circle-size: 6.5rem;
+    --circle-paper: var(--catalog-bg, var(--color-background));
+    display: flex;
+    gap: var(--catalog-gap, 18px);
+    margin: 0 calc(var(--page-margin) * -1);
+    padding: 0.5rem var(--page-margin) 0.25rem;
+    list-style: none;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--page-margin);
+    scrollbar-width: none;
+  }
+
+  .catalog-circles::-webkit-scrollbar {
+    display: none;
+  }
+
+  .catalog-circles__item {
+    flex: 0 0 auto;
+    width: var(--circle-size);
+    scroll-snap-align: start;
+  }
+
+  /* Center the row when it fits; scroll from the edge when it does not */
+  .catalog-circles__item:first-child {
+    margin-inline-start: auto;
+  }
+
+  .catalog-circles__item:last-child {
+    margin-inline-end: auto;
+  }
+
+  .catalog-circles__link {
+    display: grid;
+    justify-items: center;
+    gap: 0.7rem;
+    color: var(--catalog-ink);
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .catalog-circles__media {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--color-accent) 10%, var(--circle-paper));
+    box-shadow:
+      0 0 0 3px var(--circle-paper),
+      0 0 0 4px color-mix(in srgb, var(--catalog-ink) 16%, transparent);
+    transition: box-shadow 300ms var(--catalog-ease);
+  }
+
+  .catalog-circles__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 600ms var(--catalog-ease);
+  }
+
+  .catalog-circles__initial {
+    font-family: var(--font-heading--family);
+    font-size: calc(var(--circle-size) * 0.34);
+    font-weight: 500;
+    line-height: 1;
+    color: var(--color-accent);
+  }
+
+  .catalog-circles__title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.3;
+    transition: color 200ms ease;
+  }
+
+  .catalog-circles__count {
+    margin-top: -0.4rem;
+    font-size: 0.75rem;
+    color: var(--catalog-mute, var(--color-text-muted));
+  }
+
+  .catalog-circles__link:hover .catalog-circles__media,
+  .catalog-circles__link:focus-visible .catalog-circles__media {
+    box-shadow:
+      0 0 0 3px var(--circle-paper),
+      0 0 0 5px var(--color-accent);
+  }
+
+  .catalog-circles__link:hover .catalog-circles__image,
+  .catalog-circles__link:focus-visible .catalog-circles__image {
+    transform: scale(1.08);
+  }
+
+  .catalog-circles__link:hover .catalog-circles__title,
+  .catalog-circles__link:focus-visible .catalog-circles__title {
+    color: var(--color-accent);
+  }
+
+  @media (min-width: 750px) {
+    .catalog-circles {
+      --circle-size: var(--catalog-circle-size, 150px);
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: calc(var(--catalog-gap, 18px) * 1.25) calc(var(--catalog-gap, 18px) * 1.75);
+      margin: 0;
+      padding: 0.5rem 0 0;
+      overflow: visible;
+    }
+
+    .catalog-circles__item:first-child,
+    .catalog-circles__item:last-child {
+      margin-inline: 0;
+    }
+
+    .catalog-circles__title {
+      font-size: 1rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .catalog-circles__media,
+    .catalog-circles__image {
+      transition: none;
+    }
+
+    .catalog-circles__link:hover .catalog-circles__image,
+    .catalog-circles__link:focus-visible .catalog-circles__image {
+      transform: none;
+    }
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -999,12 +1209,24 @@
       "type": "select",
       "id": "layout_style",
       "label": "t:labels.layout_style",
-      "default": "cards",
+      "default": "circles",
       "options": [
+        { "value": "circles", "label": "t:options.layout_style.circles" },
         { "value": "cards", "label": "t:options.layout_style.cards" },
         { "value": "bento", "label": "t:options.layout_style.bento" },
         { "value": "grid", "label": "t:options.layout_style.grid" }
       ]
+    },
+    {
+      "type": "range",
+      "id": "circle_size",
+      "label": "t:labels.circle_size",
+      "visible_if": "{{ section.settings.layout_style == 'circles' }}",
+      "min": 100,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 150
     },
     {
       "type": "color",
@@ -1110,7 +1332,7 @@
         "heading": "Shop the catalog",
         "subheading": "<p>Explore curated looks for every celebration.</p>",
         "header_alignment": "center",
-        "layout_style": "cards"
+        "layout_style": "circles"
       }
     }
   ]

@@ -1,27 +1,27 @@
 {% doc %}
-  Renders AJAX predictive search UI powered by Shopify Suggest API.
+  Renders the live search used in the header search panel.
+  Results are loaded from the `predictive-search` section through the
+  Section Rendering API, so products appear in the theme's product card.
 
   @param {string} section_id - Parent section id for unique input ids
-  @param {number} [limit] - Max results to fetch
+  @param {number} [limit] - Max products to show
   @param {boolean} [show_vendor] - Whether to show product vendor
+  @param {string} [popular] - Comma-separated popular search terms shown before typing
 
   @example
-  {% render 'predictive-search', section_id: section.id, limit: 6 %}
+  {% render 'predictive-search', section_id: section.id, limit: 6, popular: 'Bridal, Festive' %}
 {% enddoc %}
 
 {%- liquid
   assign result_limit = limit | default: 6
   assign include_vendor = show_vendor | default: false
+  assign popular_terms = popular | default: '' | split: ','
 -%}
 
 <predictive-search
-  class="predictive-search"
-  data-section-id="{{ section_id }}"
+  class="predictive-search{% unless include_vendor %} predictive-search--no-vendor{% endunless %}"
   data-url="{{ routes.predictive_search_url }}"
-  data-search-url="{{ routes.search_url }}"
   data-limit="{{ result_limit }}"
-  data-show-vendor="{{ include_vendor }}"
-  data-money-format="{{ shop.money_format | escape }}"
 >
   <form
     action="{{ routes.search_url }}"
@@ -44,16 +44,12 @@
         name="q"
         value="{{ search.terms | escape }}"
         placeholder="{{ 'search.placeholder' | t }}"
-        role="combobox"
-        aria-expanded="false"
-        aria-owns="PredictiveSearchResults-{{ section_id }}"
         aria-controls="PredictiveSearchResults-{{ section_id }}"
-        aria-autocomplete="list"
-        aria-haspopup="listbox"
         autocomplete="off"
         autocorrect="off"
         autocapitalize="off"
         spellcheck="false"
+        enterkeyhint="search"
         data-predictive-search-input
       >
       <input type="hidden" name="options[prefix]" value="last">
@@ -65,6 +61,11 @@
       >
         {{ 'icon-close.svg' | inline_asset_content }}
       </button>
+      <button type="submit" class="predictive-search__submit" aria-label="{{ 'search.submit' | t }}">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+          <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
     </div>
   </form>
 
@@ -72,46 +73,72 @@
     id="PredictiveSearchResults-{{ section_id }}"
     class="predictive-search__results"
     data-predictive-search-results
-    tabindex="-1"
   >
-    <div class="predictive-search__status visually-hidden" role="status" data-predictive-search-status></div>
-    <div class="predictive-search__loading is-hidden" data-predictive-search-loading>
-      {{ 'search.searching' | t }}
+    <p class="visually-hidden" role="status" data-predictive-search-status></p>
+
+    {%- if popular_terms.size > 0 -%}
+      <div class="predictive-search__block" data-predictive-search-idle>
+        <p class="predictive-search__heading">{{ 'search.popular' | t }}</p>
+        <ul class="predictive-search__chips" role="list">
+          {%- for term in popular_terms -%}
+            {%- assign clean_term = term | strip -%}
+            {%- if clean_term != blank -%}
+              <li>
+                <a
+                  class="predictive-search__chip"
+                  href="{{ routes.search_url }}?q={{ clean_term | url_encode }}&amp;options%5Bprefix%5D=last"
+                >
+                  {{- clean_term | escape -}}
+                </a>
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endif -%}
+
+    <div class="predictive-search__grid predictive-search__skeleton" data-predictive-search-skeleton hidden>
+      {%- for i in (1..result_limit) -%}
+        {% render 'product-card-skeleton' %}
+      {%- endfor -%}
     </div>
-    <div class="predictive-search__empty is-hidden" data-predictive-search-empty>
-      {{ 'search.no_results_short' | t }}
-    </div>
-    <ul
-      class="predictive-search__list"
-      role="listbox"
-      data-predictive-search-list
-      hidden
-    ></ul>
-    <a
-      class="predictive-search__view-all is-hidden"
-      data-predictive-search-view-all
-      href="{{ routes.search_url }}"
-    >
-      {{ 'search.view_all' | t }}
-    </a>
+
+    <div class="predictive-search__content" data-predictive-search-content hidden></div>
   </div>
 </predictive-search>
 
 {% stylesheet %}
   .predictive-search {
+    --ps-line: color-mix(in srgb, var(--color-heading) 12%, transparent);
+    --ps-ease: cubic-bezier(0.22, 1, 0.36, 1);
     display: block;
     width: 100%;
   }
 
+  .predictive-search [hidden] {
+    display: none !important;
+  }
+
   .predictive-search__form {
-    margin: 0;
+    width: min(100%, 44rem);
+    margin: 0 auto;
   }
 
   .predictive-search__field {
-    position: relative;
     display: flex;
     align-items: center;
-    border-bottom: 1px solid color-mix(in srgb, var(--color-heading) 16%, transparent);
+    gap: 0.25rem;
+    padding: 0.3rem 0.3rem 0.3rem 0.85rem;
+    border: 1px solid var(--ps-line);
+    border-radius: 999px;
+    background: var(--color-surface);
+    transition: border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease;
+  }
+
+  .predictive-search__field:focus-within {
+    border-color: var(--color-accent);
+    background: var(--color-background);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent) 12%, transparent);
   }
 
   .predictive-search__icon,
@@ -119,36 +146,44 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2.5rem;
-    height: 2.5rem;
-    color: inherit;
     flex-shrink: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    color: var(--color-text-muted);
   }
 
   .predictive-search__icon svg,
   .predictive-search__reset svg {
-    width: 1.125rem;
-    height: 1.125rem;
+    width: 1.1rem;
+    height: 1.1rem;
   }
 
   .predictive-search__reset {
     appearance: none;
     border: 0;
+    border-radius: 999px;
     background: transparent;
     cursor: pointer;
+  }
+
+  .predictive-search__reset:hover {
+    color: var(--color-heading);
   }
 
   .predictive-search__input {
     flex: 1;
     min-width: 0;
+    padding: 0.7rem 0;
     border: 0;
     background: transparent;
-    color: inherit;
+    color: var(--color-heading);
     font: inherit;
     font-size: 1rem;
-    letter-spacing: 0.04em;
-    padding: 0.85rem 0;
     outline: none;
+  }
+
+  .predictive-search__input::placeholder {
+    color: var(--color-text-muted);
   }
 
   .predictive-search__input::-webkit-search-decoration,
@@ -158,99 +193,236 @@
     display: none;
   }
 
-  .predictive-search__results {
-    margin-top: 1rem;
-    max-height: min(60vh, 28rem);
-    overflow: auto;
+  .predictive-search__submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--color-button);
+    color: var(--color-button-text);
+    cursor: pointer;
+    transition: background-color 160ms ease, transform 160ms var(--ps-ease);
   }
 
-  .predictive-search__list {
-    list-style: none;
+  .predictive-search__submit:hover,
+  .predictive-search__submit:focus-visible {
+    background: var(--color-button-hover);
+    transform: translateX(2px);
+  }
+
+  .predictive-search__results {
+    max-height: calc(100dvh - 9.5rem);
+    margin-top: 1rem;
+    padding: 0.5rem 0.25rem 0.75rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .predictive-search__panel {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .predictive-search__block {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .predictive-search__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .predictive-search__heading {
+    margin: 0;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .predictive-search__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
     margin: 0;
     padding: 0;
-    display: grid;
-    gap: 0.25rem;
+    list-style: none;
   }
 
-  .predictive-search__item {
-    margin: 0;
-  }
-
-  .predictive-search__link {
-    display: grid;
-    grid-template-columns: 3.5rem minmax(0, 1fr) auto;
-    gap: 0.85rem;
+  .predictive-search__chip {
+    display: inline-flex;
     align-items: center;
-    padding: 0.65rem 0.25rem;
-    color: inherit;
+    min-height: 2.25rem;
+    padding: 0 1rem;
+    border: 1px solid var(--ps-line);
+    border-radius: 999px;
+    color: var(--color-heading);
+    font-size: 0.85rem;
     text-decoration: none;
-    transition: background-color 180ms ease;
+    transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
   }
 
-  .predictive-search__link:hover,
-  .predictive-search__link:focus-visible,
-  .predictive-search__link.is-active {
-    background: color-mix(in srgb, var(--color-heading) 4%, transparent);
+  .predictive-search__chip mark {
+    background: none;
+    color: var(--color-accent);
+    font-weight: 700;
   }
 
-  .predictive-search__media {
-    width: 3.5rem;
-    aspect-ratio: 1;
-    background: var(--color-surface);
-    overflow: hidden;
+  .predictive-search__chip--collection::before {
+    content: '';
+    width: 0.4rem;
+    height: 0.4rem;
+    margin-right: 0.5rem;
+    border-radius: 999px;
+    background: var(--color-accent);
   }
 
-  .predictive-search__media img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .predictive-search__meta {
-    min-width: 0;
-  }
-
-  .predictive-search__title {
-    margin: 0;
-    font-size: 0.875rem;
-    letter-spacing: 0.02em;
-  }
-
-  .predictive-search__vendor {
-    margin: 0.15rem 0 0;
-    font-size: 0.6875rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    opacity: 0.55;
-  }
-
-  .predictive-search__price {
-    font-size: 0.8125rem;
-    white-space: nowrap;
-  }
-
-  .predictive-search__loading,
-  .predictive-search__empty {
-    padding: 1rem 0.25rem;
-    font-size: 0.875rem;
-    opacity: 0.65;
+  .predictive-search__chip:hover,
+  .predictive-search__chip:focus-visible {
+    border-color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 8%, var(--color-background));
+    color: var(--color-accent);
   }
 
   .predictive-search__view-all {
     display: inline-flex;
-    margin-top: 0.75rem;
-    padding-top: 0.85rem;
-    border-top: 1px solid color-mix(in srgb, var(--color-heading) 8%, transparent);
-    width: 100%;
-    color: inherit;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--color-accent);
+    font-size: 0.8rem;
+    font-weight: 700;
     text-decoration: none;
-    font-size: 0.75rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    white-space: nowrap;
   }
 
   .predictive-search__view-all:hover {
-    opacity: 0.65;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .predictive-search__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .predictive-search__item {
+    min-width: 0;
+  }
+
+  .predictive-search.is-loading .predictive-search__content {
+    opacity: 0.45;
+    transition: opacity 200ms ease;
+  }
+
+  .predictive-search__skeleton > :nth-child(n + 5) {
+    display: none;
+  }
+
+  /* Compact version of the theme product card for the search panel */
+  .predictive-search .product-card {
+    padding: 0.45rem;
+    border-radius: 18px;
+    box-shadow: none;
+  }
+
+  .predictive-search .product-card:hover,
+  .predictive-search .product-card:focus-within {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px color-mix(in srgb, var(--color-heading) 10%, transparent);
+  }
+
+  .predictive-search .product-card__media {
+    border-radius: 14px;
+  }
+
+  .predictive-search .product-card__wish {
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .predictive-search .product-card__info {
+    gap: 6px;
+    padding: 10px 6px 6px;
+  }
+
+  .predictive-search .product-card__title {
+    font-size: 13.5px;
+  }
+
+  .predictive-search .product-card__price {
+    font-size: 16px;
+  }
+
+  .predictive-search .product-card__atc {
+    height: 40px;
+    font-size: 13px;
+  }
+
+  .predictive-search--no-vendor .product-card__meta-row {
+    display: none;
+  }
+
+  .predictive-search__empty {
+    display: grid;
+    gap: 0.35rem;
+    padding: 1.75rem 1rem;
+    border-radius: 18px;
+    background: var(--color-surface);
+    text-align: center;
+  }
+
+  .predictive-search__empty-title,
+  .predictive-search__empty-tip {
+    margin: 0;
+  }
+
+  .predictive-search__empty-title {
+    font-weight: 700;
+    color: var(--color-heading);
+  }
+
+  .predictive-search__empty-tip {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 750px) {
+    .predictive-search__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .predictive-search__skeleton > :nth-child(n + 5) {
+      display: block;
+    }
+
+    .predictive-search__skeleton > :nth-child(n + 7) {
+      display: none;
+    }
+  }
+
+  @media (min-width: 990px) {
+    .predictive-search__grid {
+      grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+      gap: 1rem;
+    }
+
+    .predictive-search__skeleton > :nth-child(n + 7) {
+      display: block;
+    }
   }
 
   .is-hidden {
@@ -267,18 +439,15 @@
       this.input = this.querySelector('[data-predictive-search-input]');
       this.resetButton = this.querySelector('[data-predictive-search-reset]');
       this.results = this.querySelector('[data-predictive-search-results]');
-      this.list = this.querySelector('[data-predictive-search-list]');
       this.status = this.querySelector('[data-predictive-search-status]');
-      this.loading = this.querySelector('[data-predictive-search-loading]');
-      this.empty = this.querySelector('[data-predictive-search-empty]');
-      this.viewAll = this.querySelector('[data-predictive-search-view-all]');
+      this.idle = this.querySelector('[data-predictive-search-idle]');
+      this.skeleton = this.querySelector('[data-predictive-search-skeleton]');
+      this.content = this.querySelector('[data-predictive-search-content]');
       this.endpoint = this.dataset.url;
-      this.searchUrl = this.dataset.searchUrl;
       this.limit = Number(this.dataset.limit || 6);
-      this.showVendor = this.dataset.showVendor === 'true';
+      this.cache = new Map();
       this.abortController = null;
       this.debounceTimer = null;
-      this.activeIndex = -1;
 
       this.onInput = () => this.onQueryChange();
       this.onReset = () => this.clear();
@@ -300,11 +469,10 @@
     onQueryChange() {
       const term = this.input.value.trim();
       this.resetButton?.classList.toggle('is-hidden', term.length === 0);
-      this.input?.setAttribute('aria-expanded', term.length > 1 ? 'true' : 'false');
 
       window.clearTimeout(this.debounceTimer);
       if (term.length < 2) {
-        this.resetResults();
+        this.showIdle();
         return;
       }
 
@@ -312,154 +480,95 @@
     }
 
     async search(term) {
+      const cached = this.cache.get(term);
+      if (cached) {
+        this.abortController?.abort();
+        this.render(cached);
+        return;
+      }
+
       this.abortController?.abort();
-      this.abortController = new AbortController();
+      const controller = new AbortController();
+      this.abortController = controller;
       this.setLoading(true);
 
       const url = new URL(this.endpoint, window.location.origin);
       url.searchParams.set('q', term);
-      url.searchParams.set('resources[type]', 'product');
+      url.searchParams.set('section_id', 'predictive-search');
+      url.searchParams.set('resources[type]', 'product,query,collection');
       url.searchParams.set('resources[limit]', String(this.limit));
+      url.searchParams.set('resources[limit_scope]', 'each');
       url.searchParams.set('resources[options][unavailable_products]', 'last');
-      url.searchParams.set('resources[options][fields]', 'title,product_type,variants.title,vendor');
+      url.searchParams.set('resources[options][fields]', 'title,product_type,variants.title,vendor,tag');
 
       try {
-        const response = await fetch(url.toString(), {
-          signal: this.abortController.signal,
-          headers: { Accept: 'application/json' },
-        });
+        const response = await fetch(url.toString(), { signal: controller.signal });
         if (!response.ok) throw new Error('Predictive search failed');
-        const data = await response.json();
-        this.renderResults(term, data?.resources?.results?.products || []);
+
+        const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
+        const panel = doc.querySelector('[data-predictive-results]');
+        if (!panel) throw new Error('Predictive search section missing');
+
+        const result = { html: panel.outerHTML, status: panel.dataset.status || '' };
+        this.cache.set(term, result);
+        if (this.input.value.trim() === term) this.render(result);
       } catch (error) {
-        if (error.name !== 'AbortError') console.error(error);
-      } finally {
+        if (error.name === 'AbortError') return;
+        console.error(error);
         this.setLoading(false);
       }
     }
 
-    renderResults(term, products) {
-      this.activeIndex = -1;
-      this.list.innerHTML = '';
+    render({ html, status }) {
+      this.setLoading(false);
+      if (this.idle) this.idle.hidden = true;
 
-      if (!products.length) {
-        this.list.hidden = true;
-        this.empty?.classList.remove('is-hidden');
-        this.viewAll?.classList.add('is-hidden');
-        if (this.status) this.status.textContent = 'No results';
-        return;
-      }
+      // Assign from a string so the injected <product-card> elements upgrade and bind.
+      this.content.innerHTML = html;
+      this.content.hidden = false;
 
-      this.empty?.classList.add('is-hidden');
-      this.list.hidden = false;
-
-      const fragment = document.createDocumentFragment();
-      products.forEach((product, index) => {
-        const li = document.createElement('li');
-        li.className = 'predictive-search__item';
-        li.setAttribute('role', 'option');
-        li.id = `PredictiveSearchOption-${this.dataset.sectionId}-${index}`;
-
-        const price = this.formatMoney(product.price);
-        const image = product.image
-          ? `<div class="predictive-search__media"><img src="${product.image}" alt="" width="70" height="70" loading="lazy"></div>`
-          : `<div class="predictive-search__media" aria-hidden="true"></div>`;
-        const vendor = this.showVendor && product.vendor
-          ? `<p class="predictive-search__vendor">${this.escape(product.vendor)}</p>`
-          : '';
-
-        li.innerHTML = `
-          <a class="predictive-search__link" href="${product.url}" data-index="${index}">
-            ${image}
-            <div class="predictive-search__meta">
-              <p class="predictive-search__title">${this.escape(product.title)}</p>
-              ${vendor}
-            </div>
-            <div class="predictive-search__price">${price}</div>
-          </a>
-        `;
-        fragment.appendChild(li);
-      });
-
-      this.list.appendChild(fragment);
-      if (this.viewAll) {
-        this.viewAll.href = `${this.searchUrl}?q=${encodeURIComponent(term)}`;
-        this.viewAll.classList.remove('is-hidden');
-      }
-      if (this.status) {
-        this.status.textContent = `${products.length} results`;
-      }
-    }
-
-    handleKeys(event) {
-      const links = Array.from(this.querySelectorAll('.predictive-search__link'));
-      if (!links.length) return;
-
-      if (event.key === 'ArrowDown') {
-        event.preventDefault();
-        this.activeIndex = (this.activeIndex + 1) % links.length;
-        this.paintActive(links);
-      } else if (event.key === 'ArrowUp') {
-        event.preventDefault();
-        this.activeIndex = (this.activeIndex - 1 + links.length) % links.length;
-        this.paintActive(links);
-      } else if (event.key === 'Enter' && this.activeIndex >= 0) {
-        event.preventDefault();
-        links[this.activeIndex].click();
-      } else if (event.key === 'Escape') {
-        this.clear();
-        this.closest('header-search')?.close?.();
-      }
-    }
-
-    paintActive(links) {
-      links.forEach((link, index) => {
-        link.classList.toggle('is-active', index === this.activeIndex);
-      });
-      this.input?.setAttribute(
-        'aria-activedescendant',
-        `PredictiveSearchOption-${this.dataset.sectionId}-${this.activeIndex}`
-      );
+      window.TahReveal?.boot?.(this.content);
+      document.dispatchEvent(new CustomEvent('wishlist:updated'));
+      if (this.status) this.status.textContent = status;
     }
 
     setLoading(isLoading) {
-      this.loading?.classList.toggle('is-hidden', !isLoading);
+      this.classList.toggle('is-loading', isLoading);
+      if (!this.skeleton) return;
+
+      if (isLoading) {
+        if (this.idle) this.idle.hidden = true;
+        // First search shows card placeholders; later searches dim the current results.
+        this.skeleton.hidden = !this.content.hidden;
+      } else {
+        this.skeleton.hidden = true;
+      }
     }
 
-    resetResults() {
-      this.list.innerHTML = '';
-      this.list.hidden = true;
-      this.empty?.classList.add('is-hidden');
-      this.viewAll?.classList.add('is-hidden');
-      this.loading?.classList.add('is-hidden');
+    showIdle() {
+      this.abortController?.abort();
+      this.setLoading(false);
+      this.content.innerHTML = '';
+      this.content.hidden = true;
+      if (this.idle) this.idle.hidden = false;
       if (this.status) this.status.textContent = '';
-      this.input?.setAttribute('aria-expanded', 'false');
-      this.input?.removeAttribute('aria-activedescendant');
+    }
+
+    handleKeys(event) {
+      if (event.key !== 'ArrowDown') return;
+
+      const first = this.content?.querySelector('a[href]:not([tabindex="-1"])');
+      if (!first || this.content.hidden) return;
+
+      event.preventDefault();
+      first.focus();
     }
 
     clear() {
       if (this.input) this.input.value = '';
       this.resetButton?.classList.add('is-hidden');
-      this.resetResults();
+      this.showIdle();
       this.input?.focus();
-    }
-
-    escape(value) {
-      return String(value)
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#39;');
-    }
-
-    formatMoney(cents) {
-      const amount = (Number(cents) / 100).toFixed(2);
-      const format = this.dataset.moneyFormat || '${{amount}}';
-      return format
-        .replace('{{amount_with_comma_separator}}', amount.replace('.', ','))
-        .replace('{{amount_no_decimals}}', String(Math.round(Number(cents) / 100)))
-        .replace('{{amount}}', amount);
     }
   }
 

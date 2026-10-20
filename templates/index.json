@@ -231,13 +231,75 @@
         "header_alignment": "center",
         "collection_list": [],
         "show_product_count": true,
-        "layout_style": "cards",
+        "layout_style": "circles",
+        "circle_size": 150,
         "background_color": "#ffffff",
         "text_color": "#5e184f",
         "muted_color": "#b07a9e",
         "corner_radius": 24,
         "grid_gap": 18,
         "padding_top": 48,
+        "padding_bottom": 72
+      }
+    },
+    "category_mosaic": {
+      "type": "category-mosaic",
+      "blocks": {
+        "tile_1": {
+          "type": "tile",
+          "settings": {
+            "title": "Latest",
+            "collection": "",
+            "link": ""
+          }
+        },
+        "tile_2": {
+          "type": "tile",
+          "settings": {
+            "title": "Summer",
+            "collection": "",
+            "link": ""
+          }
+        },
+        "tile_3": {
+          "type": "tile",
+          "settings": {
+            "title": "Gents",
+            "collection": "",
+            "link": ""
+          }
+        },
+        "tile_4": {
+          "type": "tile",
+          "settings": {
+            "title": "Sale",
+            "collection": "",
+            "link": ""
+          }
+        },
+        "tile_5": {
+          "type": "tile",
+          "settings": {
+            "title": "Festive",
+            "collection": "",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "tile_1",
+        "tile_2",
+        "tile_3",
+        "tile_4",
+        "tile_5"
+      ],
+      "settings": {
+        "eyebrow": "",
+        "heading": "",
+        "corner_radius": 10,
+        "desktop_height": 460,
+        "grid_gap": 16,
+        "padding_top": 0,
         "padding_bottom": 72
       }
     },
@@ -522,6 +584,7 @@
     "brands",
     "trusted_by",
     "shop_catalog",
+    "category_mosaic",
     "new_arrivals",
     "featured_collection",
     "bridal_lehenga",

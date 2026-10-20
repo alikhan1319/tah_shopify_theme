@@ -86,6 +86,9 @@
     "shop_catalog": {
       "empty": "Add category blocks (or a collection list) to build the catalog mosaic. Every 5 categories repeats the premium layout."
     },
+    "category_mosaic": {
+      "empty": "Add category tiles to build the mosaic. Five tiles create the collage layout."
+    },
     "featured_collection": {
       "empty_collection": "Select a collection to feature products.",
       "empty_products": "Select products to feature in this section.",
@@ -358,6 +361,23 @@
     "no_results_short": "No products found",
     "no_results_html": "No results found for {{ terms }}",
     "results_for_html": "{{ count }} results found for {{ terms }}",
-    "view_all": "View all results"
+    "view_all": "View all results",
+    "page_heading": "What are you looking for?",
+    "results_heading": "Results for “{{ terms }}”",
+    "results_count": {
+      "one": "{{ count }} result",
+      "other": "{{ count }} results"
+    },
+    "popular": "Popular searches",
+    "suggestions": "Suggestions",
+    "products": "Products",
+    "no_results_heading": "No results for “{{ terms }}”",
+    "no_results_tip": "Check the spelling, or try a more general word.",
+    "browse_all": "Browse all products",
+    "suggested_heading": "Trending now",
+    "sort_by": "Sort by",
+    "type_article": "Journal",
+    "type_page": "Page",
+    "read_more": "Read more"
   }
 }

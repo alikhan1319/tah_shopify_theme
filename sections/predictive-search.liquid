@@ -1,0 +1,76 @@
+{% comment %}
+  Rendered through the Section Rendering API by the `predictive-search` snippet:
+  /search/suggest?q=…&section_id=predictive-search
+  Lets live search results use the theme's real product card.
+{% endcomment %}
+
+{%- liquid
+  assign ps_products = predictive_search.resources.products
+  assign ps_queries = predictive_search.resources.queries
+  assign ps_collections = predictive_search.resources.collections
+-%}
+
+<div
+  class="predictive-search__panel"
+  data-predictive-results
+  data-status="{{ 'search.results_count' | t: count: ps_products.size | escape }}"
+>
+  {%- if ps_queries.size > 0 or ps_collections.size > 0 -%}
+    <div class="predictive-search__block">
+      <p class="predictive-search__heading">{{ 'search.suggestions' | t }}</p>
+      <ul class="predictive-search__chips" role="list">
+        {%- for query in ps_queries -%}
+          <li>
+            <a class="predictive-search__chip" href="{{ query.url }}">{{ query.styled_text }}</a>
+          </li>
+        {%- endfor -%}
+        {%- for collection in ps_collections -%}
+          <li>
+            <a class="predictive-search__chip predictive-search__chip--collection" href="{{ collection.url }}">
+              {{- collection.title | escape -}}
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  {%- endif -%}
+
+  {%- if ps_products.size > 0 -%}
+    <div class="predictive-search__block">
+      <div class="predictive-search__row">
+        <p class="predictive-search__heading">{{ 'search.products' | t }}</p>
+        <a
+          class="predictive-search__view-all"
+          href="{{ routes.search_url }}?q={{ predictive_search.terms | url_encode }}&amp;options%5Bprefix%5D=last"
+        >
+          {{- 'search.view_all' | t }}
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+
+      <ul class="predictive-search__grid" role="list">
+        {%- for product in ps_products -%}
+          <li class="predictive-search__item">
+            {% render 'product-card',
+              product: product,
+              show_description: false,
+              show_rating: false
+            %}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  {%- else -%}
+    <div class="predictive-search__empty">
+      <p class="predictive-search__empty-title">{{ 'search.no_results_heading' | t: terms: predictive_search.terms }}</p>
+      <p class="predictive-search__empty-tip">{{ 'search.no_results_tip' | t }}</p>
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "t:general.search",
+  "settings": []
+}
+{% endschema %}

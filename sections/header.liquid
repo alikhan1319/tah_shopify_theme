@@ -461,7 +461,8 @@
           {% render 'predictive-search',
             section_id: section.id,
             limit: section.settings.search_results_limit,
-            show_vendor: section.settings.search_show_vendor
+            show_vendor: section.settings.search_show_vendor,
+            popular: section.settings.search_popular_terms
           %}
         </div>
       </div>
@@ -1187,7 +1188,7 @@
   }
 
   .header-search__content {
-    max-width: 42rem;
+    width: min(100%, var(--page-width, 1200px));
     margin: 0 auto;
   }
 
@@ -1920,6 +1921,13 @@
       "id": "search_show_vendor",
       "label": "t:labels.search_show_vendor",
       "default": false
+    },
+    {
+      "type": "text",
+      "id": "search_popular_terms",
+      "label": "t:labels.popular_searches",
+      "info": "t:info.popular_searches",
+      "default": "Bridal, Lehenga, Festive, Chiffon"
     },
     {
       "type": "checkbox",
