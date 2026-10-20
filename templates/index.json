@@ -12,28 +12,39 @@
     "hero": {
       "type": "hero",
       "blocks": {
+        "banner_9MYM7R": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/Luxury_Unstitched_Partywear_Collection.png",
+            "mobile_image": "shopify://shop_images/Luxury_Unstitched_Partywear_Collection.png",
+            "collection": "womens-unstitched-collection",
+            "link": "",
+            "title": ""
+          }
+        },
         "banner_4": {
           "type": "banner",
           "settings": {
-            "image": "shopify://shop_images/ChatGPT_Image_Jul_28_2026_12_44_49_PM-4x-upscaled.jpg",
-            "mobile_image": "shopify://shop_images/ChatGPT_Image_Jul_28_2026_12_44_49_PM-4x-upscaled.jpg",
-            "collection": "",
-            "link": "",
+            "image": "shopify://shop_images/ChatGPT_Image_Sep_2_2026_04_22_45_PM.png",
+            "mobile_image": "shopify://shop_images/ChatGPT_Image_Sep_2_2026_04_22_45_PM.png",
+            "collection": "lehnga",
+            "link": "shopify://collections/lehnga",
             "title": ""
           }
         },
         "banner_rYrnmE": {
           "type": "banner",
           "settings": {
-            "image": "shopify://shop_images/ChatGPT_Image_Jul_28_2026_01_07_39_PM.png",
-            "mobile_image": "shopify://shop_images/ChatGPT_Image_Jul_28_2026_01_07_39_PM.png",
-            "collection": "",
-            "link": "",
+            "image": "shopify://shop_images/ChatGPT_Image_Sep_2_2026_03_37_14_PM.png",
+            "mobile_image": "shopify://shop_images/ChatGPT_Image_Sep_2_2026_03_37_14_PM.png",
+            "collection": "mehndi-dresses-in-pakistan-star-fabrics",
+            "link": "shopify://collections/mehndi-dresses-in-pakistan-star-fabrics",
             "title": ""
           }
         }
       },
       "block_order": [
+        "banner_9MYM7R",
         "banner_4",
         "banner_rYrnmE"
       ],
@@ -48,48 +59,40 @@
         "logo_1": {
           "type": "logo",
           "settings": {
-            "title": "Maison",
-            "collection": "",
+            "title": "Alkaram",
+            "collection": "alkaram",
             "link": ""
           }
         },
         "logo_2": {
           "type": "logo",
           "settings": {
-            "title": "Atelier",
-            "collection": "",
+            "title": "Ally's",
+            "collection": "allys",
             "link": ""
           }
         },
         "logo_3": {
           "type": "logo",
           "settings": {
-            "title": "Lumiere",
-            "collection": "",
+            "title": "Ghazi",
+            "collection": "ghazi-by-zouk-2026-cotton-collection-star-fabrics",
+            "link": ""
+          }
+        },
+        "logo_kYfV9y": {
+          "type": "logo",
+          "settings": {
+            "title": "Limelight",
+            "collection": "limelight",
             "link": ""
           }
         },
         "logo_4": {
           "type": "logo",
           "settings": {
-            "title": "Velvet",
-            "collection": "",
-            "link": ""
-          }
-        },
-        "logo_5": {
-          "type": "logo",
-          "settings": {
-            "title": "Noir",
-            "collection": "",
-            "link": ""
-          }
-        },
-        "logo_6": {
-          "type": "logo",
-          "settings": {
-            "title": "Opaline",
-            "collection": "",
+            "title": "Tawakkal",
+            "collection": "tawakkal",
             "link": ""
           }
         }
@@ -98,9 +101,8 @@
         "logo_1",
         "logo_2",
         "logo_3",
-        "logo_4",
-        "logo_5",
-        "logo_6"
+        "logo_kYfV9y",
+        "logo_4"
       ],
       "settings": {
         "heading": "Trusted by top brands",
@@ -165,34 +167,26 @@
     "shop_catalog": {
       "type": "shop-catalog",
       "blocks": {
-        "cat_1": {
+        "category_iF4Wj7": {
           "type": "category",
           "settings": {
-            "collection": "",
-            "title": "Women's wear",
+            "collection": "womens-unstitched-collection",
+            "title": "Unstitched Collection",
             "link": ""
           }
         },
-        "cat_2": {
+        "category_r6NbQH": {
           "type": "category",
           "settings": {
-            "collection": "",
-            "title": "Footwear",
-            "link": ""
-          }
-        },
-        "cat_3": {
-          "type": "category",
-          "settings": {
-            "collection": "",
-            "title": "Accessories",
+            "collection": "women-ready-made",
+            "title": "Ready to Wear Collection",
             "link": ""
           }
         },
         "cat_4": {
           "type": "category",
           "settings": {
-            "collection": "",
+            "collection": "lehnga",
             "image": "shopify://shop_images/ChatGPT_Image_Jul_26_2026_03_57_47_PM-2x-upscaled.jpg",
             "title": "Bridal Lehnga",
             "link": ""
@@ -201,27 +195,77 @@
         "cat_5": {
           "type": "category",
           "settings": {
-            "collection": "",
-            "title": "Bridal",
+            "collection": "sherwani",
+            "image": "shopify://shop_images/ChatGPT_Image_Jul_26_2026_04_15_45_PM-2x-upscaled.jpg",
+            "title": "Sherwani",
+            "link": ""
+          }
+        },
+        "cat_2": {
+          "type": "category",
+          "settings": {
+            "collection": "3-piece-pant-coat",
+            "image": "shopify://shop_images/ChatGPT_Image_Jul_26_2026_04_47_44_PM.png",
+            "title": "3 Piece Suit",
+            "link": ""
+          }
+        },
+        "cat_1": {
+          "type": "category",
+          "settings": {
+            "collection": "bridal-maxi",
+            "image": "shopify://shop_images/ChatGPT_Image_Jul_26_2026_04_31_58_PM-2x-upscaled.jpg",
+            "title": "Bridal Maxi",
+            "link": ""
+          }
+        },
+        "category_VYbnxE": {
+          "type": "category",
+          "settings": {
+            "collection": "mehndi-dresses-in-pakistan-star-fabrics",
+            "image": "shopify://shop_images/ChatGPT_Image_Aug_28_2026_03_39_59_PM.png",
+            "title": "Mehdi Dress",
+            "link": ""
+          }
+        },
+        "cat_3": {
+          "type": "category",
+          "settings": {
+            "collection": "fancy-unstitched-collection",
+            "image": "shopify://shop_images/ChatGPT_Image_Jul_26_2026_04_59_17_PM-clean-clean-2x-upscaled_1.jpg",
+            "title": "Accessories",
             "link": ""
           }
         },
         "cat_6": {
           "type": "category",
           "settings": {
-            "collection": "",
-            "title": "Festive",
+            "collection": "kids-collection",
+            "image": "shopify://shop_images/ChatGPT_Image_Jul_27_2026_11_23_01_AM-4x-upscaled.jpg",
+            "title": "Kids Collection",
+            "link": ""
+          }
+        },
+        "category_yERaxH": {
+          "type": "category",
+          "settings": {
+            "collection": "star-fabrics-men-s-ready-made-collection-premium-shalwar-kameez-waistcoat-suits",
+            "title": "Men's Ready to Wear",
             "link": ""
           }
         }
       },
       "block_order": [
-        "cat_1",
-        "cat_2",
-        "cat_3",
+        "category_iF4Wj7",
+        "category_r6NbQH",
         "cat_4",
         "cat_5",
-        "cat_6"
+        "cat_2",
+        "cat_1",
+        "category_VYbnxE",
+        "cat_3",
+        "cat_6",
+        "category_yERaxH"
       ],
       "settings": {
         "use_theme_colors": true,
@@ -248,40 +292,45 @@
         "tile_1": {
           "type": "tile",
           "settings": {
-            "title": "Latest",
-            "collection": "",
+            "image": "shopify://shop_images/ChatGPT_Image_Jul_26_2026_03_57_47_PM-2x-upscaled.jpg",
+            "collection": "lehnga",
+            "title": "Bridal Lehnga",
             "link": ""
           }
         },
         "tile_2": {
           "type": "tile",
           "settings": {
-            "title": "Summer",
-            "collection": "",
+            "image": "shopify://shop_images/ChatGPT_Image_Aug_28_2026_03_39_59_PM.png",
+            "collection": "mehndi-dresses-in-pakistan-star-fabrics",
+            "title": "Mehndi Dress",
             "link": ""
           }
         },
         "tile_3": {
           "type": "tile",
           "settings": {
-            "title": "Gents",
-            "collection": "",
+            "image": "shopify://shop_images/ChatGPT_Image_Jul_26_2026_04_15_45_PM-2x-upscaled.jpg",
+            "collection": "sherwani",
+            "title": "Sherwani",
             "link": ""
           }
         },
         "tile_4": {
           "type": "tile",
           "settings": {
-            "title": "Sale",
-            "collection": "",
+            "image": "shopify://shop_images/ChatGPT_Image_Jul_26_2026_04_47_44_PM.png",
+            "collection": "3-piece-pant-coat",
+            "title": "3 Piece Suit",
             "link": ""
           }
         },
         "tile_5": {
           "type": "tile",
           "settings": {
-            "title": "Festive",
-            "collection": "",
+            "image": "shopify://shop_images/ChatGPT_Image_Jul_26_2026_04_31_58_PM-2x-upscaled.jpg",
+            "collection": "bridal-maxi",
+            "title": "Bridal Maxi",
             "link": ""
           }
         }
@@ -303,8 +352,8 @@
         "padding_bottom": 72
       }
     },
-    "new_arrivals": {
-      "type": "new-arrivals",
+    "bridal_lehenga": {
+      "type": "bridal-lehenga",
       "settings": {
         "use_theme_colors": true,
         "collection": "new-arrivals",
@@ -314,10 +363,8 @@
         "header_alignment": "center",
         "show_cta": true,
         "link_label": "View all",
-        "cta_label": "Shop new arrivals",
+        "cta_label": "Shop lehengas",
         "cta_link": "",
-        "enable_auto_scroll": true,
-        "scroll_speed": 40,
         "products_to_show": 8,
         "show_vendor": true,
         "show_description": true,
@@ -326,8 +373,8 @@
         "show_add_to_cart": true,
         "background_color": "#f6effb",
         "grid_gap": 24,
-        "columns_mobile": "2",
-        "columns_tablet": "3",
+        "columns_mobile": "1",
+        "columns_tablet": "2",
         "columns_desktop": 4,
         "padding_top": 72,
         "padding_bottom": 72
@@ -338,8 +385,14 @@
       "settings": {
         "use_theme_colors": true,
         "products": [
-          "9-piece-embroidered-chiffon-unstitched-suit-embroidered-body-front-double-front-back-patches-chiffon-dupatta-with-border-dyed-silk-trouser-womens-premium-festive-wear",
-          "9-piece-hand-work-embroidered-chiffon-organza-unstitched-suit-organza-neckline-front-back-patch-dupatta-pallu-embroidered-silk-trouser-premium-womens-handcrafted-festive-wear"
+          "regal-maroon-silk-bridal-farshi-lehenga-with-heavy-handmade-kora-dabka-work",
+          "luxury-sherwani-with-kulla-pearl-mala-groom-set",
+          "elegant-3-piece-formal-suit-with-waistcoat-paisley-tie-white-shirt",
+          "dusty-rose-handmade-cora-dabka-maxi-dress-for-wedding-ready-to-wear",
+          "luxury-embroidered-18-piece-bridal-outfit-zari-net-organza-silk-with-velvet-borders-full-suit-with-dupatta-trouser",
+          "lyra-pink-embroidered-lawn-3-piece-with-chiffon-dupatta",
+          "kids-festive-silk-3-piece-set-with-sequin-embroidery-tassel-detail",
+          "premium-black-shalwar-kameez-with-waistcoat-wash-wear-men-s-elegant-suit-star-fabrics"
         ],
         "eyebrow": "Curated edit",
         "heading": "Featured products",
@@ -356,14 +409,14 @@
         "show_add_to_cart": true,
         "background_color": "#ffffff",
         "grid_gap": 24,
-        "columns_mobile": "2",
-        "columns_tablet": "3",
+        "columns_mobile": "1",
+        "columns_tablet": "2",
         "columns_desktop": 4,
         "padding_top": 72,
         "padding_bottom": 72
       }
     },
-    "bridal_lehenga": {
+    "bridal_lehenga_U6CHji": {
       "type": "bridal-lehenga",
       "settings": {
         "use_theme_colors": true,
@@ -384,7 +437,63 @@
         "show_add_to_cart": true,
         "background_color": "#f6effb",
         "grid_gap": 24,
-        "columns_mobile": "2",
+        "columns_mobile": "1",
+        "columns_tablet": "2",
+        "columns_desktop": 4,
+        "padding_top": 72,
+        "padding_bottom": 72
+      }
+    },
+    "bridal_lehenga_gYNGRn": {
+      "type": "bridal-lehenga",
+      "settings": {
+        "use_theme_colors": true,
+        "collection": "bridal-maxi",
+        "eyebrow": "Wedding edit",
+        "heading": "Maxi Collection",
+        "subheading": "<p>Handcrafted lehengas for your most celebrated moments.</p>",
+        "header_alignment": "center",
+        "show_cta": true,
+        "link_label": "View all",
+        "cta_label": "Shop lehengas",
+        "cta_link": "",
+        "products_to_show": 8,
+        "show_vendor": true,
+        "show_description": true,
+        "show_rating": true,
+        "show_quick_view": true,
+        "show_add_to_cart": true,
+        "background_color": "#f6effb",
+        "grid_gap": 24,
+        "columns_mobile": "1",
+        "columns_tablet": "2",
+        "columns_desktop": 4,
+        "padding_top": 72,
+        "padding_bottom": 72
+      }
+    },
+    "bridal_lehenga_FXhf83": {
+      "type": "bridal-lehenga",
+      "settings": {
+        "use_theme_colors": true,
+        "collection": "mehndi-dresses-in-pakistan-star-fabrics",
+        "eyebrow": "Wedding edit",
+        "heading": "Mehndi Collection",
+        "subheading": "<p>Handcrafted lehengas for your most celebrated moments.</p>",
+        "header_alignment": "center",
+        "show_cta": true,
+        "link_label": "View all",
+        "cta_label": "Shop lehengas",
+        "cta_link": "",
+        "products_to_show": 8,
+        "show_vendor": true,
+        "show_description": true,
+        "show_rating": true,
+        "show_quick_view": true,
+        "show_add_to_cart": true,
+        "background_color": "#f6effb",
+        "grid_gap": 24,
+        "columns_mobile": "1",
         "columns_tablet": "2",
         "columns_desktop": 4,
         "padding_top": 72,
@@ -433,6 +542,7 @@
         "review_2",
         "review_3"
       ],
+      "disabled": true,
       "settings": {
         "use_theme_colors": true,
         "eyebrow": "From our clients",
@@ -585,9 +695,11 @@
     "trusted_by",
     "shop_catalog",
     "category_mosaic",
-    "new_arrivals",
-    "featured_collection",
     "bridal_lehenga",
+    "featured_collection",
+    "bridal_lehenga_U6CHji",
+    "bridal_lehenga_gYNGRn",
+    "bridal_lehenga_FXhf83",
     "customer_review_videos",
     "customer_testimonials",
     "why_choose",
