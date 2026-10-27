@@ -56,19 +56,43 @@
     "brands": {
       "type": "brands",
       "blocks": {
-        "logo_1": {
-          "type": "logo",
-          "settings": {
-            "title": "Alkaram",
-            "collection": "alkaram",
-            "link": ""
-          }
-        },
         "logo_2": {
           "type": "logo",
           "settings": {
-            "title": "Ally's",
-            "collection": "allys",
+            "title": "ALTAN",
+            "collection": "noore",
+            "link": ""
+          }
+        },
+        "logo_JWKmi7": {
+          "type": "logo",
+          "settings": {
+            "title": "Flossie",
+            "collection": "safeera-by-flossie",
+            "link": ""
+          }
+        },
+        "logo_M8FV48": {
+          "type": "logo",
+          "settings": {
+            "title": "Gul Ahmed",
+            "collection": "gul-ahmed",
+            "link": ""
+          }
+        },
+        "logo_9UpMG4": {
+          "type": "logo",
+          "settings": {
+            "title": "Johra",
+            "collection": "mahveen-by-johra",
+            "link": ""
+          }
+        },
+        "logo_LeHexB": {
+          "type": "logo",
+          "settings": {
+            "title": "Riaz Arts",
+            "collection": "chinar",
             "link": ""
           }
         },
@@ -84,7 +108,7 @@
           "type": "logo",
           "settings": {
             "title": "Limelight",
-            "collection": "limelight",
+            "collection": "limelight-printed-khaddar",
             "link": ""
           }
         },
@@ -92,14 +116,17 @@
           "type": "logo",
           "settings": {
             "title": "Tawakkal",
-            "collection": "tawakkal",
+            "collection": "velvet-collection-by-shahid-tawakkal",
             "link": ""
           }
         }
       },
       "block_order": [
-        "logo_1",
         "logo_2",
+        "logo_JWKmi7",
+        "logo_M8FV48",
+        "logo_9UpMG4",
+        "logo_LeHexB",
         "logo_3",
         "logo_kYfV9y",
         "logo_4"
